@@ -1,0 +1,87 @@
+/* General page background */
+*{
+    font-size: 14px;
+    color: #7c7c7c;
+}
+
+
+body {
+    background-color: white;
+  }
+  
+  /* Container padding */
+  /* .cart-page {
+    margin-inline: 3.5rem;
+  }  */
+
+  .nav
+  {
+    border-radius: 10px;
+    padding: 2.5rem;
+    margin-inline: 2.5rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+
+  }
+
+  
+  /* Sidebar styling */
+  .cart-summary
+   {
+    background-color: #f5f5f5e5;
+    /* border-radius: 10px; */
+    padding: 1.5rem;
+    /* box-shadow: 0 0 10px rgba(0,0,0,0.05); */
+    border: none;
+  }
+
+ 
+  
+  /* Table styling */
+  .cart-table thead th {
+    background-color: #e9ecef;
+    font-weight: bold;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .cart-table td {
+    vertical-align: middle;
+  }
+  
+  .cart-table .form-control {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    height: auto;
+  }
+  
+  /* Discount and link styling */
+  .text-decoration-underline {
+    color: #5caf90;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  /* Buttons */
+  .btn-success {
+    background-color: #5caf90;
+    border-color: #5caf90;
+  }
+  
+  .btn-success:hover {
+    background-color: #5caf90;
+    border-color: #5caf90;
+  }
+  
+  /* Continue shopping link */
+  .fw-medium {
+    color: #5caf90;
+  }
+  
+  .fw-medium:hover {
+    text-decoration: underline;
+  }
+  
+  /* Image spacing */
+  .cart-product-image {
+    margin-right: 10px;
+  }
+  
