@@ -1,0 +1,99 @@
+.hover-dropdown {
+    position: relative;
+  }
+  
+  .hover-dropdown:hover .dropdown-menu {
+    display: block;
+    z-index: 10;
+  }
+  
+  .dropdown-menu {
+    display: none;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    min-width: 200px;
+    padding: 0;
+  }
+  
+  .dropdown-item {
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    display: block;
+  }
+  .dropdown-item:hover {
+    background-color: transparent; 
+    color: #5cac94; 
+  }
+  .all-category-btn svg {
+    color: white !important;
+  }
+  
+  
+  .user-hover {
+    position: relative;
+  }
+  
+  .user-hover:hover .user-dropdown {
+    display: block;
+  }
+  
+  .user-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    min-width: 150px;
+    z-index: 100;
+  }
+  
+  .user-dropdown .dropdown-item {
+    padding: 10px 15px;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .user-dropdown .dropdown-item:last-child {
+    border-bottom: none;
+  }
+  .all-category-btn {
+    background-color: #5cac94 !important;
+    color: white;
+  }
+  
+  
+  /* ظهور القوائم عند الـ hover */
+.hover-dropdown:hover .dropdown-menu {
+    display: block;
+    z-index: 999;
+  }
+  
+  /* ضبط شكل زر All Categories */
+  .all-category-btn:hover {
+    background-color: #519f87 !important;
+  }
+  /* dropdown يظهر عند hover */
+.hover-dropdown:hover .dropdown-menu {
+    display: block;
+    z-index: 999;
+  }
+  
+  /* زر All Categories hover */
+  .all-category-btn:hover {
+    background-color: #519f87 !important;
+    color: #fff !important;
+  }
+  
+  /* السهم ▼ */
+  .dropdown-arrow {
+    font-size: 10px;
+  }
+  
+  /* تغيير لون الخط بس عند hover على الرابط */
+  .nav-item-with-dropdown:hover .dropdown-toggle-custom {
+    color: #5cac94 !important;
+    cursor: pointer;
+  }
+  
