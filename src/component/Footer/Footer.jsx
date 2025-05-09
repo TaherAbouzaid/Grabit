@@ -1,7 +1,7 @@
 import { Container, Row, Col } from "react-bootstrap";
-import {FaFacebookF,FaInstagram,FaLinkedinIn,FaTwitter,} from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, } from "react-icons/fa";
 import { BiLocationPlus, BiPhone, BiEnvelope } from "react-icons/bi";
-import "../component/Footer.css";
+import "../Footer/Footer.css"; // Import your CSS file for styling
 const Footer = () => {
   return (
     <footer className="bg-white text-secondary pt-5 border-top">
@@ -20,55 +20,60 @@ const Footer = () => {
               needs from our store.
             </p>
             <div className="d-flex gap-2">
-               <img
-                src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/android.png"
-                alt="App Store"
-                style={{ height: 36 }}
-              />
-              <img
-                src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/apple.png"
-                alt="Google Play"
-                style={{ height: 36 }}
-              />
+              <a href="#" rel="noopener noreferrer">
+                <img
+                  src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/android.png"
+                  alt="Google Play"
+                  style={{ height: 36 }}
+                />
+              </a>
+              <a href="#" rel="noopener noreferrer">
+                <img
+                  src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/apple.png"
+                  alt="App Store"
+                  style={{ height: 36 }}
+                />
+              </a>
             </div>
+
           </Col>
 
           {/* Category / Company / Account */}
-         <Col md={2}>
-  <h6 className="footer-title">Category</h6>
-  <ul className="footer-list">
-    <li><a href="#" className="footer-link">Dried Fruit</a></li>
-    <li><a href="#" className="footer-link">Cookies</a></li>
-    <li><a href="#" className="footer-link">Foods</a></li>
-    <li><a href="#" className="footer-link">Fresh Fruit</a></li>
-    <li><a href="#" className="footer-link">Tuber Root</a></li>
-    <li><a href="#" className="footer-link">Vegetables</a></li>
-  </ul>
-</Col>
+          <Col md={2}>
+            <h6 className="footer-title">Category</h6>
+            <ul className="footer-list">
+              <li><a href="#" className="footer-link">Dried Fruit</a></li>
+              <li><a href="#" className="footer-link">Cookies</a></li>
+              <li><a href="#" className="footer-link">Foods</a></li>
+              <li><a href="#" className="footer-link">Fresh Fruit</a></li>
+              <li><a href="#" className="footer-link">Tuber Root</a></li>
+              <li><a href="#" className="footer-link">Vegetables</a></li>
+            </ul>
+          </Col>
 
-<Col md={2}>
-  <h6 className="footer-title">Company</h6>
-  <ul className="footer-list">
-    <li><a href="#" className="footer-link">About us</a></li>
-    <li><a href="#" className="footer-link">Delivery</a></li>
-    <li><a href="#" className="footer-link">Legal Notice</a></li>
-    <li><a href="#" className="footer-link">Terms & conditions</a></li>
-    <li><a href="#" className="footer-link">Secure payment</a></li>
-    <li><a href="#" className="footer-link">Contact us</a></li>
-  </ul>
-</Col>
+          <Col md={2}>
+            <h6 className="footer-title">Company</h6>
+            <ul className="footer-list">
+              <li><a href="#" className="footer-link">About us</a></li>
+              <li><a href="#" className="footer-link">Delivery</a></li>
+              <li><a href="#" className="footer-link">Legal Notice</a></li>
+              <li><a href="#" className="footer-link">Terms & conditions</a></li>
+              <li><a href="#" className="footer-link">Secure payment</a></li>
+              <li><a href="#" className="footer-link">Contact us</a></li>
+            </ul>
+          </Col>
 
-<Col md={2}>
-  <h6 className="footer-title">Account</h6>
-  <ul className="footer-list">
-    <li><a href="#" className="footer-link">Sign In</a></li>
-    <li><a href="#" className="footer-link">View Cart</a></li>
-    <li><a href="#" className="footer-link">Return Policy</a></li>
-    <li><a href="#" className="footer-link">Become a Vendor</a></li>
-    <li><a href="#" className="footer-link">Affiliate Program</a></li>
-    <li><a href="#" className="footer-link">Payments</a></li>
-  </ul>
-</Col>
+          <Col md={2}>
+            <h6 className="footer-title">Account</h6>
+            <ul className="footer-list">
+              <li><a href="#" className="footer-link">Sign In</a></li>
+              <li><a href="#" className="footer-link">View Cart</a></li>
+              <li><a href="#" className="footer-link">Return Policy</a></li>
+              <li><a href="#" className="footer-link">Become a Vendor</a></li>
+              <li><a href="#" className="footer-link">Affiliate Program</a></li>
+              <li><a href="#" className="footer-link">Payments</a></li>
+            </ul>
+          </Col>
 
 
           {/* Contact */}
@@ -96,7 +101,7 @@ const Footer = () => {
                   <a
                     key={idx}
                     href="#top"
-                    className="social-icon"                   
+                    className="social-icon"
                   >
                     <Icon size={15} color="#fff" />
                   </a>

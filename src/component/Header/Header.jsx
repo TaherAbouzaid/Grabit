@@ -1,10 +1,10 @@
 import { useState } from "react";
-import {Navbar,Container,Nav,Form,Button,InputGroup,Badge,NavDropdown, Dropdown,} from "react-bootstrap";
-import {FaShoppingBag,FaThLarge,} from "react-icons/fa";
+import { Navbar, Container, Nav, Form, Button, InputGroup, Badge, NavDropdown, Dropdown, } from "react-bootstrap";
+import { FaShoppingBag, FaThLarge, } from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import { PiPhoneCall } from "react-icons/pi";
 import { BiHeart, BiSearch, BiShoppingBag, BiUser } from "react-icons/bi";
-import "../component/Header.css";
+import "../Header/Header.css";
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,20 +53,20 @@ function Header() {
           </a>
 
           {/* Search Bar */}
-      <div className="search-bar-container">
-  <InputGroup className="search-bar-group">
-    <Form.Control
-      type="text"
-      placeholder="Search Products..."
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="search-input"
-    />
-    <Button variant="light" className="search-button">
-      <BiSearch size={20} color="#5cac94" />
-    </Button>
-  </InputGroup>
-</div>
+          <div className="search-bar-container">
+            <InputGroup className="search-bar-group">
+              <Form.Control
+                type="text"
+                placeholder="Search Products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+              <Button variant="light" className="search-button">
+                <BiSearch size={20} color="#5cac94" />
+              </Button>
+            </InputGroup>
+          </div>
 
 
           {/* User Icons */}
@@ -78,9 +78,9 @@ function Header() {
                 <div className="small fw-bold">LOGIN</div>
               </a>
               <div className="user-dropdown">
-                <a href="/profile" className="dropdown-item">Register</a>
+                <a href="/Register" className="dropdown-item">Register</a>
                 <a href="/orders" className="dropdown-item">Cheackout</a>
-                <a href="/logout" className="dropdown-item">Logout</a>
+                <a href="/Login" className="dropdown-item">Login</a>
               </div>
             </div>
 
@@ -195,5 +195,4 @@ function Header() {
     </header>
   );
 }
-
 export default Header;
