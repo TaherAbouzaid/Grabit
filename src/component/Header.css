@@ -1,3 +1,4 @@
+/* item   */
 .hover-dropdown {
     position: relative;
   }
@@ -24,12 +25,8 @@
   .dropdown-item:hover {
     background-color: transparent; 
     color: #5cac94; 
-  }
-  .all-category-btn svg {
-    color: white !important;
-  }
-  
-  
+  }  
+  /* user */
   .user-hover {
     position: relative;
   }
@@ -63,37 +60,41 @@
     color: white;
   }
   
-  
-  /* ظهور القوائم عند الـ hover */
-.hover-dropdown:hover .dropdown-menu {
-    display: block;
-    z-index: 999;
-  }
-  
-  /* ضبط شكل زر All Categories */
-  .all-category-btn:hover {
-    background-color: #519f87 !important;
-  }
-  /* dropdown يظهر عند hover */
-.hover-dropdown:hover .dropdown-menu {
-    display: block;
-    z-index: 999;
-  }
-  
-  /* زر All Categories hover */
-  .all-category-btn:hover {
-    background-color: #519f87 !important;
-    color: #fff !important;
-  }
-  
-  /* السهم ▼ */
+
   .dropdown-arrow {
     font-size: 10px;
   }
-  
-  /* تغيير لون الخط بس عند hover على الرابط */
-  .nav-item-with-dropdown:hover .dropdown-toggle-custom {
-    color: #5cac94 !important;
-    cursor: pointer;
-  }
-  
+ 
+  /* searhc */
+  .search-bar-container {
+  flex-grow: 1;
+  margin:0 6rem;
+}
+
+.search-bar-group {
+  height: 50px;
+  width: 90%;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+  background-color: #fff;
+}
+
+.search-input {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0.75rem 1rem;
+  font-size: 15px;
+  color: #505e64;
+}
+
+.search-button {
+  border: none !important;
+  border-left: 1px solid #eee !important;
+  background-color: #fff !important;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

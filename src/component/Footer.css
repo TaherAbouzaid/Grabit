@@ -1,0 +1,77 @@
+footer {
+  background-color: white;
+  color: #6c757d;
+  padding-top: 3rem;
+  border-top: 1px solid #dee2e6;
+}
+
+footer h6 {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+footer a {
+  color: #6c757d;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+footer a:hover {
+  color: #5cac94;
+}
+
+footer .social-icon {
+  width: 36px;
+  height: 36px;
+  background-color: #505e64;
+  color: #fff;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+}
+
+footer .social-icon:hover {
+  opacity: 0.8;
+}
+
+footer .footer-bottom {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 0;
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+footer .footer-payment img {
+  height: 24px;
+}
+.footer-title {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.footer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-link {
+  display: inline-block;
+  color: #6c757d;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #5cac94;
+}

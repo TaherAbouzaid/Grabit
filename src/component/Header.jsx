@@ -1,21 +1,6 @@
 import { useState } from "react";
-import {
-  Navbar,
-  Container,
-  Nav,
-  Form,
-  Button,
-  InputGroup,
-  Badge,
-  NavDropdown,
-  Dropdown,
-} from "react-bootstrap";
-import {
-  FaSearch,
-  FaShoppingBag,
-  FaThLarge,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
+import {Navbar,Container,Nav,Form,Button,InputGroup,Badge,NavDropdown, Dropdown,} from "react-bootstrap";
+import {FaShoppingBag,FaThLarge,} from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import { PiPhoneCall } from "react-icons/pi";
 import { BiHeart, BiSearch, BiShoppingBag, BiUser } from "react-icons/bi";
@@ -49,7 +34,6 @@ function Header() {
             </NavDropdown>
             <NavDropdown title="Dollar" id="currency-dropdown" className="hover-dropdown text-secondary">
               <NavDropdown.Item>USD ($)</NavDropdown.Item>
-              <NavDropdown.Item>EUR (€)</NavDropdown.Item>
               <NavDropdown.Item>EGP (ج.م)</NavDropdown.Item>
             </NavDropdown>
           </div>
@@ -64,24 +48,26 @@ function Header() {
             <img
               src="https://grabit-react-next.maraviyainfotech.com/assets/img/logo/logo.png"
               alt="Grabit Logo"
-              style={{ height: "55px" }}
+              style={{ height: "35px" }}
             />
           </a>
 
           {/* Search Bar */}
-          <div className="flex-grow-1 mx-4 search-bar-wrapper">
-            <InputGroup>
-              <Form.Control
-                placeholder="Search for products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-              <Button variant="light" className="search-button">
-                <BiSearch size={20} color="#5cac94" />
-              </Button>
-            </InputGroup>
-          </div>
+      <div className="search-bar-container">
+  <InputGroup className="search-bar-group">
+    <Form.Control
+      type="text"
+      placeholder="Search Products..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="search-input"
+    />
+    <Button variant="light" className="search-button">
+      <BiSearch size={20} color="#5cac94" />
+    </Button>
+  </InputGroup>
+</div>
+
 
           {/* User Icons */}
           <div className="d-flex gap-4 user-actions">
