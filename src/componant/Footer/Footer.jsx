@@ -1,98 +1,132 @@
 import { Container, Row, Col } from "react-bootstrap";
-import {FaFacebookF,FaTwitter, FaInstagram,FaYoutube,FaMapMarkerAlt,FaPhone,FaEnvelope,FaClock,FaGooglePlay} from "react-icons/fa";
-
-
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, } from "react-icons/fa";
+import { BiLocationPlus, BiPhone, BiEnvelope } from "react-icons/bi";
+import "./Footer.css";
 const Footer = () => {
   return (
-    <div className="bg-white text-secondary py-5">
+    <footer className="bg-white text-secondary pt-5 border-top">
       <Container>
         <Row className="gy-4">
-          {/* Logo & About */}
+          {/* Logo */}
           <Col md={3}>
-            <div className="mb-4">
-              <img
-                src="https://grabit-react-next.maraviyainfotech.com/assets/img/logo/logo.png"
-                alt="Grabit Logo"
-                style={{ height: "40px" }}
-              />
-            </div>
+            <img
+              src="https://grabit-react-next.maraviyainfotech.com/assets/img/logo/logo.png"
+              alt="Grabit Logo"
+              style={{ height: 40 }}
+              className="mb-3"
+            />
             <p>
-              Grabit is the biggest marketof grocery.Get your daily needs from our site.
+              Grabit is the biggest market of grocery products. Get your daily
+              needs from our store.
             </p>
+            <div className="d-flex gap-2">
+              <a href="#" rel="noopener noreferrer">
+                <img
+                  src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/android.png"
+                  alt="Google Play"
+                  style={{ height: 36 }}
+                />
+              </a>
+              <a href="#" rel="noopener noreferrer">
+                <img
+                  src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/apple.png"
+                  alt="App Store"
+                  style={{ height: 36 }}
+                />
+              </a>
+            </div>
+
           </Col>
 
-          {/* Footer Columns */}
-          {[
-            {
-              title: "Category",
-              links: ["Dried Fruit", "Cookies", "Foods", "Fresh Fruit", "Tuber Root", "Vegetables"]
-            },
-            {
-              title: "Company",
-              links: ["About Us", "Delivery", "Legal Notice", "Terms & Conditions", "Secure Payment", "Contact Us"]
-            },
-            {
-              title: "Account",
-              links: ["Sign In", "View Cart", "Return Policy", "Become a Vendor", "Affiliate Program", "Payment"]
-            }
-          ].map((section, index) => (
-            <Col md={2} key={index}>
-              <h5 className="mb-3 pb-2 border-bottom fw-bold">{section.title}</h5>
-              <ul className="list-unstyled">
-                {section.links.map((link, i) => (
-                  <li key={i} className="mb-2">
-                    <a href="#" className="text-secondary text-decoration-none hover-green">
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </Col>
-          ))}
-
-          {/* Contact Info */}
+          {/* Category / Company / Account */}
           <Col md={2}>
-            <h5 className="mb-3 pb-2 border-bottom fw-bold">Contact Info</h5>
-            <ul className="list-unstyled">
-              <li className="d-flex gap-3 mb-3">
-                <FaMapMarkerAlt className="text-success" />
-                <span>123 Street, New York, USA</span>
-              </li>
-              <li className="d-flex gap-3 mb-3">
-                <FaPhone className="text-success" />
-                <span>+20 10322 70 55</span>
-              </li>
-              <li className="d-flex gap-3 mb-3">
-                <FaEnvelope className="text-success" />
-                <span>info@grabit.com</span>
-              </li>
-              
+            <h6 className="footer-title">Category</h6>
+            <ul className="footer-list">
+              <li><a href="#" className="footer-link">Dried Fruit</a></li>
+              <li><a href="#" className="footer-link">Cookies</a></li>
+              <li><a href="#" className="footer-link">Foods</a></li>
+              <li><a href="#" className="footer-link">Fresh Fruit</a></li>
+              <li><a href="#" className="footer-link">Tuber Root</a></li>
+              <li><a href="#" className="footer-link">Vegetables</a></li>
             </ul>
-            <div className="d-flex gap-2 mt-3">
-              {[FaFacebookF, FaTwitter, FaInstagram, FaYoutube].map((Icon, idx) => (
-                <a
-                  key={idx}
-                  href="#"
-                  className="text-white bg-secondary p-2 rounded-circle hover-green"
-                >
-                  <Icon size={15} />
-                </a>
-              ))}
+          </Col>
+
+          <Col md={2}>
+            <h6 className="footer-title">Company</h6>
+            <ul className="footer-list">
+              <li><a href="#" className="footer-link">About us</a></li>
+              <li><a href="#" className="footer-link">Delivery</a></li>
+              <li><a href="#" className="footer-link">Legal Notice</a></li>
+              <li><a href="#" className="footer-link">Terms & conditions</a></li>
+              <li><a href="#" className="footer-link">Secure payment</a></li>
+              <li><a href="#" className="footer-link">Contact us</a></li>
+            </ul>
+          </Col>
+
+          <Col md={2}>
+            <h6 className="footer-title">Account</h6>
+            <ul className="footer-list">
+              <li><a href="#" className="footer-link">Sign In</a></li>
+              <li><a href="#" className="footer-link">View Cart</a></li>
+              <li><a href="#" className="footer-link">Return Policy</a></li>
+              <li><a href="#" className="footer-link">Become a Vendor</a></li>
+              <li><a href="#" className="footer-link">Affiliate Program</a></li>
+              <li><a href="#" className="footer-link">Payments</a></li>
+            </ul>
+          </Col>
+
+
+          {/* Contact */}
+          <Col md={3}>
+            <h6 className="fw-bold mb-3 border-bottom pb-2">Contact</h6>
+            <ul className="list-unstyled">
+              <li className="d-flex gap-2 align-items-start mb-3">
+                <BiLocationPlus color="#5cac94" size={30} />
+                <span>2548 Broaddus Maple Court, Madisonville KY 4783, USA.</span>
+              </li>
+              <li className="d-flex gap-2 align-items-center mb-3">
+                <BiPhone color="#5cac94" size={20} />
+                <span>+00 9876543210</span>
+              </li>
+              <li className="d-flex gap-2 align-items-center mb-3">
+                <BiEnvelope color="#5cac94" size={20} />
+                <span>example@email.com</span>
+              </li>
+            </ul>
+
+            {/* Social Icons */}
+            <div className="d-flex gap-2 mt-2">
+              {[FaFacebookF, FaLinkedinIn, FaTwitter, FaInstagram].map(
+                (Icon, idx) => (
+                  <a
+                    key={idx}
+                    href="#top"
+                    className="social-icon"
+                  >
+                    <Icon size={15} color="#fff" />
+                  </a>
+                )
+              )}
             </div>
           </Col>
         </Row>
-      </Container>
 
-      {/* Hover styling */}
-      <style>
-        {`
-          .hover-green:hover {
-            color: #5cac94!important;
-            // background-color: #e6f8ec !important;
-          }
-        `}
-      </style>
-    </div>
+        {/* Footer Bottom */}
+        <div className="footer-bottom">
+          <p className="mb-2 mb-md-0">
+            Copyright © Grabit all rights reserved.
+            Powered by Grabit.
+          </p>
+          <div className="d-flex gap-2 justify-content-center">
+            <img
+              src="https://grabit-react-next.maraviyainfotech.com/assets/img/hero-bg/payment.png"
+              alt="Visa"
+              style={{ height: 24 }}
+            />
+          </div>
+        </div>
+      </Container>
+    </footer>
   );
 };
 

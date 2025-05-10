@@ -1,0 +1,21 @@
+.my-5 h2{
+    color: #505e64;
+    font-size: 2rem;
+    text-align: center;
+}
+.login-box {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.login-btn {
+  background-color: #505e64;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #5cac94;
+}

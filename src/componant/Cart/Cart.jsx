@@ -1,15 +1,31 @@
 import React from 'react';
 import { Container, Row, Col, Form, Button, Table, Image, Breadcrumb } from 'react-bootstrap';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 import './CartPage.css';
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext.jsx";
+
+
+
 
 
 const Cart = () => {
+const { user } = useAuth();
+    const navigate = useNavigate();
+
+     const goToCheckout = () => {
+      if (user) {
+        navigate("/checkout");
+    } else {
+      navigate("/login", { state: { from: { pathname: "/checkout" } } });
+    }
+  };
+
+
   return (
     <Container fluid className="p-4 border rounded">
 
-        <div className="nav d-flex justify-content-between mb-5 p-3">
+        <div className="nav d-flex justify-content-between  p-3">
             <p>Cart</p>
         
          <Breadcrumb>
@@ -109,7 +125,7 @@ const Cart = () => {
             </Table>
             <div className="mt-3 d-flex justify-content-between">
               <a href="#" className="text-decoration-underline fw-medium">Continue Shopping</a>
-              <Button className="" variant="success">Check Out</Button>
+              <Button className="" variant="success"  onClick={goToCheckout}>Check Out</Button>
 
             </div>
           </div>
