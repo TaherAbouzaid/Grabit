@@ -1,15 +1,40 @@
 import { useState } from "react";
-import { Navbar, Container, Nav, Form, Button, InputGroup, Badge, NavDropdown, Dropdown, } from "react-bootstrap";
+import { Navbar, Container, Nav, Form, Button, InputGroup, Badge, NavDropdown, Dropdown, Offcanvas, Image, Col, Row, } from "react-bootstrap";
 import { FaShoppingBag, FaThLarge, } from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import { PiPhoneCall } from "react-icons/pi";
 import { BiHeart, BiSearch, BiShoppingBag, BiUser } from "react-icons/bi";
 import { useAuth } from "../../context/AuthContext";
 import "./Header.css";
+import { IoCloseSharp } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { setSearchQuery } from '../../Store/Slices/filtersSlice';
 
 function Header() {
-  const [searchQuery, setSearchQuery] = useState("");
   const { user, logout } = useAuth();
+  const [showcart, setShowcart] = useState(false);
+  const handleClose = () => setShowcart(false);
+  const handleShow = () => setShowcart(true);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+
+     const goToCheckout = () => {
+      if (user) {
+        navigate("/checkout");
+    } else {
+      navigate("/login", { state: { from: { pathname: "/checkout" } } });
+    }
+  };
+
+    const handleSearchChange = (e) => {
+        console.log('search query:', e.target.value);
+
+    dispatch(setSearchQuery(e.target.value));
+  };
+
+
 
 
   return (
@@ -59,12 +84,11 @@ function Header() {
           <div className="search-bar-container">
             <InputGroup className="search-bar-group">
               <Form.Control
-                type="text"
-                placeholder="Search Products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
+          type="text"
+          placeholder="Search Products..."
+          onChange={handleSearchChange}
+          className="search-input"
+        />
               <Button variant="light" className="search-button">
                 <BiSearch size={20} color="#5cac94" />
               </Button>
@@ -109,8 +133,10 @@ function Header() {
               </a>
             </div>
 
-            <div className="text-center">
-              <a href="/cart" className="text-decoration-none text-secondary">
+            <div className="text-center" onClick={handleShow}>
+              <a  className="text-decoration-none text-secondary"
+               
+              >
                 <div className="position-relative">
                   <BiShoppingBag size={24} />
                   <Badge bg="danger" pill className="position-absolute top-0 end-0 translate-middle">
@@ -204,6 +230,67 @@ function Header() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
+        <Offcanvas show={showcart} onHide={handleClose} placement="end">
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>My Cart</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+         <div className="d-flex flex-column ">
+
+          <div className="mb-5">
+              {[
+                  { name: "Women's wallet Hand Purse", price: 50,image: 'https://grabit-react-next.maraviyainfotech.com/assets/img/product-images/48_1.jpg' },
+                  { name: "Rose Gold Earring", price: 60, image: 'https://grabit-react-next.maraviyainfotech.com/assets/img/product-images/53_1.jpg' },
+                  { name: 'Apple', price: 10, image: 'https://grabit-react-next.maraviyainfotech.com/assets/img/product-images/21_1.jpg' },
+                ].map((item, idx) => (
+                  <Row key={idx} className="border border-secondry m-2 py-3">
+                    <Col>
+                        <Image src={item.image} width="60" height="60" className="me-2" />
+                    </Col>
+                    <Col>
+                       <h5>{item.name}</h5>
+                       <h6>${item.price}</h6>
+                       <div className="d-flex align-items-center ">
+                          <Button size="sm" variant="light">-</Button>
+                          <Form.Control className="mx-1 text-center" style={{ width: '40px' }} size="sm" value="1" readOnly />
+                          <Button size="sm" variant="light">+</Button>
+                        </div>
+                    </Col>
+                    <Col className="d-flex justify-content-end ">
+                          <IoCloseSharp />
+                    </Col>
+                  </Row>
+                ))}
+          </div>
+
+          <div className="p-3">
+            <hr />
+            <div className="d-flex justify-content-between mb-2">
+              <span>Sub-Total</span>
+              <span>$120.00</span>
+            </div>
+            <div className="d-flex justify-content-between mb-2">
+              <span>Vate(20%)</span>
+              <span>$24.00</span>
+            </div>
+            <div className="d-flex justify-content-between fw-bold">
+              <span>Total Amount</span>
+              <span>$144.00</span>
+            </div>
+            <div className="mt-3 d-flex justify-content-between">
+              <Button size="lg" className="px-5" variant="secondary " href="/Cart">View Cart</Button>
+              <Button size="lg" className="px-5" variant="success"  onClick={goToCheckout}>Check Out</Button>
+           
+            </div>
+
+          </div>
+        </div>
+
+
+
+        </Offcanvas.Body>
+      </Offcanvas>
+
     </header>
   );
 }

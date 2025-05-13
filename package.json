@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.8.0",
+    "@reduxjs/toolkit": "^2.8.1",
     "bootstrap": "^5.3.6",
     "bootstrap-icons": "^1.12.1",
     "country-state-city": "^3.2.1",

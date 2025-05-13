@@ -12,21 +12,18 @@ const Wishlist = () => {
     {
       name: "Women's wallet Hand Purse",
       image: 'https://grabit-react-next.maraviyainfotech.com/assets/img/product-images/48_1.jpg',
-    //   date: '08/05/2025',
       price: 50,
       status: 'Available',
     },
     {
       name: 'Rose Gold Earring',
       image: 'https://grabit-react-next.maraviyainfotech.com/assets/img/product-images/53_1.jpg',
-    //   date: '08/05/2025',
       price: 60,
       status: 'Out Of Stock',
     },
     {
       name: 'Apple',
       image: 'https://grabit-react-next.maraviyainfotech.com/assets/img/product-images/21_1.jpg',
-    //   date: '08/05/2025',
       price: 10,
       status: 'Available',
     },
@@ -64,7 +61,6 @@ const Wishlist = () => {
                 <tr > 
                   <th>Image</th>
                   <th>Name</th>
-                  {/* <th>Date</th> */}
                   <th>Price</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -77,7 +73,6 @@ const Wishlist = () => {
                       <Image src={item.image} width="50" />
                     </td>
                     <td>{item.name}</td>
-                    {/* <td>{item.date}</td> */}
                     <td>${item.price}</td>
                     <td className={item.status === 'Available' ? 'text-success' : 'text-danger'}>
                       {item.status}

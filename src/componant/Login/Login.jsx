@@ -19,7 +19,7 @@ const Login = () => {
       const userDoc = await getDoc(doc(db, "Users", res.user.uid));
       if (userDoc.exists()) {
         console.log("User data:", userDoc.data());
-        navigate("/Home");
+        navigate("/products");
       } else {
         console.log("No such user data in Firestore!");
       }

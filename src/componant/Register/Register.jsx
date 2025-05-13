@@ -56,7 +56,7 @@ const navigate = useNavigate();
         email: data.email,
         phone: data.phone,
         role: "customer",
-        profileImage: "", // if not uploaded
+        profileImage: "",
          address: [
           {
             country: countries.find(c => c.isoCode === data.country)?.name || '',
@@ -66,7 +66,7 @@ const navigate = useNavigate();
             postalCode: data.postCode || ""
           }
         ],
-        wishlist: [], // or add sample IDs: ["productID1", "productID2"]
+        wishlist: [], 
         selected: false,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -76,15 +76,13 @@ const navigate = useNavigate();
       await setDoc(doc(db, "Users", user.uid), userData);
 
       alert("Registered successfully!");
-         navigate("/login");
+         navigate("/products");
     } catch (error) {
       console.error("Registration error:", error);
       alert("Something went wrong!");
     }
 
-    // } catch (err) {
-    //   console.log("Registration error:", err);
-    // }
+   
   };
 
   return (
@@ -307,28 +305,6 @@ const navigate = useNavigate();
             </Button>
           </div>
 
-
-
-      {/* <input {...register("firstName")} placeholder="First Name" required />
-      <input {...register("lastName")} placeholder="Last Name" required />
-      <input {...register("email")} placeholder="Email" required />
-      <input {...register("phone")} placeholder="Phone Number" required />
-      <input {...register("password")} placeholder="Password" type="password" required />
-       <input {...register("confirmPassword", {required: "Please confirm your password",
-         validate: (value) => value === watch("password") || "Passwords do not match"
-        })}
-        type="password"
-        placeholder="Confirm Password"
-        required
-        />
-        {errors.confirmPassword && <p style={{ color: "red" }}>{errors.confirmPassword.message}</p>}
-
-      <input {...register("address")} placeholder="Address" required />
-      <input {...register("country")} placeholder="Region State" required />
-      <input {...register("city")} placeholder="City" required />
-      <input {...register("postCode")} placeholder="Poste Code" required />
-
-      <button type="submit">Register</button> */}
     </Form>
     </div>
     </Container>
