@@ -79,28 +79,6 @@ const Login = () => {
         </Col>
       </Row>
     </Container>
-
-
-
-
-//     <form onSubmit={handleSubmit(onSubmit)}>
-//       <input
-//   {...register("email")}
-//   type="email"
-//   placeholder="Email"
-//   autoComplete="email"
-//   required
-// />
-// <input
-//   {...register("password")}
-//   type="password"
-//   placeholder="Password"
-//   autoComplete="current-password"
-//   required
-// />
-//       <button type="submit">Login</button>
-
-//    </form>
   );
 };
 

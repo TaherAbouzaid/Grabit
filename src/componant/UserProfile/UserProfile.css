@@ -1,0 +1,193 @@
+
+/* Button Group */
+.btn-grp {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-grp Button {
+  background-color: rgb(218, 218, 218);
+  border-color: rgb(251, 249, 249);
+  color: black;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-grp Button:hover {
+  background-color: rgb(200, 200, 200);
+}
+
+/* User Banner */
+.user-banner {
+  background-image: url("/panner.jpg"); 
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 30vh; 
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.avatar-container {
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+}
+
+.user-avatar {
+  width: 30vw; /* Relative to viewport width */
+  max-width: 120px;
+  height: auto;
+  border-radius: 10%;
+  border: 2px solid white;
+  object-fit: cover;
+}
+
+.user-name {
+  position: absolute;
+  bottom: 1rem;
+  left: 10vw; /* Adjusted for smaller screens */
+  color: aliceblue;
+}
+
+.user-name h3 {
+  font-size: 1.5rem;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.edit-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.edit-btn Button {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  background-color: black;
+}
+
+/* Vendor Card */
+.gi-vendor-profile-card {
+  margin-top: 1rem;
+}
+
+.gi-vendor-card-body {
+  border: 1px solid rgb(224, 215, 215);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background-color: white;
+}
+
+.gi-vendor-detail-block ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.gi-vendor-detail-block h6 {
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-bottom: 1px solid rgb(224, 215, 215);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.gi-vendor-detail-block li {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .user-banner {
+    height: 20vh;
+  }
+
+  .user-avatar {
+    width: 20vw;
+    max-width: 80px;
+  }
+
+  .user-name {
+    left: 25vw;
+  }
+
+  .user-name h3 {
+    font-size: 1.2rem;
+  }
+
+  .edit-btn {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .edit-btn Button {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .btn-grp Button {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+
+  .gi-vendor-card-body {
+    padding: 1rem;
+  }
+
+  .gi-vendor-detail-block h6 {
+    font-size: 1rem;
+  }
+
+  .gi-vendor-detail-block li {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .user-banner {
+    height: 15vh;
+  }
+
+  .user-avatar {
+    width: 25vw;
+    max-width: 60px;
+  }
+
+  .user-name {
+    left: 30vw;
+    bottom: 0.5rem;
+  }
+
+  .user-name h3 {
+    font-size: 1rem;
+  }
+
+  .edit-btn {
+    top: 0.3rem;
+    right: 0.3rem;
+  }
+
+  .edit-btn Button {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .btn-grp {
+    margin-bottom: 1rem;
+  }
+
+  .btn-grp Button {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+}

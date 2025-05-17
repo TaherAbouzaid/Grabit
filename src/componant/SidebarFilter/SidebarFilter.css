@@ -1,0 +1,30 @@
+/* Existing styles (if any) */
+.Catsidebar-filter {
+  /* Add your existing styles here */
+}
+
+/* Custom styles for Accordion */
+.accordion-item {
+  background-color: #f8f9fa; /* Light gray background for the entire item */
+  border: 1px solid #ced4da; /* Bootstrap default border color */
+}
+
+.accordion-header {
+  background-color: #f8f9fa; /* Light gray background for header */
+}
+
+.accordion-button {
+  background-color: #f8f9fa !important; /* Light gray for button */
+  color: #212529 !important; /* Dark text for contrast */
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #f8f9fa !important; /* Maintain light gray when expanded */
+  color: #212529 !important; /* Dark text when expanded */
+  box-shadow: none; /* Remove default shadow for cleaner look */
+}
+
+.accordion-body {
+  background-color: #f8f9fa; /* Light gray background for body */
+  color: #212529; /* Dark text for contrast */
+}

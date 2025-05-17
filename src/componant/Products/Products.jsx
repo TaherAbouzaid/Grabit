@@ -1,23 +1,75 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Spinner, Card } from 'react-bootstrap';
-import { fetchProducts } from '../../Store/Slices/productsSlice'; // استيراد الـ thunk
 import SidebarFilter from '../SidebarFilter/SidebarFilter';
-import { Link } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom"; 
 import './Products.css'
+import { useAuth } from '../../context/AuthContext';
+import { addToLocalWishlist, addToWishlist } from '../../Store/Slices/wishlistSlice';
+import { addToCart, fetchCart } from '../../Store/Slices/cartSlice';
+import { fetchProducts} from '../../Store/Slices/productsSlice'
+
 
 
 const ProductPage = () => {
   const dispatch = useDispatch();
-  const { items:allProducts, loading, error } = useSelector((state) => state.products);
+  // const { items:allProducts, loading, error } = useSelector((state) => state.products);
   const { category, subcategory, priceRange, tags, searchQuery} = useSelector((state) => state.filter);
+  const { user } = useAuth();
+  // const user = useSelector(state => state.user.user); 
+  const { items: products, loading, error } = useSelector(state => state.products);
+  // const { currentUser } = useSelector(state => state.user);
+  const { error: cartError, loading: cartLoading } = useSelector(state => state.cart);
+
+
+const navigate = useNavigate();
+
 
   
+   useEffect(() => {
+    dispatch(fetchProducts()); 
+  }, []);
 
   useEffect(() => {
-    dispatch(fetchProducts()); 
-  }, [dispatch]);
+    if (user && user.uid) {
+      console.log("Fetching cart on mount for userId:", user.uid);
+      dispatch(fetchCart(user.uid));
+    }
+  }, [dispatch, user]);
 
+
+ const handleAddToWishlist = (product) => {
+  if (user && user.uid) {
+    dispatch(addToWishlist({ product, userId: user.uid }));
+  } else {
+    dispatch(addToLocalWishlist(product));
+  }
+};
+
+//  const handleAddToCart = (product) => {
+//     if (!user) {
+//       navigate("/login");
+//     } else {
+//       dispatch(addToCart({ product, userId: user.uid }));
+//     }
+//   };
+
+ const handleAddToCart =async (productId, price) => {
+    console.log("Current user:", user);
+    if (!user || !user.uid) {
+      console.log("No user logged in or userId is undefined");
+      alert("Please log in to add items to your cart");
+      navigate("/login");
+      return;
+    }
+    console.log("Dispatching addToCart for productId:", productId, "userId:", user.uid);
+    await dispatch(addToCart({ userId: user.uid, productId, price }));
+    console.log("Fetching cart after addToCart for userId:", user.uid);
+    await dispatch(fetchCart(user.uid));
+  };
+
+
+  const allProducts = products || [];
   const filteredProducts = allProducts.filter((product) => {
       const matchesSearch = !searchQuery || product.title?.en.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -89,7 +141,14 @@ console.log("Search Query from Redux:", searchQuery);
                     <Card.Body>
                       <Card.Title>{product.title.en}</Card.Title>
                       <Card.Text>${product.price}</Card.Text>
-                    </Card.Body>
+                       <button onClick={() => handleAddToWishlist(product)}>Add to Wishlist ❤️</button>  
+                        <button onClick={()=>handleAddToCart(product.id, product.price)}
+                          className="bg-blue-500 text-white px-4 py-2 rounded"
+                           disabled={cartLoading}
+                           >Add to Cart</button>
+                                     {cartError && <p className="text-red-500">{cartError}</p>}
+
+                      </Card.Body>
                   </Card>
                 </Col>
               ))}

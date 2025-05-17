@@ -8,10 +8,6 @@ body {
     background-color: white;
   }
   
-  /* Container padding */
-  /* .cart-page {
-    margin-inline: 3.5rem;
-  }  */
 
   .nav
   {
@@ -27,9 +23,7 @@ body {
   .cart-summary
    {
     background-color: #f5f5f5e5;
-    /* border-radius: 10px; */
     padding: 1.5rem;
-    /* box-shadow: 0 0 10px rgba(0,0,0,0.05); */
     border: none;
   }
 
