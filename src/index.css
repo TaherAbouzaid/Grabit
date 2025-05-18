@@ -1,5 +1,59 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap');
 
+/* في ملف CSS الخاص بيك */
+/* .container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  @media (min-width: 768px) {
+    .container {
+      max-width: 750px;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .container {
+      max-width: 970px;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .container {
+      max-width: 1170px;
+    }
+  }
+   */
+   body {
+    font-family: "Manrope", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+
+
+@keyframes fadeinUp {
+   0% {
+    opacity: 0;
+    -webkit-transform: translateY(30px);
+    -ms-transform: translateY(30px);
+    transform: translateY(30px);
+}
+100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    -ms-transform: translateY(0);
+    transform: translateY(0);
+}
+}
+
+.fadeInUp{
+    animation: fadeinUp 2s  ease-in-out;
+}
 
 
