@@ -73,7 +73,7 @@ const navigate = useNavigate();
       };
 
       // 3. Save user data in Firestore (in `Users` collection)
-      await setDoc(doc(db, "Users", user.uid), userData);
+      await setDoc(doc(db, "users", user.uid), userData);
 
       alert("Registered successfully!");
          navigate("/products");

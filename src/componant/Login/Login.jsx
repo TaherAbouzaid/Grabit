@@ -16,7 +16,7 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const res = await signInWithEmailAndPassword(auth, data.email, data.password);
-      const userDoc = await getDoc(doc(db, "Users", res.user.uid));
+      const userDoc = await getDoc(doc(db, "users", res.user.uid));
       if (userDoc.exists()) {
         console.log("User data:", userDoc.data());
         navigate("/products");

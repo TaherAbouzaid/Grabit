@@ -25,7 +25,7 @@ export const fetchUserData = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       console.log("Fetching user data for userId:", userId);
-      const docRef = doc(db, "Users", userId);
+      const docRef = doc(db, "users", userId);
       const docSnap = await getDoc(docRef, { cache: "no-cache" });
       if (docSnap.exists()) {
         const rawData = docSnap.data();
@@ -168,7 +168,7 @@ export default userSlice.reducer;
 //       return new Promise((resolve) => {
 //         const unsub = auth.onAuthStateChanged(async (user) => {
 //           if (user) {
-//             const docRef = doc(db, "Users", user.uid);
+//             const docRef = doc(db, "users", user.uid);
 //             const userDoc = await getDoc(docRef);
 //             if (userDoc.exists()) {
 //               const userData = { uid: user.uid, ...convertTimestamps(userDoc.data()) };
@@ -210,7 +210,7 @@ export default userSlice.reducer;
 //   async (userId, { rejectWithValue }) => {
 //     try {
 //       console.log("Fetching user data for userId:", userId);
-//       const docRef = doc(db, "Users", userId);
+//       const docRef = doc(db, "users", userId);
 //       const docSnap = await getDoc(docRef, { cache: "no-cache" });
 //       if (docSnap.exists()) {
 //         const rawData = docSnap.data();
@@ -237,7 +237,7 @@ export default userSlice.reducer;
 //   "user/fetchById",
 //   async (userId, { rejectWithValue }) => {
 //     try {
-//       const docRef = doc(db, "Users", userId);
+//       const docRef = doc(db, "users", userId);
 //       const docSnap = await getDoc(docRef);
 //       if (docSnap.exists()) {
 //         return { id: docSnap.id, ...convertTimestamps(docSnap.data()) };
@@ -256,7 +256,7 @@ export default userSlice.reducer;
 //   "user/addUser",
 //   async ({ userId, userData }, { rejectWithValue }) => {
 //     try {
-//       const docRef = doc(db, "Users", userId);
+//       const docRef = doc(db, "users", userId);
 //       await setDoc(docRef, userData);
 //       return { id: userId, ...userData };
 //     } catch (error) {
@@ -271,7 +271,7 @@ export default userSlice.reducer;
 //   "user/updateUser",
 //   async ({ userId, userData }, { rejectWithValue }) => {
 //     try {
-//       const docRef = doc(db, "Users", userId);
+//       const docRef = doc(db, "users", userId);
 //       await updateDoc(docRef, userData);
 //       return { id: userId, ...userData };
 //     } catch (error) {

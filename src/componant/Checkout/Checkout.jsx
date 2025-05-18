@@ -230,7 +230,7 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
-      const userRef = doc(db, "Users", user.uid);
+      const userRef = doc(db, "users", user.uid);
       const newAddress = {
         street: formData.street,
         country: formData.country,
@@ -300,7 +300,7 @@ export default function CheckoutPage() {
           city: formData.city,
           postalCode: formData.postalCode,
         };
-        const userRef = doc(db, "Users", user.uid);
+        const userRef = doc(db, "users", user.uid);
         console.log("Saving new address:", JSON.stringify(newAddress, null, 2));
         await updateDoc(userRef, {
           address: arrayUnion(newAddress),
@@ -518,7 +518,7 @@ export default function CheckoutPage() {
                                     city: formData.city,
                                     postalCode: formData.postalCode,
                                   };
-                                  const userRef = doc(db, "Users", user.uid);
+                                  const userRef = doc(db, "users", user.uid);
                                   await updateDoc(userRef, {
                                     address: arrayUnion(newAddress),
                                     fullName: `${formData.firstName} ${formData.lastName}`,

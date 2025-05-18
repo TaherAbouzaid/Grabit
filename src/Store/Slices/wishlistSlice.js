@@ -7,7 +7,7 @@
 // //   "wishlist/addToWishlist",
 // //   async ({ product, userId }, thunkAPI) => {
 // //     try {
-// //       const wishlistRef = collection(db, "Users", userId, "wishlist");
+// //       const wishlistRef = collection(db, "users", userId, "wishlist");
 // //       await addDoc(wishlistRef, product);
 // //       return product;
 // //     } catch (error) {
@@ -118,7 +118,7 @@
 //   "wishlist/addToWishlist",
 //   async ({ product, userId }, thunkAPI) => {
 //     try {
-//       const wishlistRef = collection(db, "Users", userId, "wishlist");
+//       const wishlistRef = collection(db, "users", userId, "wishlist");
 //       await addDoc(wishlistRef, product);
 
 //       const productDocRef = docRef(db, "allproducts", product.id);
@@ -138,7 +138,7 @@
 //   async (userId, thunkAPI) => {
 //     try {
 //       const localItems = JSON.parse(localStorage.getItem("wishlist")) || [];
-//       const wishlistRef = collection(db, "Users", userId, "wishlist");
+//       const wishlistRef = collection(db, "users", userId, "wishlist");
 
 //       for (const product of localItems) {
 //         await addDoc(wishlistRef, product);
@@ -157,7 +157,7 @@
 //   "wishlist/fetchUserWishlist",
 //   async (userId, thunkAPI) => {
 //     try {
-//       const wishlistRef = collection(db, "Users", userId, "wishlist");
+//       const wishlistRef = collection(db, "users", userId, "wishlist");
 //       const q = query(wishlistRef);
 //       const snapshot = await getDocs(q);
 //       const wishlist = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -172,12 +172,12 @@
 //   "wishlist/removeFromWishlist",
 //   async ({ productId, userId }, thunkAPI) => {
 //     try {
-//       const wishlistRef = collection(db, "Users", userId, "wishlist");
+//       const wishlistRef = collection(db, "users", userId, "wishlist");
 //       const snapshot = await getDocs(wishlistRef);
 
 //       const targetDoc = snapshot.docs.find(doc => doc.data().id === productId);
 //       if (targetDoc) {
-//         await deleteDoc(doc(db, "Users", userId, "wishlist", targetDoc.id));
+//         await deleteDoc(doc(db, "users", userId, "wishlist", targetDoc.id));
 //       }
 
 //       return productId;
@@ -299,7 +299,7 @@ export const addToWishlist = createAsyncThunk(
   "wishlist/addToWishlist",
   async ({ product, userId }, thunkAPI) => {
     try {
-      const wishlistRef = collection(db, "Users", userId, "wishlist");
+      const wishlistRef = collection(db, "users", userId, "wishlist");
       const q = query(wishlistRef);
       const snapshot = await getDocs(q);
       const exists = snapshot.docs.some(doc => doc.data().id === product.id);
@@ -328,7 +328,7 @@ export const syncLocalWishlistToFirestore = createAsyncThunk(
   async (userId, thunkAPI) => {
     try {
       const localItems = JSON.parse(localStorage.getItem("wishlist")) || [];
-      const wishlistRef = collection(db, "Users", userId, "wishlist");
+      const wishlistRef = collection(db, "users", userId, "wishlist");
       const existingItems = await getDocs(wishlistRef);
       const existingIds = existingItems.docs.map(doc => doc.data().id);
 
@@ -355,7 +355,7 @@ export const fetchUserWishlist = createAsyncThunk(
   "wishlist/fetchUserWishlist",
   async (userId, thunkAPI) => {
     try {
-      const wishlistRef = collection(db, "Users", userId, "wishlist");
+      const wishlistRef = collection(db, "users", userId, "wishlist");
       const q = query(wishlistRef);
       const snapshot = await getDocs(q);
       const wishlist = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -371,12 +371,12 @@ export const removeFromWishlist = createAsyncThunk(
   "wishlist/removeFromWishlist",
   async ({ productId, userId }, thunkAPI) => {
     try {
-      const wishlistRef = collection(db, "Users", userId, "wishlist");
+      const wishlistRef = collection(db, "users", userId, "wishlist");
       const snapshot = await getDocs(wishlistRef);
 
       const targetDoc = snapshot.docs.find(doc => doc.data().id === productId);
       if (targetDoc) {
-        await deleteDoc(doc(db, "Users", userId, "wishlist", targetDoc.id));
+        await deleteDoc(doc(db, "users", userId, "wishlist", targetDoc.id));
         const productDocRef = docRef(db, "allproducts", productId);
         await updateDoc(productDocRef, {
           wishlistCount: increment(-1),

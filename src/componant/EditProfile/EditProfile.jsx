@@ -46,7 +46,7 @@ const EditProfile = () => {
     const fetchData = async () => {
       const uid = auth.currentUser?.uid;
       if (uid) {
-        const userRef = doc(db, "Users", uid);
+        const userRef = doc(db, "users", uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
           const userData = userSnap.data();
@@ -195,7 +195,7 @@ const EditProfile = () => {
     const uid = auth.currentUser?.uid;
     if (!uid) return;
 
-    const userRef = doc(db, "Users", uid);
+    const userRef = doc(db, "users", uid);
     let profileImage = form.profileImage;
 
     try {

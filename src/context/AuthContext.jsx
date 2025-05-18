@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const docRef = doc(db, "Users", user.uid);
+        const docRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(docRef);
         if (userDoc.exists()) {
           setCurrentUser({ uid: user.uid, ...userDoc.data() });
