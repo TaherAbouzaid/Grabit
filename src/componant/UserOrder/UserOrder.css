@@ -1,0 +1,42 @@
+.custom-table {
+  font-size: 14px;
+  border-color: #dee2e6 !important;
+  width: 100%;
+  color: gray;
+}
+
+.custom-table thead {
+  background-color: #f9f9f9;
+  font-weight: 500;
+  font-size: 14px;
+  color: gray;
+}
+
+.custom-table tr:nth-child(even),
+.custom-table tr:nth-child(odd) {
+  background-color: white;
+
+}
+
+.view-button {
+  padding: 4px 12px;
+}
+
+.shop-now-button {
+  padding: 6px 14px;
+}
+
+.card-header {
+  font-size: 15px;
+  color: gray;
+}
+
+
+.custom-table th,
+.custom-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+    color: gray;
+}
