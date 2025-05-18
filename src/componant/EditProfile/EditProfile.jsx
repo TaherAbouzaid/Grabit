@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { db, auth, storage } from "../../firebase/config";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { sendPasswordResetEmail } from "firebase/auth";
+// import { sendPasswordResetEmail } from "firebase/auth";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { Country, State, City } from "country-state-city";
-import { toast, ToastContainer } from "react-toastify";
+import {  ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./EditProfile.css";
 
@@ -232,41 +232,41 @@ const EditProfile = () => {
     }
   };
 
-  const handleResetPassword = async () => {
-    setResetMessage({ type: "", text: "" });
-    if (!auth.currentUser?.email) {
-      setResetMessage({ type: "danger", text: "No email associated with this account." });
-      toast.error("No email associated with this account.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      return;
-    }
+  // const handleResetPassword = async () => {
+  //   setResetMessage({ type: "", text: "" });
+  //   if (!auth.currentUser?.email) {
+  //     setResetMessage({ type: "danger", text: "No email associated with this account." });
+  //     toast.error("No email associated with this account.", {
+  //       position: "top-right",
+  //       autoClose: 3000,
+  //     });
+  //     return;
+  //   }
 
-    const toastId = toast.loading("Sending password reset email...", {
-      position: "top-right",
-    });
+  //   const toastId = toast.loading("Sending password reset email...", {
+  //     position: "top-right",
+  //   });
 
-    try {
-      await sendPasswordResetEmail(auth, auth.currentUser.email);
-      toast.update(toastId, {
-        render: "Password reset email sent. Check your inbox.",
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-      });
-      setResetMessage({ type: "success", text: "Password reset email sent. Check your inbox." });
-    } catch (error) {
-      console.error("Error sending password reset email:", error.message);
-      toast.update(toastId, {
-        render: `Failed to send reset email: ${error.message}`,
-        type: "error",
-        isLoading: false,
-        autoClose: 5000,
-      });
-      setResetMessage({ type: "danger", text: `Failed to send reset email: ${error.message}` });
-    }
-  };
+  //   try {
+  //     await sendPasswordResetEmail(auth, auth.currentUser.email);
+  //     toast.update(toastId, {
+  //       render: "Password reset email sent. Check your inbox.",
+  //       type: "success",
+  //       isLoading: false,
+  //       autoClose: 3000,
+  //     });
+  //     setResetMessage({ type: "success", text: "Password reset email sent. Check your inbox." });
+  //   } catch (error) {
+  //     console.error("Error sending password reset email:", error.message);
+  //     toast.update(toastId, {
+  //       render: `Failed to send reset email: ${error.message}`,
+  //       type: "error",
+  //       isLoading: false,
+  //       autoClose: 5000,
+  //     });
+  //     setResetMessage({ type: "danger", text: `Failed to send reset email: ${error.message}` });
+  //   }
+  // };
 
   return (
     <Container fluid className="edit-profile py-4">
@@ -423,15 +423,12 @@ const EditProfile = () => {
                 )}
               </Form.Group>
 
-              <Button
-                variant="primary"
-                onClick={handleResetPassword}
-                className="mb-3 w-100"
-              >
-                Reset Password
-              </Button>
+             <div>
 
-              <div className="d-flex justify-content-between">
+              <Link to="/ChangePassword" > Change Your Password</Link>
+             </div>
+
+              <div className="d-flex justify-content-between ">
                 <Button variant="secondary" onClick={() => navigate("/profile")}>
                   Cancel
                 </Button>

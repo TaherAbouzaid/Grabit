@@ -1,0 +1,60 @@
+.orders-card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+  border: none;
+  border-radius: 0.3rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.header-row {
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.header-title {
+  color: #5a6a85;
+  font-weight: 500;
+  margin: 0;
+}
+
+.table-responsive {
+  color: #5a6a85;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 15px 10px;
+}
+
+.orders-table th {
+  font-weight: 500;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.orders-table td {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.product-image {
+  border-radius: 0.25rem;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  font-weight: 500;
+  border: none;
+}
+
+.header-button,
+.action-button{
+    background-color: #5cac94;
+    border: none;
+}
+
+.header-button:hover,
+.action-button:hover {
+    background-color: #5cac94;
+}

@@ -1,127 +1,175 @@
+
 import { Container, Row, Col } from "react-bootstrap";
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter, } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTwitter,
+} from "react-icons/fa";
 import { BiLocationPlus, BiPhone, BiEnvelope } from "react-icons/bi";
+import { useSelector, useDispatch } from "react-redux";
+import { setCategory, setSubcategory } from "../../Store/Slices/filtersSlice";
+import { fetchProductsByCategory } from "../../Store/Slices/productsSlice";
+import { useNavigate } from "react-router-dom";
 import "./Footer.css";
+
 const Footer = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { categories, loading } = useSelector((state) => state.categories);
+
+  
+  const getCategoryName = (category) => {
+    if (category && category.name) {
+      return typeof category.name === "object"
+        ? category.name.en || category.name.ar
+        : category.name;
+    }
+    return "Unknown Category";
+  };
+
+  const handleCategoryClick = (categoryId, categorySlug) => {
+    dispatch(setCategory(categoryId));
+    dispatch(fetchProductsByCategory(categoryId));
+    navigate(`/products/${categorySlug}`);
+  };
+
   return (
-    <footer className="bg-white text-secondary pt-5 border-top">
+    <footer>
       <Container>
-        <Row className="gy-4">
+        <Row className="gy-4 gx-2">
           {/* Logo */}
-          <Col md={3}>
+          <Col xs={12} sm={6} md={4} lg={3}>
             <img
               src="https://grabit-react-next.maraviyainfotech.com/assets/img/logo/logo.png"
               alt="Grabit Logo"
-              style={{ height: 40 }}
-              className="mb-3"
+              className="logo mb-3"
             />
-            <p>
+            <p className="mb-3">
               Grabit is the biggest market of grocery products. Get your daily
               needs from our store.
             </p>
-            <div className="d-flex gap-2">
+            <div className="app-store-buttons">
               <a href="#" rel="noopener noreferrer">
                 <img
                   src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/android.png"
                   alt="Google Play"
-                  style={{ height: 36 }}
+                  className="app-store-img"
                 />
               </a>
               <a href="#" rel="noopener noreferrer">
                 <img
                   src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/apple.png"
                   alt="App Store"
-                  style={{ height: 36 }}
+                  className="app-store-img"
                 />
               </a>
             </div>
-
           </Col>
 
-          {/* Category / Company / Account */}
-          <Col md={2}>
+          {/* Category  */}
+          <Col xs={6} sm={4} md={3} lg={2}>
             <h6 className="footer-title">Category</h6>
-            <ul className="footer-list">
-              <li><a href="#" className="footer-link">Dried Fruit</a></li>
-              <li><a href="#" className="footer-link">Cookies</a></li>
-              <li><a href="#" className="footer-link">Foods</a></li>
-              <li><a href="#" className="footer-link">Fresh Fruit</a></li>
-              <li><a href="#" className="footer-link">Tuber Root</a></li>
-              <li><a href="#" className="footer-link">Vegetables</a></li>
-            </ul>
+            {loading ? (
+              <div>Loading...</div>
+            ) : categories.length === 0 ? (
+              <div>No categories available</div>
+            ) : (
+              <ul className="footer-list">
+                {categories.map((category) => (
+                  <li key={category.id}>
+                    <a
+                      href="#"
+                      className="footer-link"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleCategoryClick(category.id, category.slug);
+                      }}
+                    >
+                      {getCategoryName(category)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Col>
 
-          <Col md={2}>
+          {/* Company */}
+          <Col xs={6} sm={4} md={3} lg={2}>
             <h6 className="footer-title">Company</h6>
             <ul className="footer-list">
-              <li><a href="#" className="footer-link">About us</a></li>
-              <li><a href="#" className="footer-link">Delivery</a></li>
+              <li><a href="/AboutUs" className="footer-link">About us</a></li>
+              <li><a href="/OrderTracker" className="footer-link">Delivery</a></li>
               <li><a href="#" className="footer-link">Legal Notice</a></li>
               <li><a href="#" className="footer-link">Terms & conditions</a></li>
-              <li><a href="#" className="footer-link">Secure payment</a></li>
-              <li><a href="#" className="footer-link">Contact us</a></li>
+              <li><a href="/Checkout" className="footer-link">Secure payment</a></li>
+              <li><a href="/ContactUs" className="footer-link">Contact us</a></li>
             </ul>
           </Col>
 
-          <Col md={2}>
+          {/* Account */}
+          <Col xs={6} sm={4} md={3} lg={2}>
             <h6 className="footer-title">Account</h6>
             <ul className="footer-list">
-              <li><a href="#" className="footer-link">Sign In</a></li>
-              <li><a href="#" className="footer-link">View Cart</a></li>
+              <li><a href="/Register" className="footer-link">Sign In</a></li>
+              <li><a href="/Cart" className="footer-link">View Cart</a></li>
               <li><a href="#" className="footer-link">Return Policy</a></li>
               <li><a href="#" className="footer-link">Become a Vendor</a></li>
               <li><a href="#" className="footer-link">Affiliate Program</a></li>
-              <li><a href="#" className="footer-link">Payments</a></li>
+              <li><a href="Checkout" className="footer-link">Payments</a></li>
             </ul>
           </Col>
 
-
           {/* Contact */}
-          <Col md={3}>
-            <h6 className="fw-bold mb-3 border-bottom pb-2">Contact</h6>
+          <Col xs={12} sm={6} md={4} lg={3}>
+            <h6 className="footer-title">Contact</h6>
             <ul className="list-unstyled">
               <li className="d-flex gap-2 align-items-start mb-3">
-                <BiLocationPlus color="#5cac94" size={30} />
-                <span>2548 Broaddus Maple Court, Madisonville KY 4783, USA.</span>
+                <BiLocationPlus color="#5cac94" size={28} />
+                <span className="contact-text">
+                  2548 Broaddus Maple Court, Madisonville KY 4783, USA.
+                </span>
               </li>
               <li className="d-flex gap-2 align-items-center mb-3">
-                <BiPhone color="#5cac94" size={20} />
-                <span>+00 9876543210</span>
+                <BiPhone color="#5cac94" size={18} />
+                <span className="contact-text">+00 9876543210</span>
               </li>
               <li className="d-flex gap-2 align-items-center mb-3">
-                <BiEnvelope color="#5cac94" size={20} />
-                <span>example@email.com</span>
+                <BiEnvelope color="#5cac94" size={18} />
+                <span className="contact-text">example@email.com</span>
               </li>
             </ul>
 
             {/* Social Icons */}
-            <div className="d-flex gap-2 mt-2">
-              {[FaFacebookF, FaLinkedinIn, FaTwitter, FaInstagram].map(
-                (Icon, idx) => (
-                  <a
-                    key={idx}
-                    href="#top"
-                    className="social-icon"
-                  >
-                    <Icon size={15} color="#fff" />
-                  </a>
-                )
-              )}
+            <div className="d-flex gap-2 justify-content-center justify-content-md-start mt-2">
+              {[
+                { Icon: FaFacebookF, label: "Facebook" },
+                { Icon: FaLinkedinIn, label: "LinkedIn" },
+                { Icon: FaTwitter, label: "Twitter" },
+                { Icon: FaInstagram, label: "Instagram" },
+              ].map(({ Icon, label }, idx) => (
+                <a
+                  key={idx}
+                  href="#top"
+                  className="social-icon"
+                  aria-label={`Follow us on ${label}`}
+                >
+                  <Icon size={14} />
+                </a>
+              ))}
             </div>
           </Col>
         </Row>
 
         {/* Footer Bottom */}
         <div className="footer-bottom">
-          <p className="mb-2 mb-md-0">
-            Copyright © Grabit all rights reserved.
-            Powered by Grabit.
+          <p className="mb-2 mb-md-0 text-center text-md-start">
+            © Grabit. All rights reserved. Powered by Grabit.
           </p>
-          <div className="d-flex gap-2 justify-content-center">
+          <div className="footer-payment d-flex gap-2 justify-content-center">
             <img
               src="https://grabit-react-next.maraviyainfotech.com/assets/img/hero-bg/payment.png"
-              alt="Visa"
-              style={{ height: 24 }}
+              alt="Payment Methods"
             />
           </div>
         </div>

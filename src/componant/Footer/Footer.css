@@ -1,77 +1,222 @@
+
+/* ضمان حدود صحيحة لجميع العناصر */
+* {
+  box-sizing: border-box;
+}
+
+/* التحكم الأساسي في الـ Footer */
 footer {
   background-color: white;
   color: #6c757d;
-  padding-top: 3rem;
+  padding: 2.5rem 0 1rem;
   border-top: 1px solid #dee2e6;
+  overflow-x: hidden; /* منع السكرول الأفقي */
 }
 
-footer h6 {
+/* تصميم العناوين */
+footer h6,
+.footer-title {
   font-weight: bold;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #dee2e6;
+  font-size: 1.1rem;
 }
 
-footer a {
+/* تصميم الروابط */
+footer a,
+.footer-link {
   color: #6c757d;
   text-decoration: none;
-  transition: color 0.3s;
+  transition: color 0.3s ease;
+  font-size: 0.95rem;
 }
 
-footer a:hover {
+footer a:hover,
+.footer-link:hover {
   color: #5cac94;
 }
 
+/* تصميم أيقونات التواصل */
 footer .social-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   background-color: #505e64;
   color: #fff;
   border-radius: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.3s;
+  transition: opacity 0.3s ease;
+  font-size: 0.85rem;
 }
 
 footer .social-icon:hover {
   opacity: 0.8;
 }
 
+/* تصميم الجزء السفلي من الـ Footer */
 footer .footer-bottom {
   border-top: 1px solid #dee2e6;
   padding: 1rem 0;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  max-width: 100%;
 }
 
+/* تصميم صور الدفع */
 footer .footer-payment img {
-  height: 24px;
-}
-.footer-title {
-  font-weight: bold;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #dee2e6;
+  height: 22px;
+  max-width: 100%;
 }
 
+/* تصميم القوائم */
 .footer-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.footer-link {
-  display: inline-block;
-  color: #6c757d;
-  text-decoration: none;
+.footer-list li {
   margin-bottom: 0.5rem;
-  transition: color 0.3s ease;
 }
 
-.footer-link:hover {
-  color: #5cac94;
+/* تصميم الشعار وصور المتجر */
+footer img.logo {
+  max-height: 36px;
+  max-width: 100%;
+}
+
+footer .app-store-img {
+  height: 32px;
+  max-width: 110px;
+}
+
+/* تصميم حاوية أزرار المتجر */
+footer .app-store-buttons {
+  display: flex;
+  flex-direction: row; /* أفقي افتراضيًا */
+  gap: 0.5rem;
+  align-items: center;
+  max-width: 100%;
+}
+
+/* التحكم في النصوص الطويلة */
+footer .contact-text {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* التحكم في الحاوية والصف */
+footer .container {
+  overflow-x: hidden;
+}
+
+footer .row {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 100%;
+}
+
+/* التصميم الريسبونسيف */
+@media (max-width: 768px) {
+  footer {
+    padding: 2rem 0;
+  }
+
+  .footer-title {
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .footer-list {
+    text-align: center;
+  }
+
+  .footer-list li {
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-payment {
+    justify-content: center;
+  }
+
+  .social-icon {
+    margin: 0 auto;
+  }
+
+  footer img.logo {
+    max-height: 32px;
+  }
+
+  footer .app-store-img {
+    height: 28px;
+    max-width: 90px;
+  }
+
+  .contact-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  footer {
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+
+  .footer-bottom p {
+    font-size: 0.85rem;
+  }
+
+  .footer-payment img {
+    height: 18px;
+  }
+
+  .contact-text {
+    font-size: 0.85rem;
+  }
+
+  .social-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+
+  footer .app-store-img {
+    height: 26px;
+    max-width: 80px;
+  }
+
+  footer .app-store-buttons {
+    flex-direction: column; /* مكدس رأسيًا على الشاشات الصغيرة */
+    align-items: center;
+  }
+}
+
+@media (min-width: 992px) {
+  .footer-title {
+    font-size: 1.2rem;
+  }
+
+  footer a,
+  .footer-link {
+    font-size: 1rem;
+  }
+
+  footer .app-store-buttons {
+    flex-direction: row; /* أفقي على الشاشات الكبيرة */
+    align-items: flex-start;
+  }
 }

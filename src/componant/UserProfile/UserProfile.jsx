@@ -22,7 +22,7 @@ const UserProfile = () => {
         <Col xs={12} md={3}>
           <ButtonGroup vertical className="btn-grp w-100">
             <Button variant="secondary">User Profile</Button>
-            <Button variant="secondary">User History</Button>
+            <Button variant="secondary" onClick={()=>navigate("/userHistory")}>User History</Button>
             <Button variant="secondary" onClick={() => navigate("/Cart")}>Cart</Button>
             <Button variant="secondary" onClick={() => navigate("/checkout")}>Checkout</Button>
             <Button variant="secondary" onClick={() => navigate("/OrderTracker")}>Track Order</Button>

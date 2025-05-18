@@ -3,7 +3,7 @@ import { setCategory, setSubcategory } from '../../Store/Slices/filtersSlice';
 import { fetchProductsByCategory } from '../../Store/Slices/productsSlice';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Nav } from 'react-bootstrap';
-
+// import { useState } from 'react';
 
 const MegaMenu = () => {
   const dispatch = useDispatch();
