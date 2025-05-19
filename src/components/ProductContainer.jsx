@@ -10,7 +10,7 @@ import "./styles.css";
 import SidebarFilter from "../componant/SidebarFilter/SidebarFilter";
 import { useSelector } from "react-redux";
 
-const PRODUCTS_PER_PAGE = 12;
+const PRODUCTS_PER_PAGE = 9;
 
 const ProductContainer = () => {
   const [products, setProducts] = useState([]);

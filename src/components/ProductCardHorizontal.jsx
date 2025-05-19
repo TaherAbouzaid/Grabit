@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../Store/Slices/cartSlice';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,15 +12,16 @@ const ProductCardHorizontal = ({ product }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
+  const { currentLanguage } = useLanguage();
   const { loading: cartLoading } = useSelector(state => state.cart);
   
   const firstVariant = product.productType === "variant" && product.variants?.[0];
   
   const getTitle = () => {
     if (product.productType === "variant" && firstVariant) {
-      return firstVariant.title?.en || firstVariant.title?.ar;
+      return firstVariant.title?.[currentLanguage] || firstVariant.title?.en;
     }
-    return product.title?.en || product.title?.ar || product.name?.en || product.name?.ar;
+    return product.title?.[currentLanguage] || product.title?.en || product.name?.[currentLanguage] || product.name?.en;
   };
 
   const getPrice = () => {
@@ -56,7 +58,7 @@ const ProductCardHorizontal = ({ product }) => {
 
   const handleAddToCart = async () => {
     if (!user) {
-      toast.error("Please login to add items to cart!", {
+      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -65,7 +67,7 @@ const ProductCardHorizontal = ({ product }) => {
     }
 
     if (getQuantity() === 0) {
-      toast.error("This product is out of stock!", {
+      toast.error(currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -78,12 +80,12 @@ const ProductCardHorizontal = ({ product }) => {
         productId: product.id, 
         price: getPrice()
       }));
-      toast.success(`${getTitle()} added to cart!`, {
+      toast.success(currentLanguage === 'ar' ? `تمت إضافة ${getTitle()} إلى السلة!` : `${getTitle()} added to cart!`, {
         position: "top-right",
         autoClose: 3000,
       });
     } catch (error) {
-      toast.error("Failed to add to cart!", {
+      toast.error(currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -163,7 +165,9 @@ const ProductCardHorizontal = ({ product }) => {
                 fontSize: "0.9rem",
                 marginBottom: "auto"
               }}>
-                {getQuantity() > 0 ? `In Stock (${getQuantity()})` : "Out of Stock"}
+                {getQuantity() > 0 ? 
+                  (currentLanguage === 'ar' ? `متوفر (${getQuantity()})` : `In Stock (${getQuantity()})`) : 
+                  (currentLanguage === 'ar' ? "غير متوفر" : "Out of Stock")}
               </div>
 
               <button 
@@ -171,7 +175,7 @@ const ProductCardHorizontal = ({ product }) => {
                 disabled={getQuantity() <= 0 || cartLoading}
                 onClick={handleAddToCart}
               >
-                Add to Cart
+                {currentLanguage === 'ar' ? "إضافة إلى السلة" : "Add to Cart"}
               </button>
             </div>
           </div>

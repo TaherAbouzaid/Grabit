@@ -5,6 +5,7 @@ import { collection, getDocs, getDocs as getSubDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { Spinner } from "react-bootstrap";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { useLanguage } from "../context/LanguageContext";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./styles.css";
@@ -13,6 +14,7 @@ const TrendingItems = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const sliderRef = useRef();
+  const { currentLanguage } = useLanguage();
 
   useEffect(() => {
     const fetchTrendingProducts = async () => {
@@ -39,7 +41,13 @@ const TrendingItems = () => {
           products.push(productData);
         }
 
-        setProducts(products.slice(0, 6));
+        // Sort products by trendingScore
+        const sortedProducts = products
+          .filter(product => product.trendingScore > 0)
+          .sort((a, b) => b.trendingScore - a.trendingScore)
+          .slice(0, 6);
+
+        setProducts(sortedProducts);
       } catch (error) {
         console.error("Error fetching trending products:", error);
       } finally {
@@ -79,7 +87,7 @@ const TrendingItems = () => {
     <div className="slider-section-fixed-width">
       <div className="slider-header-row d-flex align-items-center justify-content-between mb-3">
         <h3 className="slider-header-title mb-0">
-          Trending <span style={{ color: '#5caf90' }}>Items</span>
+          {currentLanguage === 'ar' ? 'المنتجات' : 'Trending'} <span style={{ color: '#5caf90' }}>{currentLanguage === 'ar' ? 'الرائجة' : 'Items'}</span>
         </h3>
         <div className="slider-header-arrows">
           <button className="trending-arrow me-2" onClick={() => sliderRef.current?.slickPrev()} aria-label="Previous">

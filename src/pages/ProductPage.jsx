@@ -6,7 +6,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { fetchProductById } from "../services/productService";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../Store/Slices/cartSlice';
 import { addReview, getProductReviews } from '../Store/Slices/reviewSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -50,6 +52,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
+  const { currentLanguage } = useLanguage();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mainImg, setMainImg] = useState("");
@@ -61,6 +64,7 @@ const ProductPage = () => {
   const [hoveredRating, setHoveredRating] = useState(0);
   const reviews = useSelector(state => state.reviews.items);
   const reviewsLoading = useSelector(state => state.reviews.loading);
+  const cartLoading = useSelector(state => state.cart.loading);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -274,6 +278,69 @@ const ProductPage = () => {
     );
   };
 
+  const handleAddToCart = async () => {
+    if (!user) {
+      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      navigate("/login");
+      return;
+    }
+
+    if (getCurrentQuantity() === 0) {
+      toast.error(currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      const cartItem = {
+        userId: user.uid,
+        productId: product.id,
+        quantity: 1,
+        subCategoryId: product.subCategoryId,
+        brandId: product.brandId,
+        productType: product.productType
+      };
+
+      // Add variant information if it's a variant product
+      if (product.productType === "variant" && selectedVariant) {
+        cartItem.variantId = selectedVariant.id;
+        cartItem.variantAttributes = selectedAttributes;
+        cartItem.title = selectedVariant.title?.[currentLanguage] || selectedVariant.title?.en;
+        cartItem.mainImage = selectedVariant.mainImage;
+        cartItem.quantity = selectedVariant.quantity;
+        cartItem.price = selectedVariant.discountPrice || selectedVariant.price;
+        cartItem.originalPrice = selectedVariant.price;
+        cartItem.images = selectedVariant.images || [];
+      } else {
+        // For simple products
+        cartItem.title = product.title?.[currentLanguage] || product.title?.en;
+        cartItem.mainImage = product.mainImage;
+        cartItem.quantity = product.quantity;
+        cartItem.price = product.discountPrice || product.price;
+        cartItem.originalPrice = product.price;
+        cartItem.images = product.images || [];
+      }
+
+      console.log('Adding to cart:', cartItem); // للتأكد من البيانات
+      await dispatch(addToCart(cartItem));
+      toast.success(currentLanguage === 'ar' ? `تمت إضافة ${cartItem.title} إلى السلة!` : `${cartItem.title} added to cart!`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error('Error adding to cart:', error); // للتأكد من الأخطاء
+      toast.error(currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="text-center my-5">
@@ -317,9 +384,9 @@ const ProductPage = () => {
 
   const getCurrentTitle = () => {
     if (product.productType === "variant" && selectedVariant) {
-      return selectedVariant.title?.en || selectedVariant.title?.ar;
+      return selectedVariant.title?.[currentLanguage] || selectedVariant.title?.en;
     }
-    return product.title?.en || product.title?.ar || product.name?.en || product.name?.ar;
+    return product.title?.[currentLanguage] || product.title?.en || product.name?.[currentLanguage] || product.name?.en;
   };
 
   const getCurrentQuantity = () => {
@@ -465,7 +532,7 @@ const ProductPage = () => {
               ))}
               {product?.ratingSummary?.count > 0 && (
                 <small className="text-muted ms-2">
-                  ({product.ratingSummary.count} reviews)
+                  ({product.ratingSummary.count} {currentLanguage === 'ar' ? 'تقييمات' : 'reviews'})
                 </small>
               )}
             </div>
@@ -484,19 +551,21 @@ const ProductPage = () => {
                   )}
                 </>
               ) : (
-                <span>Price not available</span>
+                <span>{currentLanguage === 'ar' ? 'السعر غير متوفر' : 'Price not available'}</span>
               )}
             </div>
 
             <div style={{ margin: "10px 0", color: getCurrentQuantity() > 0 ? "#5caf90" : "#d9534f", fontWeight: 500 }}>
-              {getCurrentQuantity() > 0 ? `In Stock (${getCurrentQuantity()})` : "Out of Stock"}
+              {getCurrentQuantity() > 0 ? 
+                (currentLanguage === 'ar' ? `متوفر (${getCurrentQuantity()})` : `In Stock (${getCurrentQuantity()})`) : 
+                (currentLanguage === 'ar' ? 'غير متوفر' : 'Out of Stock')}
             </div>
 
-            {/* Product Description - Shared between simple and variant */}
+            {/* Product Description */}
             <div className="mb-4">
-              <h5 className="mb-3">Description</h5>
+              <h5 className="mb-3">{currentLanguage === 'ar' ? 'الوصف' : 'Description'}</h5>
               <div style={{ color: "#666", lineHeight: 1.6, maxWidth: "100%", overflow: "hidden", overflowWrap: "break-word", wordBreak: "break-word" }}>
-                <div dangerouslySetInnerHTML={{__html: product.description?.en || product.description?.ar || "No description available"}} />
+                <div dangerouslySetInnerHTML={{__html: product.description?.[currentLanguage] || product.description?.en || (currentLanguage === 'ar' ? 'لا يوجد وصف متوفر' : 'No description available')}} />
               </div>
             </div>
 
@@ -504,7 +573,9 @@ const ProductPage = () => {
               // Variant Product Selection
               getAttributeKeys().map(attributeKey => (
                 <div key={attributeKey} className="mb-4">
-                  <h5 className="mb-3">Select {attributeKey.charAt(0).toUpperCase() + attributeKey.slice(1)}</h5>
+                  <h5 className="mb-3">
+                    {currentLanguage === 'ar' ? 'اختر' : 'Select'} {attributeKey.charAt(0).toUpperCase() + attributeKey.slice(1)}
+                  </h5>
                   <div className="d-flex flex-wrap gap-2">
                     {getAvailableAttributeValues(attributeKey).map(value => {
                       const matchingVariants = getMatchingVariants(attributeKey, value);
@@ -562,9 +633,12 @@ const ProductPage = () => {
             {/* Add to Cart Button */}
             <button 
               className="btn btn-success btn-lg w-100"
-              disabled={product.productType === "variant" && Object.keys(selectedAttributes).length === 0}
+              disabled={product.productType === "variant" && Object.keys(selectedAttributes).length === 0 || getCurrentQuantity() === 0 || cartLoading}
+              onClick={handleAddToCart}
             >
-              Add to Cart
+              {cartLoading ? 
+                (currentLanguage === 'ar' ? 'جاري الإضافة...' : 'Adding...') : 
+                (currentLanguage === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart')}
             </button>
           </div>
         </div>
@@ -575,7 +649,7 @@ const ProductPage = () => {
         <div className="col-12">
           <div className="card">
             <div className="card-body">
-              <h3 className="card-title mb-4">Customer Reviews</h3>
+              <h3 className="card-title mb-4">{currentLanguage === 'ar' ? 'تقييمات العملاء' : 'Customer Reviews'}</h3>
               
               {/* Review Form */}
               <div className="mb-4">
@@ -584,31 +658,33 @@ const ProductPage = () => {
                     className="btn btn-outline-success"
                     onClick={() => setShowReviewForm(!showReviewForm)}
                   >
-                    {showReviewForm ? "Cancel Review" : "Write a Review"}
+                    {showReviewForm ? 
+                      (currentLanguage === 'ar' ? 'إلغاء التقييم' : 'Cancel Review') : 
+                      (currentLanguage === 'ar' ? 'كتابة تقييم' : 'Write a Review')}
                   </button>
                 ) : (
                   <button 
                     className="btn btn-outline-success"
                     onClick={() => navigate("/login")}
                   >
-                    Login to Write a Review
+                    {currentLanguage === 'ar' ? 'تسجيل الدخول لكتابة تقييم' : 'Login to Write a Review'}
                   </button>
                 )}
 
                 {showReviewForm && (
                   <div className="mt-3 p-3 border rounded">
                     <div className="mb-3">
-                      <label className="form-label">Rating</label>
+                      <label className="form-label">{currentLanguage === 'ar' ? 'التقييم' : 'Rating'}</label>
                       {renderReviewStars(rating, true)}
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">Your Review</label>
+                      <label className="form-label">{currentLanguage === 'ar' ? 'تقييمك' : 'Your Review'}</label>
                       <textarea
                         className="form-control"
                         rows="3"
                         value={review}
                         onChange={(e) => setReview(e.target.value)}
-                        placeholder="Write your review here..."
+                        placeholder={currentLanguage === 'ar' ? 'اكتب تقييمك هنا...' : 'Write your review here...'}
                       />
                     </div>
                     <div className="d-flex gap-2">
@@ -617,7 +693,9 @@ const ProductPage = () => {
                         onClick={handleReviewSubmit}
                         disabled={reviewsLoading}
                       >
-                        {reviewsLoading ? 'Submitting...' : 'Submit Review'}
+                        {reviewsLoading ? 
+                          (currentLanguage === 'ar' ? 'جاري الإرسال...' : 'Submitting...') : 
+                          (currentLanguage === 'ar' ? 'إرسال التقييم' : 'Submit Review')}
                       </button>
                       <button 
                         className="btn btn-outline-secondary"
@@ -627,7 +705,7 @@ const ProductPage = () => {
                           setReview("");
                         }}
                       >
-                        Cancel
+                        {currentLanguage === 'ar' ? 'إلغاء' : 'Cancel'}
                       </button>
                     </div>
                   </div>
@@ -658,7 +736,11 @@ const ProductPage = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-muted">No reviews yet. Be the first to review this product!</p>
+                  <p className="text-muted">
+                    {currentLanguage === 'ar' ? 
+                      'لا توجد تقييمات بعد. كن أول من يقيم هذا المنتج!' : 
+                      'No reviews yet. Be the first to review this product!'}
+                  </p>
                 )}
               </div>
             </div>

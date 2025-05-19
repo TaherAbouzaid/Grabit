@@ -10,5 +10,13 @@
   "common": {
     "loading": "جاري التحميل...",
     "error": "حدث خطأ"
+  },
+  "categories": {
+    "home_kitchen": "المنزل والمطبخ",
+    "electronics": "الإلكترونيات",
+    "clothing": "الملابس",
+    "health_beauty": "الصحة والجمال",
+    "food": "الطعام",
+    "other": "أخرى"
   }
 } 

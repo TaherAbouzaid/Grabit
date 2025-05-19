@@ -10,5 +10,13 @@
   "common": {
     "loading": "Loading...",
     "error": "An error occurred"
+  },
+  "categories": {
+    "home_kitchen": "Home & Kitchen",
+    "electronics": "Electronics",
+    "clothing": "Clothing",
+    "health_beauty": "Health & Beauty",
+    "food": "Food",
+    "other": "Other"
   }
 } 

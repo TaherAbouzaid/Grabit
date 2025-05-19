@@ -5,6 +5,7 @@ import "./styles.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../Store/Slices/cartSlice';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,6 +14,7 @@ const ProductCardSmall = ({ product }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { currentLanguage } = useLanguage();
   const { loading: cartLoading } = useSelector(state => state.cart);
 
   // Get the first variant if it's a variant product
@@ -30,7 +32,7 @@ const ProductCardSmall = ({ product }) => {
 
   const handleAddToCart = async () => {
     if (!user) {
-      toast.error("Please login to add items to cart!", {
+      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -39,7 +41,7 @@ const ProductCardSmall = ({ product }) => {
     }
 
     if (quantity === 0) {
-      toast.error("This product is out of stock!", {
+      toast.error(currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -52,12 +54,12 @@ const ProductCardSmall = ({ product }) => {
         productId: product.id, 
         price: discountPrice || price
       }));
-      toast.success(`${title?.en} added to cart!`, {
+      toast.success(currentLanguage === 'ar' ? `تمت إضافة ${title?.[currentLanguage]} إلى السلة!` : `${title?.en} added to cart!`, {
         position: "top-right",
         autoClose: 3000,
       });
     } catch (error) {
-      toast.error("Failed to add to cart!", {
+      toast.error(currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -82,20 +84,20 @@ const ProductCardSmall = ({ product }) => {
           <div className="product-card-small-img me-3">
             <img
               src={mainImage}
-              alt={title?.en}
+              alt={title?.[currentLanguage]}
               style={{ width: 60, height: 60, objectFit: "contain" }}
             />
           </div>
           <div className="flex-grow-1">
             <div
               className="product-card-small-title mb-1"
-              title={title?.en}
+              title={title?.[currentLanguage]}
               style={{ fontSize: 14, fontWeight: 600, color: '#6c757d', lineHeight: 1.2, marginBottom: 3 }}
             >
-              {title?.en}
+              {title?.[currentLanguage]}
             </div>
             <div className="product-card-small-category mb-2" style={{ color: '#888', fontSize: 12, marginBottom: 6 }}>
-              {subCategoryId?.name?.en}
+              {subCategoryId?.name?.[currentLanguage]}
             </div>
             <div className="product-card-small-prices" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span className="product-card-small-price-new" style={{ color: '#495057', fontWeight: 700, fontSize: 15 }}>

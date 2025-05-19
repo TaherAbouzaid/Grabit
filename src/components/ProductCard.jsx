@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../Store/Slices/cartSlice';
 import { addToWishlist, addToLocalWishlist, removeFromWishlist, removeFromLocalWishlist } from '../Store/Slices/wishlistSlice';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -18,6 +19,7 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
+  const { currentLanguage } = useLanguage();
   const { loading: cartLoading } = useSelector(state => state.cart);
   const wishlistItems = useSelector(state => state.wishlist.items);
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -66,7 +68,7 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = async () => {
     if (!user) {
-      toast.error("Please login to add items to cart!", {
+      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -75,7 +77,7 @@ const ProductCard = ({ product }) => {
     }
 
     if (quantity === 0) {
-      toast.error("This product is out of stock!", {
+      toast.error(currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -88,12 +90,12 @@ const ProductCard = ({ product }) => {
         productId: product.id, 
         price: discountPrice || price 
       }));
-      toast.success(`${title?.en} added to cart!`, {
+      toast.success(currentLanguage === 'ar' ? `تمت إضافة ${title?.[currentLanguage]} إلى السلة!` : `${title?.en} added to cart!`, {
         position: "top-right",
         autoClose: 3000,
       });
     } catch (error) {
-      toast.error("Failed to add to cart!", {
+      toast.error(currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -102,7 +104,7 @@ const ProductCard = ({ product }) => {
 
   const handleWishlistToggle = () => {
     if (!user) {
-      toast.error("Please login to add items to wishlist!", {
+      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى المفضلة!" : "Please login to add items to wishlist!", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -113,13 +115,13 @@ const ProductCard = ({ product }) => {
     if (isInWishlist) {
       if (user) {
         dispatch(removeFromWishlist({ productId: product.id, userId: user.uid }));
-        toast.success(`${title?.en} removed from wishlist!`, {
+        toast.success(currentLanguage === 'ar' ? `تمت إزالة ${title?.[currentLanguage]} من المفضلة!` : `${title?.en} removed from wishlist!`, {
           position: "top-right",
           autoClose: 3000,
         });
       } else {
         dispatch(removeFromLocalWishlist(product.id));
-        toast.success(`${title?.en} removed from wishlist!`, {
+        toast.success(currentLanguage === 'ar' ? `تمت إزالة ${title?.[currentLanguage]} من المفضلة!` : `${title?.en} removed from wishlist!`, {
           position: "top-right",
           autoClose: 3000,
         });
@@ -127,13 +129,13 @@ const ProductCard = ({ product }) => {
     } else {
       if (user) {
         dispatch(addToWishlist({ product, userId: user.uid }));
-        toast.success(`${title?.en} added to wishlist!`, {
+        toast.success(currentLanguage === 'ar' ? `تمت إضافة ${title?.[currentLanguage]} إلى المفضلة!` : `${title?.en} added to wishlist!`, {
           position: "top-right",
           autoClose: 3000,
         });
       } else {
         dispatch(addToLocalWishlist(product));
-        toast.success(`${title?.en} added to wishlist!`, {
+        toast.success(currentLanguage === 'ar' ? `تمت إضافة ${title?.[currentLanguage]} إلى المفضلة!` : `${title?.en} added to wishlist!`, {
           position: "top-right",
           autoClose: 3000,
         });
@@ -181,7 +183,7 @@ const ProductCard = ({ product }) => {
           <Card.Img
             variant="top"
             src={imgSrc}
-            alt={title?.en}
+            alt={title?.[currentLanguage]}
             className={isHovered ? "zoom-img" : ""}
             style={{ 
               height: "250px", 
@@ -191,13 +193,13 @@ const ProductCard = ({ product }) => {
           />
           <div style={{ position: "absolute", top: "10px", right: "10px" }}>
             {quantity === 0 ? (
-              <Badge bg="danger">OUT OF STOCK</Badge>
+              <Badge bg="danger">{currentLanguage === 'ar' ? "غير متوفر" : "OUT OF STOCK"}</Badge>
             ) : (
               <>
                 {discountPrice ? (
-                  <Badge bg="warning" text="dark">SALE</Badge>
+                  <Badge bg="warning" text="dark">{currentLanguage === 'ar' ? "خصم" : "SALE"}</Badge>
                 ) : isNew() && (
-                  <Badge bg="success">NEW</Badge>
+                  <Badge bg="success">{currentLanguage === 'ar' ? "جديد" : "NEW"}</Badge>
                 )}
               </>
             )}
@@ -207,7 +209,7 @@ const ProductCard = ({ product }) => {
           <div className="hover-icons">
             <button 
               className="icon-btn" 
-              title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+              title={isInWishlist ? (currentLanguage === 'ar' ? "إزالة من المفضلة" : "Remove from Wishlist") : (currentLanguage === 'ar' ? "إضافة إلى المفضلة" : "Add to Wishlist")}
               onClick={handleWishlistToggle}
               style={{ color: isInWishlist ? "#ff4d4d" : "inherit" }}
             >
@@ -215,14 +217,14 @@ const ProductCard = ({ product }) => {
             </button>
             <button 
               className="icon-btn" 
-              title="Quick View" 
+              title={currentLanguage === 'ar' ? "عرض سريع" : "Quick View"} 
               onClick={() => setShowModal(true)}
             >
               <FiEye />
             </button>
             <button 
               className="icon-btn" 
-              title="Add to Cart"
+              title={currentLanguage === 'ar' ? "إضافة إلى السلة" : "Add to Cart"}
               onClick={handleAddToCart}
               disabled={quantity === 0 || cartLoading}
               style={{ 
@@ -235,8 +237,8 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
         <Card.Body>
-          <small className="text-muted d-block">{subCategoryId?.name?.en}</small>
-          <small className="text-muted d-block">{brandId?.name?.en || 'Grabit'}</small>
+          <small className="text-muted d-block">{subCategoryId?.name?.[currentLanguage]}</small>
+          <small className="text-muted d-block">{brandId?.name?.[currentLanguage] || 'Grabit'}</small>
 
           <Card.Title
             className="mt-1"
@@ -250,12 +252,12 @@ const ProductCard = ({ product }) => {
               cursor: "pointer",
               transition: "color 0.2s ease"
             }}
-            title={title?.en} 
+            title={title?.[currentLanguage]} 
             onClick={handleTitleClick}
             onMouseEnter={(e) => e.target.style.color = "#5caf90"}
             onMouseLeave={(e) => e.target.style.color = "#4b5966"}
           >
-            {title?.en}
+            {title?.[currentLanguage]}
           </Card.Title>
 
           <div className="mb-2 d-flex">
