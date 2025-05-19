@@ -9,7 +9,13 @@
   },
   "common": {
     "loading": "جاري التحميل...",
-    "error": "حدث خطأ"
+    "error": "حدث خطأ",
+    "search": "بحث",
+    "loadingResults": "جارٍ تحميل النتائج...",
+    "searchError": "فشل في التحميل: {{message}}",
+    "searchResults": "نتائج البحث عن \"{{query}}\"",
+    "noResults": "لا توجد منتجات مطابقة لبحثك.",
+    "enterQuery": "يرجى إدخال كلمة بحث."
   },
   "categories": {
     "home_kitchen": "المنزل والمطبخ",

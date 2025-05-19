@@ -1,4 +1,3 @@
-
 import { Container, Row, Col } from "react-bootstrap";
 import {
   FaFacebookF,
@@ -9,29 +8,43 @@ import {
 import { BiLocationPlus, BiPhone, BiEnvelope } from "react-icons/bi";
 import { useSelector, useDispatch } from "react-redux";
 import { setCategory, setSubcategory } from "../../Store/Slices/filtersSlice";
-import { fetchProductsByCategory } from "../../Store/Slices/productsSlice";
 import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import "./Footer.css";
 
 const Footer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { categories, loading } = useSelector((state) => state.categories);
+  const { items: products } = useSelector((state) => state.products);
+  const { t } = useTranslation();
 
-  
-  const getCategoryName = (category) => {
-    if (category && category.name) {
-      return typeof category.name === "object"
-        ? category.name.en || category.name.ar
-        : category.name;
-    }
-    return "Unknown Category";
-  };
+  // Extract categories dynamically from products
+  const categories = useMemo(() => {
+    const filteredProducts = products.filter((p) => {
+      if (!p.categoryId || !p.categoryId.categoryId) {
+        console.log("Product missing categoryId:", p);
+        return false;
+      }
+      return true;
+    });
+    const categoriesMap = new Map(
+      filteredProducts.map((p) => [
+        p.categoryId.categoryId,
+        {
+          id: p.categoryId.categoryId,
+          name: p.categoryId.name?.en || t("categories.uncategorized", "Uncategorized"),
+        },
+      ])
+    );
+    return Array.from(categoriesMap.values());
+  }, [products, t]);
 
-  const handleCategoryClick = (categoryId, categorySlug) => {
+  const handleCategoryClick = (categoryId) => {
+    console.log("Category clicked in Footer:", { categoryId });
     dispatch(setCategory(categoryId));
-    dispatch(fetchProductsByCategory(categoryId));
-    navigate(`/products/${categorySlug}`);
+    dispatch(setSubcategory(null));
+    navigate("/shop");
   };
 
   return (
@@ -67,10 +80,10 @@ const Footer = () => {
             </div>
           </Col>
 
-          {/* Category  */}
+          {/* Category */}
           <Col xs={6} sm={4} md={3} lg={2}>
             <h6 className="footer-title">Category</h6>
-            {loading ? (
+            {products.length === 0 ? (
               <div>Loading...</div>
             ) : categories.length === 0 ? (
               <div>No categories available</div>
@@ -83,10 +96,10 @@ const Footer = () => {
                       className="footer-link"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleCategoryClick(category.id, category.slug);
+                        handleCategoryClick(category.id);
                       }}
                     >
-                      {getCategoryName(category)}
+                      {category.name}
                     </a>
                   </li>
                 ))}
@@ -103,7 +116,7 @@ const Footer = () => {
               <li><a href="#" className="footer-link">Legal Notice</a></li>
               <li><a href="#" className="footer-link">Terms & conditions</a></li>
               <li><a href="/Checkout" className="footer-link">Secure payment</a></li>
-              <li><a href="/ContactUs" className="footer-link">Contact us</a></li>
+              <li><a href="/ContactPage" className="footer-link">Contact us</a></li>
             </ul>
           </Col>
 

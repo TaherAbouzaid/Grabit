@@ -1,11 +1,13 @@
 import CategorySlider from "../components/CategorySlider";
-import ProductContainer from "../components/ProductContainer";
+// import ProductContainer from "../components/ProductContainer";
+import ProductSubCategory from "../components/ProductSubCategory";
 
 const Shop = () => {
   return (
     <>
     <CategorySlider />
-    <ProductContainer />
+    {/* <ProductContainer /> */}
+    <ProductSubCategory/>
     </>
   )
 }

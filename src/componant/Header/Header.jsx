@@ -9,13 +9,14 @@ import { useAuth } from "../../context/AuthContext";
 import "./Header.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { setSearchQuery } from '../../Store/Slices/filtersSlice';
+// import { setSearchQuery } from '../../Store/Slices/filtersSlice';
 import { fetchCart, updateCartQuantity, removeFromCart } from '../../Store/Slices/cartSlice';
 import { fetchUserData } from '../../Store/Slices/userSlice';
 import { fetchProducts } from '../../Store/Slices/productsSlice';
 import MegaMenu from "../MegaMenu/MegaMenu";
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import SearchBar from "../SearchBar/SearchBar";
 
 function Header() {
   const { user, logout } = useAuth();
@@ -64,10 +65,10 @@ function Header() {
   };
 
   // Handle search query
-  const handleSearchChange = (e) => {
-    console.log('search query:', e.target.value);
-    dispatch(setSearchQuery(e.target.value));
-  };
+  // const handleSearchChange = (e) => {
+  //   console.log('search query:', e.target.value);
+  //   dispatch(setSearchQuery(e.target.value));
+  // };
 
   // Handle quantity change
   const handleQuantityChange = (productId, change) => {
@@ -158,19 +159,7 @@ function Header() {
           </a>
 
           {/* Search Bar */}
-          <div className="search-bar-container">
-            <InputGroup className="search-bar-group">
-              <Form.Control
-                type="text"
-                placeholder={t('common.search')}
-                onChange={handleSearchChange}
-                className="search-input"
-              />
-              <Button variant="light" className="search-button">
-                <BiSearch size={20} color="#5cac94" />
-              </Button>
-            </InputGroup>
-          </div>
+            <SearchBar />
 
           {/* User Icons */}
           <div className="d-flex gap-4 user-actions">
@@ -244,67 +233,60 @@ function Header() {
             <Button
               className="rounded-0 border-0 d-flex align-items-center gap-2 px-4 py-3 all-category-btn"
               style={{ backgroundColor: "#5cac94", color: "#fff", fontWeight: "500", fontSize: "18px" }}
+              onClick={()=>navigate("/shop")}
             >
               <FaThLarge className="text-white" />
               {t('nav.allCategories')}
             </Button>
-            <div className="dropdown-menu position-absolute mt-0">
-              <a href="#fruits" className="dropdown-item">{t('categories.fruits')}</a>
-              <a href="#vegetables" className="dropdown-item">{t('categories.vegetables')}</a>
-              <a href="#meat" className="dropdown-item">{t('categories.meat')}</a>
-              <a href="#drinks" className="dropdown-item">{t('categories.drinks')}</a>
-              <a href="#snacks" className="dropdown-item">{t('categories.snacks')}</a>
-            </div>
           </div>
 
           <Navbar.Toggle aria-controls="main-navbar" />
           <Navbar.Collapse id="main-navbar">
             <Nav className="mx-auto">
               <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
-                <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom">
-                  {t('nav.home')} <span className="dropdown-arrow">▼</span>
+                <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom fw-bold" 
+                  onClick={()=>navigate("/")}
+                > Home
+                {/* {t('nav.home')} */}
                 </span>
-                <div className="dropdown-menu position-absolute">
-                  <a href="#home1" className="dropdown-item">{t('categories.grocery')}</a>
-                  <a href="#home2" className="dropdown-item">{t('categories.fashion')}</a>
-                  <a href="#home2" className="dropdown-item">{t('categories.fashion2')}</a>
-                </div>
+              
               </div>
 
               <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
-                <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom">
+                <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom fw-bold">
                   {t('nav.categories')} <FaAngleDown size={12} />
                 </span>
-                <MegaMenu />
-              </div>
+                <div className="w-100">
 
-              <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
-                <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom">
-                  {t('nav.blog')} <FaAngleDown size={12} /> 
-                </span >
-                <div className="dropdown-menu position-absolute">
-                  <a href="#blog1" className="dropdown-item">{t('blog.latestPosts')}</a>
-                  <a href="#blog2" className="dropdown-item">{t('blog.tipsAndTricks')}</a>
+                <MegaMenu />
                 </div>
               </div>
 
               <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
-                <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom">
+                <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom fw-bold"
+                  onClick={()=>navigate("/BlogPage")}
+                >{t('nav.blog')} 
+                </span >
+              </div>
+
+              <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
+                <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom fw-bold">
                   {t('nav.pages')} <FaAngleDown size={12} />
                 </span>
                 <div className="dropdown-menu position-absolute">
-                  <a href="#about" className="dropdown-item">{t('nav.about')}</a>
-                  <a href="#contact" className="dropdown-item" onClick={() => handleNavigation("/ContactPage")}>{t('nav.contact')}</a>
+                  <a href="#" className="dropdown-item " onClick={()=>navigate("/AboutUs")} >{t('nav.about')}</a>
+                  <a href="#" className="dropdown-item" onClick={()=>navigate("/ContactPage")}>{t('nav.contact')}</a>
                   <a href="#" className="dropdown-item" onClick={() => handleNavigation("/Cart")}>{t('nav.cart')}</a>
                   <a href="#" className="dropdown-item" onClick={() => handleNavigation("/checkout")}>{t('nav.checkout')}</a>
                   <a href="#" className="dropdown-item" onClick={() => handleNavigation("/OrderList")}>{t('nav.orders')}</a>
-                  <a href="#compare" className="dropdown-item">{t('nav.compare')}</a>
+                  <a href="#" className="dropdown-item"onClick={()=>handleNavigation("/profile")}  >{t('nav.profile')}</a>
+{/*                   
                   <a href="#faq" className="dropdown-item">{t('nav.faq')}</a>
-                  <a href="/login" className="dropdown-item">{t('nav.login')}</a>
+                  <a href="/login" className="dropdown-item">{t('nav.login')}</a> */}
                 </div>
               </div>
 
-              <Nav.Link href="/offers" className="d-flex align-items-center gap-2 px-3 py-3">
+              <Nav.Link href="/offers" className="d-flex align-items-center gap-2 px-3 py-3 fw-bold">
                 <FaShoppingBag size={16} />
                 {t('nav.offers')}
               </Nav.Link>

@@ -1,0 +1,165 @@
+/* Existing AboutUs styles */
+.image-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Adjust spacing between main and smaller images */
+}
+
+.image-container {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.image-container img {
+  transition: transform 0.3s ease;
+  width: 100%; /* Ensure images fill their containers */
+}
+
+.image-container:hover img {
+  transform: scale(1.05);
+}
+
+.smaller-images {
+  display: flex;
+  flex-wrap: nowrap; /* Ensure images stay side by side */
+  gap: 15px; /* Spacing between smaller images */
+}
+
+.smaller-images .image-container {
+  flex: 1; /* Ensure both images take equal space */
+}
+
+.smaller-images .image-container img {
+  height: 200px; /* Fixed height for smaller images to match the design */
+  object-fit: cover; /* Maintain aspect ratio */
+  width: 100%; /* Ensure full width within container */
+}
+
+.main-image {
+  height: 400px; /* Fixed height for the main image to match the design */
+  object-fit: cover;
+}
+
+.content-section {
+  padding: 20px;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.same-size {
+  font-size: inherit;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.section-text {
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+/* Services Section styles */
+.services-section {
+  padding: 60px 0;
+}
+
+.text-success {
+  color: #5cac94 !important;
+}
+
+.section-subtitle {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.service-card {
+  border: 1px solid #e9e9e9;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.service-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.icon-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid #5cac94;
+  margin-bottom: 1rem;
+}
+
+.service-icon {
+  width: 30px;
+  height: 30px;
+  color: #5cac94;
+}
+
+.service-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.service-text {
+  color: #6c757d;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Team Section styles */
+.team-section {
+  padding: 60px 0;
+}
+
+.team-card {
+  transition: all 0.3s ease;
+  padding: 15px;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+}
+
+.team-image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.team-image {
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.team-image-container:hover .team-image {
+  transform: scale(1.05);
+}
+
+.team-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 10px 0 5px;
+  color: #333;
+}
+
+.team-position {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 10px;
+}

@@ -10,6 +10,9 @@ const resources = {
   en: {
     translation: translationEN
   },
+   "en-US": {
+    translation: translationEN
+  },
   ar: {
     translation: translationAR
   }
@@ -20,6 +23,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
+    lng: 'en',
     fallbackLng: 'en',
     debug: true,
     interpolation: {
@@ -32,3 +36,5 @@ i18n
   });
 
 export default i18n; 
+
+

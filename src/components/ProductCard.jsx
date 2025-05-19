@@ -103,14 +103,14 @@ const ProductCard = ({ product }) => {
   };
 
   const handleWishlistToggle = () => {
-    if (!user) {
-      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى المفضلة!" : "Please login to add items to wishlist!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      navigate("/login");
-      return;
-    }
+    // if (!user) {
+    //   toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى المفضلة!" : "Please login to add items to wishlist!", {
+    //     position: "top-right",
+    //     autoClose: 3000,
+    //   });
+    //   navigate("/login");
+    //   return;
+    // }
 
     if (isInWishlist) {
       if (user) {

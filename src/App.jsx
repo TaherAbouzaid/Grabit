@@ -30,6 +30,10 @@ import OrderList from "./componant/UserOrder/UserOrder";
 import ContactPage from "./componant/ContactUs/ContactUs";
 import OrdersTable from "./componant/UserHistory/UserHistory";
 import OffersPage from './pages/OffersPage';
+import BlogContent from "./componant/BlogContent/BlogContent";
+import BlogPage from "./componant/BlogPage/BlogPage";
+import AboutUs from "./componant/AboutUs/AboutUs";
+import SearchResults from "./componant/SearchResults/SearchResults";
 
 function App() {
   useEffect(() => {
@@ -76,6 +80,17 @@ function App() {
                 <Route path="/OrderTracker" element={<OrderTracker/>}/>
                 <Route path="/OrderList" element={<OrderList />} />
                 <Route path="/offers" element={<OffersPage />} />
+                <Route path="/category/:categoryId" element={<CategoryPage />} />
+                <Route path="/category/:categoryId/:subCategoryId" element={<CategoryPage />} />
+                <Route path="/category/:categoryId/:subCategoryId/:subSubCategoryId" element={<CategoryPage />} />
+                <Route path="/category" element={<CategoryPage/>} />
+                <Route path="/BlogPage" element={<BlogPage/>} />
+                <Route path="/BlogPage/:postId" element={<BlogContent/>} />
+                <Route path="/AboutUs" element={<AboutUs />} />
+                <Route path="/search" element={<SearchResults />} />
+
+
+
               </Routes>
             </main>
             <Footer/>

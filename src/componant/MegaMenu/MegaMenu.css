@@ -1,0 +1,111 @@
+
+.mega-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 0.375rem 0.375rem;
+  z-index: 1000;
+  padding: 0.5rem 0;
+  width: 100%; /* Respect Container */
+  max-width: 100%; /* Prevent overflow */
+}
+
+/* RTL support for Arabic */
+html[dir="rtl"] .mega-menu {
+  left: auto;
+  right: 0;
+}
+
+/* Column styles for desktop */
+.mega-menu h5 {
+  color: #5cac94;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.mega-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mega-menu ul li {
+  margin-bottom: 0.5rem;
+}
+
+.mega-menu ul li a {
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: block;
+}
+
+.mega-menu ul li a:hover {
+  color: #5cac94;
+}
+
+.mega-menu .mega-menu-col {
+  padding: 0 8px; /* Fit within Container */
+}
+
+/* Accordion styles for mobile */
+.mega-menu .accordion-header {
+  background-color: transparent;
+}
+
+.mega-menu .accordion-button {
+  color: #5cac94;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.mega-menu .accordion-button:not(.collapsed) {
+  color: #5cac94;
+  background-color: transparent;
+}
+
+.mega-menu .accordion-button:focus {
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.mega-menu .accordion-body {
+  padding: 0.5rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) { /* Below md */
+  .mega-menu {
+    position: static; /* Prevent absolute positioning issues */
+    padding: 0.25rem 0;
+  }
+
+  .mega-menu .mega-menu-col {
+    margin-bottom: 0.5rem;
+  }
+
+  .mega-menu .accordion-button {
+    font-size: 0.9rem;
+  }
+
+  .mega-menu ul li a {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 575.98px) { /* Below sm */
+  .mega-menu .mega-menu-col {
+    padding: 0 5px;
+  }
+
+  .mega-menu .accordion-button {
+    padding: 0.4rem 0;
+  }
+}
