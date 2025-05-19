@@ -10,11 +10,13 @@ import { fetchUserData } from "../../Store/Slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import { Country, State, City } from 'country-state-city';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { useTranslation } from 'react-i18next';
 
 export default function CheckoutPage() {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const cartState = useSelector(state => state.cart, shallowEqual);
   const productsState = useSelector(state => state.products, shallowEqual);
   const userState = useSelector(state => state.user, shallowEqual);
@@ -346,7 +348,7 @@ export default function CheckoutPage() {
   ];
 
   if (cartLoading || userLoading || productsLoading) {
-    return <Container fluid className="py-4 bg-white"><div>Loading...</div></Container>;
+    return <Container fluid className="py-4 bg-white"><div>{t('common.loading')}</div></Container>;
   }
 
   if (cartError || userError || productsError) {
@@ -354,11 +356,11 @@ export default function CheckoutPage() {
   }
 
   if (!user) {
-    return <Container fluid className="py-4 bg-white"><div>Please log in to proceed.</div></Container>;
+    return <Container fluid className="py-4 bg-white"><div>{t('checkout.loginRequired')}</div></Container>;
   }
 
   if (!cart || !cart.products || cart.products.length === 0) {
-    return <Container fluid className="py-4 bg-white"><div>Your cart is empty.</div></Container>;
+    return <Container fluid className="py-4 bg-white"><div>{t('cart.empty')}</div></Container>;
   }
 
   return (
@@ -376,29 +378,29 @@ export default function CheckoutPage() {
               <Col md={5}>
                 <Card className="border-0 mb-4 shadow-sm rounded-4">
                   <Card.Body>
-                    <h3 className="mb-4 text-secondary fw-normal">Summary</h3>
+                    <h3 className="mb-4 text-secondary fw-normal">{t('checkout.orderSummary')}</h3>
                     <ListGroup variant="flush">
                       <ListGroup.Item className="d-flex justify-content-between py-3 px-0 border-bottom">
-                        <span>Sub-Total</span>
+                        <span>{t('common.subtotal')}</span>
                         <span className="fw-bold">${total.toFixed(2)}</span>
                       </ListGroup.Item>
                       <ListGroup.Item className="d-flex justify-content-between py-3 px-0 border-bottom">
-                        <span>Delivery Charges</span>
+                        <span>{t('common.shipping')}</span>
                         <span className="fw-bold">${deliveryCharges.toFixed(2)}</span>
                       </ListGroup.Item>
                       <ListGroup.Item className="d-flex justify-content-between py-3 px-0 border-bottom">
-                        <span>Discount</span>
+                        <span>{t('common.vat')}</span>
                         <span className="fw-bold">${discount.toFixed(2)}</span>
                       </ListGroup.Item>
                       <ListGroup.Item className="d-flex justify-content-between py-3 px-0 border-bottom">
-                        <span>Coupon Discount</span>
+                        <span>{t('common.couponDiscount')}</span>
                         <Button variant="link" className="text-success p-0">
-                          Apply Discount
+                          {t('checkout.applyDiscount')}
                         </Button>
                       </ListGroup.Item>
                     </ListGroup>
                     <div className="d-flex justify-content-between mt-3 mb-4 pt-3">
-                      <h5 className="fw-normal">Total Amount</h5>
+                      <h5 className="fw-normal">{t('common.totalAmount')}</h5>
                       <h5 className="fw-bold">${totalAmount.toFixed(2)}</h5>
                     </div>
 
@@ -422,9 +424,9 @@ export default function CheckoutPage() {
 
                 <Card className="mb-4 shadow-sm rounded-4">
                   <Card.Body>
-                    <h5 className="fw-bold">Delivery Method</h5>
+                    <h5 className="fw-bold">{t('checkout.deliveryMethod')}</h5>
                     <p className="text-muted">
-                      Please select the preferred shipping method to use on this order.
+                      {t('checkout.deliveryMethodDescription')}
                     </p>
                     <Form>
                       {shippingMethods.map((method, index) => (
@@ -441,12 +443,12 @@ export default function CheckoutPage() {
                       ))}
                       <Form.Group controlId="deliveryComments" className="mt-3">
                         <Form.Label className="fw-semibold">
-                          Add Comments About Your Order
+                          {t('checkout.deliveryComments')}
                         </Form.Label>
                         <Form.Control
                           as="textarea"
                           rows={3}
-                          placeholder="Comments"
+                          placeholder={t('checkout.deliveryCommentsPlaceholder')}
                         />
                       </Form.Group>
                     </Form>
@@ -455,9 +457,9 @@ export default function CheckoutPage() {
 
                 <Card className="shadow-sm rounded-4">
                   <Card.Body>
-                    <h5 className="fw-bold">Payment Method</h5>
+                    <h5 className="fw-bold">{t('checkout.paymentMethod')}</h5>
                     <p className="text-muted">
-                      Please select the preferred payment method to use on this order.
+                      {t('checkout.paymentMethodDescription')}
                     </p>
                     <Form>
                       {paymentMethods.map((method, index) => (
@@ -555,12 +557,12 @@ export default function CheckoutPage() {
                       )}
                       <Form.Group controlId="paymentComments" className="mt-3">
                         <Form.Label className="fw-semibold">
-                          Add Comments About Your Order
+                          {t('checkout.paymentComments')}
                         </Form.Label>
                         <Form.Control
                           as="textarea"
                           rows={3}
-                          placeholder="Comments"
+                          placeholder={t('checkout.paymentCommentsPlaceholder')}
                         />
                       </Form.Group>
 
@@ -569,8 +571,7 @@ export default function CheckoutPage() {
                         id="terms"
                         label={
                           <>
-                            I have read and agree to the{" "}
-                            <span className="fw-bold">Terms & Conditions</span>.
+                            {t('checkout.terms')}
                           </>
                         }
                         className="mt-3"
@@ -583,8 +584,8 @@ export default function CheckoutPage() {
               <Col md={7}>
                 <Card className="border-0 mb-4 shadow-sm rounded-4">
                   <Card.Body>
-                    <h3 className="mb-4 text-secondary fw-normal">Billing Details</h3>
-                    <h5 className="mb-3 text-secondary">Checkout Options</h5>
+                    <h3 className="mb-4 text-secondary fw-normal">{t('checkout.billingDetails')}</h3>
+                    <h5 className="mb-3 text-secondary">{t('checkout.checkoutOptions')}</h5>
 
                     <Form onSubmit={addressOption === "new" ? handleAddAddress : handleSubmit}>
                       <div className="mb-4">
@@ -593,7 +594,7 @@ export default function CheckoutPage() {
                           type="radio"
                           id="existing-address"
                           name="addressOption"
-                          label="I want to use an existing address"
+                          label={t('checkout.existingAddress')}
                           checked={addressOption === "existing"}
                           onChange={() => setAddressOption("existing")}
                           className="me-4"
@@ -604,7 +605,7 @@ export default function CheckoutPage() {
                           type="radio"
                           id="new-address"
                           name="addressOption"
-                          label="I want to use new address"
+                          label={t('checkout.newAddress')}
                           checked={addressOption === "new"}
                           onChange={() => setAddressOption("new")}
                         />
@@ -619,7 +620,7 @@ export default function CheckoutPage() {
 
                       {addressOption === "existing" && userData?.address?.length > 0 ? (
                         <div className="mb-4">
-                          <h6>Select an Address</h6>
+                          <h6>{t('checkout.selectAddress')}</h6>
                           {userData.address.map((address, index) => (
                             <Card key={index} className="mb-2 shadow-sm">
                               <Card.Body className="d-flex align-items-center">
@@ -634,55 +635,50 @@ export default function CheckoutPage() {
                                    <div className="d-flex flex-row justify-content-around w-100">
                                   <div>
                                     <div className="d-flex align-items-center">
-                                      <p className="fw-bold">Name : </p> <p> {userData.fullName}</p>
+                                      <p className="fw-bold">{t('checkout.name')}: </p> <p> {userData.fullName}</p>
                                     </div>
                                     <div className="d-flex align-items-center">
-                                      <p className="fw-bold">Address : </p>
+                                      <p className="fw-bold">{t('checkout.address')}: </p>
                                        <p> {address.street} </p>
                                     </div>
                                     <div className="d-flex align-items-center">
-                                      <p className="fw-bold">Postal Code : </p>
+                                      <p className="fw-bold">{t('checkout.postalCode')}: </p>
                                        <p>{address.postalCode}</p>
                                     </div>
                                   </div>
                                   <div>
                                     <div className="d-flex align-items-center">
-                                      <p className="fw-bold">Country: </p>
+                                      <p className="fw-bold">{t('checkout.country')}: </p>
                                      <p>{address.country}</p>
                                        </div>
                                     <div className="d-flex align-items-center">
-                                      <p className="fw-bold">State:</p> 
+                                      <p className="fw-bold">{t('checkout.state')}:</p> 
                                        <p>{address.regionState}</p>
                                     </div>
                                     <div className="d-flex align-items-center">
-                                      <p className="fw-bold">City: </p>
+                                      <p className="fw-bold">{t('checkout.city')}: </p>
                                        <p>{address.city}</p>
                                     </div>
                                   </div>
-                                  {/* <div>{userData.fullName}</div>
-                                  <div>{address.street}</div>
-                                  <div>{`${address.city}, ${address.regionState}, ${address.country}`}</div>
-                                  <div>{`Postal Code: ${address.postalCode}`}</div>
-                                   */}
                                 </div>
                               </Card.Body>
                             </Card>
                           ))}
                         </div>
                       ) : addressOption === "existing" ? (
-                        <div className="text-muted mb-4">No saved addresses found.</div>
+                        <div className="text-muted mb-4">{t('checkout.noSavedAddresses')}</div>
                       ) : (
                         <>
                           <Row className="mb-3">
                             <Col md={6}>
                               <Form.Group className="mb-3">
-                                <Form.Label>First Name*</Form.Label>
+                                <Form.Label>{t('checkout.firstName')}</Form.Label>
                                 <Form.Control
                                   type="text"
                                   name="firstName"
                                   value={formData.firstName}
                                   onChange={handleInputChange}
-                                  placeholder="Enter your first name"
+                                  placeholder={t('checkout.firstNamePlaceholder')}
                                   isInvalid={!!formErrors.firstName}
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -692,13 +688,13 @@ export default function CheckoutPage() {
                             </Col>
                             <Col md={6}>
                               <Form.Group className="mb-3">
-                                <Form.Label>Last Name*</Form.Label>
+                                <Form.Label>{t('checkout.lastName')}</Form.Label>
                                 <Form.Control
                                   type="text"
                                   name="lastName"
                                   value={formData.lastName}
                                   onChange={handleInputChange}
-                                  placeholder="Enter your last name"
+                                  placeholder={t('checkout.lastNamePlaceholder')}
                                   isInvalid={!!formErrors.lastName}
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -709,13 +705,13 @@ export default function CheckoutPage() {
                           </Row>
 
                           <Form.Group className="mb-3">
-                            <Form.Label>Address*</Form.Label>
+                            <Form.Label>{t('checkout.address')}</Form.Label>
                             <Form.Control
                               type="text"
                               name="street"
                               value={formData.street}
                               onChange={handleInputChange}
-                              placeholder="Address Line 1"
+                              placeholder={t('checkout.addressPlaceholder')}
                               isInvalid={!!formErrors.street}
                             />
                             <Form.Control.Feedback type="invalid">
@@ -726,7 +722,7 @@ export default function CheckoutPage() {
                           <Row className="mb-3">
                             <Col md={6}>
                               <Form.Group className="mb-3">
-                                <Form.Label>Country*</Form.Label>
+                                <Form.Label>{t('checkout.country')}</Form.Label>
                                 <Form.Control
                                   as="select"
                                   name="country"
@@ -739,7 +735,7 @@ export default function CheckoutPage() {
                                   }}
                                   isInvalid={!!formErrors.country}
                                 >
-                                  <option value="">Select Country</option>
+                                  <option value="">{t('checkout.selectCountry')}</option>
                                   {countries.map((country) => (
                                     <option key={country.isoCode} value={country.isoCode}>
                                       {country.name}
@@ -753,7 +749,7 @@ export default function CheckoutPage() {
                             </Col>
                             <Col md={6}>
                               <Form.Group className="mb-3">
-                                <Form.Label>Region/State*</Form.Label>
+                                <Form.Label>{t('checkout.regionState')}</Form.Label>
                                 <Form.Control
                                   as="select"
                                   name="regionState"
@@ -766,7 +762,7 @@ export default function CheckoutPage() {
                                   disabled={!selectedCountry}
                                   isInvalid={!!formErrors.regionState}
                                 >
-                                  <option value="">Select your state</option>
+                                  <option value="">{t('checkout.selectState')}</option>
                                   {states.map((state) => (
                                     <option key={state.isoCode} value={state.isoCode}>
                                       {state.name}
@@ -783,7 +779,7 @@ export default function CheckoutPage() {
                           <Row className="mb-3">
                             <Col md={6}>
                               <Form.Group className="mb-3">
-                                <Form.Label>City*</Form.Label>
+                                <Form.Label>{t('checkout.city')}</Form.Label>
                                 <Form.Control
                                   as="select"
                                   name="city"
@@ -795,7 +791,7 @@ export default function CheckoutPage() {
                                   disabled={!cities.length}
                                   isInvalid={!!formErrors.city}
                                 >
-                                  <option value="">Select your city</option>
+                                  <option value="">{t('checkout.selectCity')}</option>
                                   {cities.map((city) => (
                                     <option key={city.name} value={city.name}>
                                       {city.name}
@@ -809,13 +805,13 @@ export default function CheckoutPage() {
                             </Col>
                             <Col md={6}>
                               <Form.Group className="mb-3">
-                                <Form.Label>Postal Code*</Form.Label>
+                                <Form.Label>{t('checkout.postalCode')}</Form.Label>
                                 <Form.Control
                                   type="text"
                                   name="postalCode"
                                   value={formData.postalCode}
                                   onChange={handleInputChange}
-                                  placeholder="Postal Code"
+                                  placeholder={t('checkout.postalCodePlaceholder')}
                                   isInvalid={!!formErrors.postalCode}
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -835,7 +831,7 @@ export default function CheckoutPage() {
                             className="px-4 py-2 me-2"
                             disabled={isSubmitting}
                           >
-                            {isSubmitting ? "Adding..." : "Add Address"}
+                            {isSubmitting ? t('checkout.adding') : t('checkout.addAddress')}
                           </Button>
                         ) : (
                           <Button
@@ -844,7 +840,7 @@ export default function CheckoutPage() {
                             className="px-4 py-2"
                             disabled={isSubmitting || selectedPaymentMethod === "paypal" || selectedAddress === null}
                           >
-                            {isSubmitting ? "Processing..." : "Place Order"}
+                            {isSubmitting ? t('checkout.processing') : t('checkout.placeOrder')}
                           </Button>
                         )}
                       </div>

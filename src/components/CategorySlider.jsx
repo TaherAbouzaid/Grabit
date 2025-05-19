@@ -4,6 +4,7 @@ import CategoryCard from "./CategoryCard";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { Container, Spinner } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -19,22 +20,19 @@ const CategorySlider = () => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showSlider, setShowSlider] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategoriesAndProducts = async () => {
       setIsLoading(true);
       setShowSlider(false);
       try {
-     
         const categoriesSnapshot = await getDocs(collection(db, "categories"));
         const categoriesData = categoriesSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
 
-        console.log('Categories from collection:', categoriesData.map(cat => cat.name.en.trim().toLowerCase()));
-
-     
         const productsSnapshot = await getDocs(collection(db, "allproducts"));
         const products = productsSnapshot.docs.map(doc => doc.data());
     
@@ -46,9 +44,6 @@ const CategorySlider = () => {
           return true;
         });
     
-        console.log('Categories from products (filtered):', filteredProducts.map(p => p.categoryId));
-
-     
         const categoryCounts = {};
         filteredProducts.forEach(product => {
           let catId = null;
@@ -61,12 +56,9 @@ const CategorySlider = () => {
               catId = product.categoryId.id.toString().trim();
             }
           }
-          console.log('Resolved catId:', catId, 'from', product.categoryId);
           if (!catId) return;
           categoriesData.forEach(cat => {
             const categoryId = cat.id.toString().trim();
-      
-            console.log('Comparing product.categoryId:', catId, 'with category.id:', categoryId);
             if (catId === categoryId) {
               if (!categoryCounts[catId]) categoryCounts[catId] = 0;
               categoryCounts[catId]++;
@@ -74,14 +66,13 @@ const CategorySlider = () => {
           });
         });
 
-        
         const cats = categoriesData.map(cat => ({
+          id: cat.id,
           key: iconMap[cat.name.en] || "other",
           title: cat.name.en,
           count: categoryCounts[cat.id] || 0,
           discount: Math.floor(Math.random() * 30) + 10,
         }));
-        console.log('Final categories with counts:', cats);
         setCategories(cats);
       } catch (error) {
         console.error("Error fetching categories or products:", error);
@@ -93,8 +84,12 @@ const CategorySlider = () => {
     fetchCategoriesAndProducts();
   }, []);
 
+  const handleCategoryClick = (category) => {
+    const categorySlug = category.title.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/shop`);
+  };
+
   const settings = {
-    // dots: true,
     infinite: true,
     slidesToShow: 4,
     slidesToScroll: 1,
@@ -143,8 +138,13 @@ const CategorySlider = () => {
         ) : (
           <Slider {...settings}>
             {categories.map((cat, idx) => (
-              <div key={cat.key + idx} className="p-2">
-                <CategoryCard category={cat.key} title={cat.title} count={cat.count} discount={cat.discount} />
+              <div key={cat.key + idx} className="p-2" onClick={() => handleCategoryClick(cat)}>
+                <CategoryCard 
+                  category={cat.key} 
+                  title={cat.title} 
+                  count={cat.count} 
+                  discount={cat.discount}
+                />
               </div>
             ))}
           </Slider>

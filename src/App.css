@@ -1,2 +1,4 @@
-@import '~bootstrap/scss/bootstrap';
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Rest of your CSS */
 

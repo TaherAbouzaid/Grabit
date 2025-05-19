@@ -173,7 +173,7 @@ const OrderList = () => {
         <Button
           variant="success"
           className="shop-now-button"
-          onClick={() => navigate("/products")}
+          onClick={() => navigate("/shop")}
         >
           Shop Now
         </Button>

@@ -56,7 +56,6 @@ const DiscountedProductsSlider = () => {
   }, []);
 
   const settings = {
-    dots: true,
     infinite: true,
     slidesToShow: 5,
     slidesToScroll: 1,

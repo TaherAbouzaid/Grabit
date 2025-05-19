@@ -10,13 +10,11 @@ import TwoBanners from "../components/TwoBanners";
 import FeaturesRow from "../components/FeaturesRow";
 import ProductsShowcaseSection from "../components/ProductsShowcaseSection";
 import CategorySlider from "../components/CategorySlider";
-import { Link } from "react-router-dom";
-// import ProductContainer from "../components/ProductContainer";
+// import ProductContainer from '../components/ProductContainer';
+
 const Home = () => {
   return (
     <>
-    <Link to="/shop">shop
-    </Link>
       <HeroSlider />
       <CategorySlider />
       <DealendTimer />
@@ -24,9 +22,9 @@ const Home = () => {
       <Banner />
       <NewArrivals />
       <TwoBanners />
-    <FeaturesRow/>
-    <ProductsShowcaseSection />
-    {/* <ProductContainer /> */}
+      <FeaturesRow/>
+      <ProductsShowcaseSection />
+      {/* <ProductContainer /> */}
     </>
   );
 };

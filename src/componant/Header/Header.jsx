@@ -14,6 +14,8 @@ import { fetchCart, updateCartQuantity, removeFromCart } from '../../Store/Slice
 import { fetchUserData } from '../../Store/Slices/userSlice';
 import { fetchProducts } from '../../Store/Slices/productsSlice';
 import MegaMenu from "../MegaMenu/MegaMenu";
+import { useLanguage } from '../../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 function Header() {
   const { user, logout } = useAuth();
@@ -24,7 +26,8 @@ function Header() {
   const { items: wishlistItems } = useSelector(state => state.wishlist);
   const { userData } = useSelector(state => state.user);
   const { items: products, loading: productLoading } = useSelector(state => state.products);
-
+  const { toggleLanguage, currentLanguage } = useLanguage();
+  const { t } = useTranslation();
 
   // Debug cart and products
   useEffect(() => {
@@ -123,14 +126,17 @@ function Header() {
               <span>+20 1033 333 44</span>
             </div>
           </div>
-          <div className="text-center small">World's Fastest Online Shopping Destination</div>
+          <div className="text-center small">{t('common.worldsFastest')}</div>
           <div className="d-flex gap-3">
-            <a href="#help" className="text-secondary text-decoration-none">Help?</a>
-            <a href="#track-order" className="text-secondary text-decoration-none">Track Order</a>
-            <NavDropdown title="English" id="language-dropdown" className="hover-dropdown text-secondary">
-              <NavDropdown.Item>English</NavDropdown.Item>
-              <NavDropdown.Item>العربية</NavDropdown.Item>
-            </NavDropdown>
+            <a href="#help" className="text-secondary text-decoration-none">{t('nav.help')}</a>
+            <a href="#track-order" className="text-secondary text-decoration-none">{t('nav.trackOrder')}</a>
+            <Button 
+              variant="link" 
+              className="text-secondary p-0 hover-dropdown"
+              onClick={toggleLanguage}
+            >
+              {currentLanguage === 'en' ? 'العربية' : 'English'}
+            </Button>
             <NavDropdown title="Dollar" id="currency-dropdown" className="hover-dropdown text-secondary">
               <NavDropdown.Item>USD ($)</NavDropdown.Item>
               <NavDropdown.Item>EGP (ج.م)</NavDropdown.Item>
@@ -156,7 +162,7 @@ function Header() {
             <InputGroup className="search-bar-group">
               <Form.Control
                 type="text"
-                placeholder="Search Products..."
+                placeholder={t('common.search')}
                 onChange={handleSearchChange}
                 className="search-input"
               />
@@ -179,18 +185,18 @@ function Header() {
               >
                 <BiUser size={24} />
                 <div className="small">{getDisplayName()}</div>
-                <div className="small fw-bold">{user ? "LOGOUT" : "LOGIN"}</div>
+                <div className="small fw-bold">{user ? t('nav.logout') : t('nav.login')}</div>
               </a>
               <div className="user-dropdown">
                 {user ? (
                   <>
-                    <a href="/OrderList" className="dropdown-item" onClick={() => handleNavigation("/OrderList")}>Orders</a>
-                    <a href="#" className="dropdown-item" onClick={logout}>Logout</a>
+                    <a href="/OrderList" className="dropdown-item" onClick={() => handleNavigation("/OrderList")}>{t('nav.orders')}</a>
+                    <a href="#" className="dropdown-item" onClick={logout}>{t('nav.logout')}</a>
                   </>
                 ) : (
                   <>
-                    <a href="/register" className="dropdown-item">Register</a>
-                    <a href="/login" className="dropdown-item">LogIn</a>
+                    <a href="/register" className="dropdown-item">{t('nav.register')}</a>
+                    <a href="/login" className="dropdown-item">{t('nav.login')}</a>
                   </>
                 )}
               </div>
@@ -210,8 +216,8 @@ function Header() {
                     {wishlistItems?.length || 0}
                   </Badge>
                 </div>
-                <div className="small">Wishlist</div>
-                <div className="small fw-bold">{wishlistItems?.length || 0} ITEMS</div>
+                <div className="small">{t('nav.wishlist')}</div>
+                <div className="small fw-bold">{wishlistItems?.length || 0} {t('common.items')}</div>
               </a>
             </div>
 
@@ -223,8 +229,8 @@ function Header() {
                     {cartItems?.products?.length || 0}
                   </Badge>
                 </div>
-                <div className="small">Cart</div>
-                <div className="small fw-bold">{cartItems?.products?.length || 0} ITEMS</div>
+                <div className="small">{t('nav.cart')}</div>
+                <div className="small fw-bold">{cartItems?.products?.length || 0} {t('common.items')}</div>
               </a>
             </div>
           </div>
@@ -240,14 +246,14 @@ function Header() {
               style={{ backgroundColor: "#5cac94", color: "#fff", fontWeight: "500", fontSize: "18px" }}
             >
               <FaThLarge className="text-white" />
-              All Categories
+              {t('nav.allCategories')}
             </Button>
             <div className="dropdown-menu position-absolute mt-0">
-              <a href="#fruits" className="dropdown-item">Fruits</a>
-              <a href="#vegetables" className="dropdown-item">Vegetables</a>
-              <a href="#meat" className="dropdown-item">Meat & Seafood</a>
-              <a href="#drinks" className="dropdown-item">Drinks</a>
-              <a href="#snacks" className="dropdown-item">Snacks</a>
+              <a href="#fruits" className="dropdown-item">{t('categories.fruits')}</a>
+              <a href="#vegetables" className="dropdown-item">{t('categories.vegetables')}</a>
+              <a href="#meat" className="dropdown-item">{t('categories.meat')}</a>
+              <a href="#drinks" className="dropdown-item">{t('categories.drinks')}</a>
+              <a href="#snacks" className="dropdown-item">{t('categories.snacks')}</a>
             </div>
           </div>
 
@@ -256,51 +262,51 @@ function Header() {
             <Nav className="mx-auto">
               <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
                 <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom">
-                  Home <span className="dropdown-arrow">▼</span>
+                  {t('nav.home')} <span className="dropdown-arrow">▼</span>
                 </span>
                 <div className="dropdown-menu position-absolute">
-                  <a href="#home1" className="dropdown-item">Grocery</a>
-                  <a href="#home2" className="dropdown-item">Fashion</a>
-                  <a href="#home2" className="dropdown-item">Fashion 2</a>
+                  <a href="#home1" className="dropdown-item">{t('categories.grocery')}</a>
+                  <a href="#home2" className="dropdown-item">{t('categories.fashion')}</a>
+                  <a href="#home2" className="dropdown-item">{t('categories.fashion2')}</a>
                 </div>
               </div>
 
               <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
                 <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom">
-                  Categories <FaAngleDown size={12} />
+                  {t('nav.categories')} <FaAngleDown size={12} />
                 </span>
                 <MegaMenu />
               </div>
 
               <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
                 <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom">
-                  Blog <FaAngleDown size={12} /> 
+                  {t('nav.blog')} <FaAngleDown size={12} /> 
                 </span >
                 <div className="dropdown-menu position-absolute">
-                  <a href="#blog1" className="dropdown-item">Latest Posts</a>
-                  <a href="#blog2" className="dropdown-item">Tips & Tricks</a>
+                  <a href="#blog1" className="dropdown-item">{t('blog.latestPosts')}</a>
+                  <a href="#blog2" className="dropdown-item">{t('blog.tipsAndTricks')}</a>
                 </div>
               </div>
 
               <div className="hover-dropdown px-3 py-3 position-relative nav-item-with-dropdown">
                 <span className="nav-link d-flex align-items-center gap-1 text-dark dropdown-toggle-custom">
-                  Pages <FaAngleDown size={12} />
+                  {t('nav.pages')} <FaAngleDown size={12} />
                 </span>
                 <div className="dropdown-menu position-absolute">
-                  <a href="#about" className="dropdown-item">About Us</a>
-                  <a href="#contact" className="dropdown-item" onClick={() => handleNavigation("/ContactPage")}>Contact Us</a>
-                  <a href="#" className="dropdown-item" onClick={() => handleNavigation("/Cart")}>Cart</a>
-                  <a href="#" className="dropdown-item" onClick={() => handleNavigation("/checkout")}>Checkout</a>
-                  <a href="#" className="dropdown-item" onClick={() => handleNavigation("/OrderList")}>Orders</a>
-                  <a href="#compare" className="dropdown-item">Compare</a>
-                  <a href="#faq" className="dropdown-item">FAQ</a>
-                  <a href="/login" className="dropdown-item">Login</a>
+                  <a href="#about" className="dropdown-item">{t('nav.about')}</a>
+                  <a href="#contact" className="dropdown-item" onClick={() => handleNavigation("/ContactPage")}>{t('nav.contact')}</a>
+                  <a href="#" className="dropdown-item" onClick={() => handleNavigation("/Cart")}>{t('nav.cart')}</a>
+                  <a href="#" className="dropdown-item" onClick={() => handleNavigation("/checkout")}>{t('nav.checkout')}</a>
+                  <a href="#" className="dropdown-item" onClick={() => handleNavigation("/OrderList")}>{t('nav.orders')}</a>
+                  <a href="#compare" className="dropdown-item">{t('nav.compare')}</a>
+                  <a href="#faq" className="dropdown-item">{t('nav.faq')}</a>
+                  <a href="/login" className="dropdown-item">{t('nav.login')}</a>
                 </div>
               </div>
 
-              <Nav.Link href="#offers" className="d-flex align-items-center gap-2 px-3 py-3">
+              <Nav.Link href="/offers" className="d-flex align-items-center gap-2 px-3 py-3">
                 <FaShoppingBag size={16} />
-                Offers
+                {t('nav.offers')}
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
@@ -310,13 +316,13 @@ function Header() {
       {/* Cart Offcanvas */}
       <Offcanvas show={showCart} onHide={handleClose} placement="end">
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>My Cart</Offcanvas.Title>
+          <Offcanvas.Title>{t('nav.cart')}</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <div className="d-flex flex-column h-100">
             <div className="mb-5 flex-grow-1">
               {cartLoading || productLoading ? (
-                <div className="text-center">Loading cart...</div>
+                <div className="text-center">{t('common.loading')}</div>
               ) : cartItems?.products?.length > 0 ? (
                 cartItems.products.map((item, idx) => {
                   const product = products.find(p => p.id === item.productId);
@@ -332,7 +338,7 @@ function Header() {
                         />
                       </Col>
                       <Col xs={6}>
-                        <h5>{product?.title?.en || "Unknown Product"}</h5>
+                        <h5>{product?.title?.en || t('common.unknownProduct')}</h5>
                         <h6>${item.ItemsPrice.toFixed(2)}</h6>
                         <div className="d-flex align-items-center">
                           <Button
@@ -371,22 +377,22 @@ function Header() {
                   );
                 })
               ) : (
-                <div className="text-center text-muted">Your cart is empty.</div>
+                <div className="text-center text-muted">{t('cart.empty')}</div>
               )}
             </div>
 
             <div className="p-3">
               <hr />
               <div className="d-flex justify-content-between mb-2">
-                <span>Sub-Total</span>
+                <span>{t('common.subtotal')}</span>
                 <span>${subTotal.toFixed(2)}</span>
               </div>
               <div className="d-flex justify-content-between mb-2">
-                <span>VAT (20%)</span>
+                <span>{t('common.vat')}</span>
                 <span>${vat.toFixed(2)}</span>
               </div>
               <div className="d-flex justify-content-between fw-bold">
-                <span>Total Amount</span>
+                <span>{t('common.totalAmount')}</span>
                 <span>${total.toFixed(2)}</span>
               </div>
               <div className="mt-3 d-flex justify-content-between">
@@ -396,7 +402,7 @@ function Header() {
                   variant="secondary"
                   onClick={() => handleNavigation("/cart")}
                 >
-                  View Cart
+                  {t('nav.viewCart')}
                 </Button>
                 <Button
                   size="lg"
@@ -405,7 +411,7 @@ function Header() {
                   onClick={goToCheckout}
                   disabled={!cartItems?.products?.length || cartLoading}
                 >
-                  Check Out
+                  {t('nav.checkout')}
                 </Button>
               </div>
             </div>

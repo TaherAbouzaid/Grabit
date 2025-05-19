@@ -56,4 +56,69 @@
     animation: fadeinUp 2s  ease-in-out;
 }
 
+/* RTL Support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .me-2 {
+  margin-right: 0 !important;
+  margin-left: 0.5rem !important;
+}
+
+[dir="rtl"] .me-3 {
+  margin-right: 0 !important;
+  margin-left: 1rem !important;
+}
+
+[dir="rtl"] .ms-2 {
+  margin-left: 0 !important;
+  margin-right: 0.5rem !important;
+}
+
+[dir="rtl"] .ms-3 {
+  margin-left: 0 !important;
+  margin-right: 1rem !important;
+}
+
+[dir="rtl"] .ps-2 {
+  padding-right: 0.5rem !important;
+  padding-left: 0 !important;
+}
+
+[dir="rtl"] .pe-2 {
+  padding-left: 0.5rem !important;
+  padding-right: 0 !important;
+}
+
+[dir="rtl"] .dropdown-menu {
+  text-align: right;
+}
+
+[dir="rtl"] .form-check {
+  padding-right: 1.5rem;
+  padding-left: 0;
+}
+
+[dir="rtl"] .form-check-input {
+  margin-right: -1.5rem;
+  margin-left: 0;
+}
+
+[dir="rtl"] .input-group > .form-control {
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+[dir="rtl"] .input-group > .btn {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+[dir="rtl"] .input-group > .form-control:not(:last-child) {
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+[dir="rtl"] .input-group > .form-control:not(:first-child) {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
 

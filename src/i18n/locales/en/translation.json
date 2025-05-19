@@ -1,0 +1,14 @@
+{
+  "offers": {
+    "title": "Special Offers",
+    "subtitle": "Discover our latest deals and special promotions",
+    "noOffers": "No active offers at the moment",
+    "endsIn": "Ends in",
+    "validUntil": "Valid until",
+    "addToCart": "Add to Cart"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred"
+  }
+} 

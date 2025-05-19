@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { fetchProductById } from "../services/productService";
+import { useAuth } from "../context/AuthContext";
+import { useDispatch, useSelector } from 'react-redux';
+import { addReview, getProductReviews } from '../Store/Slices/reviewSlice';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const NextArrow = (props) => (
   <div
@@ -42,17 +47,29 @@ const PrevArrow = (props) => (
 
 const ProductPage = () => {
   const { productId } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mainImg, setMainImg] = useState("");
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedAttributes, setSelectedAttributes] = useState({});
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const reviews = useSelector(state => state.reviews.items);
+  const reviewsLoading = useSelector(state => state.reviews.loading);
 
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
+        console.log('Fetching product with ID:', productId);
         const productData = await fetchProductById(productId);
+        console.log('Fetched product data:', productData);
+        
         if (productData) {
           setProduct(productData);
           
@@ -72,6 +89,7 @@ const ProductPage = () => {
             setMainImg(productData.mainImage);
           }
         } else {
+          console.log('No product data found for ID:', productId);
           setProduct(null);
         }
       } catch (error) {
@@ -82,7 +100,9 @@ const ProductPage = () => {
     };
 
     fetchProduct();
-  }, [productId]);
+    console.log('Dispatching getProductReviews for ID:', productId);
+    dispatch(getProductReviews(productId));
+  }, [productId, dispatch]);
 
   // Get available values for an attribute based on current selections
   const getAvailableAttributeValues = (attributeKey) => {
@@ -181,6 +201,79 @@ const ProductPage = () => {
     return getAvailableAttributeValues(attributeKey).includes(attributeValue);
   };
 
+  const handleReviewSubmit = async () => {
+    if (!user) {
+      toast.error("Please login to write a review!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      navigate("/login");
+      return;
+    }
+
+    if (rating === 0) {
+      toast.error("Please select a rating!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    if (!review.trim()) {
+      toast.error("Please write a review!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      await dispatch(addReview({
+        productId,
+        userId: user.uid,
+        userName: user.displayName || user.email?.split('@')[0] || 'User',
+        rating,
+        comment: review.trim()
+      })).unwrap();
+
+      toast.success("Review submitted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setShowReviewForm(false);
+      setRating(0);
+      setReview("");
+    } catch (error) {
+      toast.error("Failed to submit review. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const renderReviewStars = (rating, isInteractive = false) => {
+    return (
+      <div className="d-flex align-items-center">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <FaStar
+            key={star}
+            className={isInteractive ? "cursor-pointer" : ""}
+            style={{
+              color: star <= (isInteractive ? (hoveredRating || rating) : rating) ? "#f8bf87" : "#ccc",
+              fontSize: isInteractive ? "1.5rem" : "1rem",
+              marginRight: "2px",
+              cursor: isInteractive ? "pointer" : "default",
+              transition: "color 0.2s ease"
+            }}
+            onClick={() => isInteractive && setRating(star)}
+            onMouseEnter={() => isInteractive && setHoveredRating(star)}
+            onMouseLeave={() => isInteractive && setHoveredRating(0)}
+          />
+        ))}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="text-center my-5">
@@ -238,6 +331,7 @@ const ProductPage = () => {
 
   return (
     <div className="container my-5">
+      <ToastContainer />
       <div className="row g-4 align-items-start">
         <div className="col-12 col-md-6 col-lg-6">
           <div
@@ -338,10 +432,8 @@ const ProductPage = () => {
                         MozUserSelect: "none",
                         msUserSelect: "none",
                         WebkitTouchCallout: "none",
-                        WebkitTapHighlightColor: "rgba(0,0,0,0)",
-                        WebkitTapHighlightColor: "transparent",
                         WebkitUserDrag: "none",
-                        KhtmlUserSelect: "none",
+                        KhtmlUserSelect: "none"
                       }}
                       onMouseDown={(e) => e.preventDefault()}
                     />
@@ -367,10 +459,15 @@ const ProductPage = () => {
               {[1,2,3,4,5].map(i => (
                 <FaStar
                   key={i}
-                  color={i <= Math.round(product.ratingSummary?.average || 0) ? "#f8bf87" : "#ccc"}
+                  color={i <= Math.round(product?.ratingSummary?.average || 0) ? "#f8bf87" : "#ccc"}
                   style={{ marginRight: 2 }}
                 />
               ))}
+              {product?.ratingSummary?.count > 0 && (
+                <small className="text-muted ms-2">
+                  ({product.ratingSummary.count} reviews)
+                </small>
+              )}
             </div>
 
             <div style={{ margin: "15px 0", fontSize: 22, fontWeight: 700 }}>
@@ -469,6 +566,102 @@ const ProductPage = () => {
             >
               Add to Cart
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="row mt-5">
+        <div className="col-12">
+          <div className="card">
+            <div className="card-body">
+              <h3 className="card-title mb-4">Customer Reviews</h3>
+              
+              {/* Review Form */}
+              <div className="mb-4">
+                {user ? (
+                  <button 
+                    className="btn btn-outline-success"
+                    onClick={() => setShowReviewForm(!showReviewForm)}
+                  >
+                    {showReviewForm ? "Cancel Review" : "Write a Review"}
+                  </button>
+                ) : (
+                  <button 
+                    className="btn btn-outline-success"
+                    onClick={() => navigate("/login")}
+                  >
+                    Login to Write a Review
+                  </button>
+                )}
+
+                {showReviewForm && (
+                  <div className="mt-3 p-3 border rounded">
+                    <div className="mb-3">
+                      <label className="form-label">Rating</label>
+                      {renderReviewStars(rating, true)}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Your Review</label>
+                      <textarea
+                        className="form-control"
+                        rows="3"
+                        value={review}
+                        onChange={(e) => setReview(e.target.value)}
+                        placeholder="Write your review here..."
+                      />
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button 
+                        className="btn btn-success"
+                        onClick={handleReviewSubmit}
+                        disabled={reviewsLoading}
+                      >
+                        {reviewsLoading ? 'Submitting...' : 'Submit Review'}
+                      </button>
+                      <button 
+                        className="btn btn-outline-secondary"
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setRating(0);
+                          setReview("");
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Existing Reviews */}
+              <div className="reviews-list">
+                {reviewsLoading ? (
+                  <div className="text-center">
+                    <div className="spinner-border text-success" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                ) : reviews.length > 0 ? (
+                  reviews.map((review) => (
+                    <div key={review.id} className="review-item border-bottom pb-3 mb-3">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                          <strong>{review.userName}</strong>
+                          <small className="text-muted ms-2">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </small>
+                        </div>
+                        {renderReviewStars(review.rating)}
+                      </div>
+                      <p className="mb-0">{review.comment}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted">No reviews yet. Be the first to review this product!</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

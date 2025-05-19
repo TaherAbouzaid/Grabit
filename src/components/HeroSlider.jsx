@@ -1,19 +1,14 @@
 import React, { useState } from "react";
-// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import { Container } from "react-bootstrap";
 import { FiArrowRight } from "react-icons/fi";
-// Import Swiper styles
+import { Link } from "react-router-dom";
+
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
-import { Link } from "react-router-dom";
-
 import "./styles.css";
-
-// import required modules
-// import { Pagination } from "swiper/modules";
 
 const HeroSlider = () => {
   const [isContentVisible, setIsContentVisible] = useState(true);

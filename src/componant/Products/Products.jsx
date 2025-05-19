@@ -28,7 +28,7 @@ const navigate = useNavigate();
   
    useEffect(() => {
     dispatch(fetchProducts()); 
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (user && user.uid) {

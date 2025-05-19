@@ -1,79 +1,68 @@
-import { useState, useEffect } from "react";
-import { fetchProducts } from "../../services/productService";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Stack from "react-bootstrap/Stack";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { fetchCategoriesWithSub } from '../../Store/Slices/categorySlicees';
+import './MegaMenuProduct.css';
 
 const MegaMenuProduct = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { categories, loading } = useSelector((state) => state.categories);
 
   useEffect(() => {
-    const getProducts = async () => {
-      try {
-        const data = await fetchProducts();
-        setProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getProducts();
-  }, []);
+    dispatch(fetchCategoriesWithSub());
+  }, [dispatch]);
 
-  // دالة لجلب عنوان المنتج بأمان
-  const getTitle = (product) => {
-    if (product && product.title) {
-      return typeof product.title === "object"
-        ? product.title.en || product.title.ar || "  Product not found "
-        : product.title;
-    }
-    return "  product not found ";
+  const handleCategoryClick = (categoryId) => {
+    navigate(`/shop`);
   };
 
-  if (loading) return <p className="text-center p-4"> Loading...</p>;
+  const handleSubCategoryClick = (categoryId, subCategoryId) => {
+    navigate(`/shop`);
+  };
 
-  if (products.length === 0) return <p className="text-center p-4">no product now   .</p>;
+  if (loading) {
+    return (
+      <Container className="py-5">
+        <div className="text-center">
+          <div className="spinner-border text-success" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </Container>
+    );
+  }
 
   return (
-    <>
-      <div className="grid grid-cols-3 gap-4 p-8">
-        {products.map((product) => (
-          <div key={product.id} className="border p-4 rounded shadow">
-            <img
-              src={product.mainImage || "/placeholder-image.jpg"} 
-              alt={getTitle(product)}
-              className="w-full h-40 object-cover"
-            />
-            <h2 className="font-bold text-lg">{getTitle(product)}</h2>
-            <p className="text-gray-600">Price: ${product.price || " not found "}</p>
-          </div>
+    <Container className="mega-menu-container py-5">
+      <Row>
+        {categories.map((category) => (
+          <Col key={category.id} md={4} className="mb-4">
+            <div className="category-card">
+              <h3 
+                className="category-title"
+                onClick={() => handleCategoryClick(category.id)}
+              >
+                {category.name.en}
+              </h3>
+              {category.subcategories && category.subcategories.length > 0 && (
+                <ul className="subcategory-list">
+                  {category.subcategories.map((subCategory) => (
+                    <li 
+                      key={subCategory.id}
+                      onClick={() => handleSubCategoryClick(category.id, subCategory.id)}
+                    >
+                      {subCategory.name.en}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </Col>
         ))}
-      </div>
-      <div className="flex flex-col gap-2 p-8 sm:flex-row sm:items-center sm:gap-6 sm:py-4">
-        <img
-          className="mx-auto block h-24 rounded-full sm:mx-0 sm:shrink-0"
-          src="/img/erin-lindford.jpg"
-          alt="Erin Lindford"
-        />
-        <div className="space-y-2 text-center sm:text-left">
-          <div className="space-y-0.5">
-            <p className="text-lg font-semibold text-black">Erin Lindford</p>
-            <p className="font-medium text-gray-500">Product Engineer</p>
-          </div>
-          <button className="border-purple-200 text-purple-600 hover:border-transparent hover:bg-purple-600 hover:text-white active:bg-purple-700">
-            Message
-          </button>
-        </div>
-      </div>
-      {/* <Stack direction="horizontal" gap={3}>
-        <Form.Control className="me-auto" placeholder="أضف عنصرك هنا..." />
-        <Button variant="secondary">Send</Button>
-        <div className="vr" />
-        <Button variant="outline-danger">إعادة تعيين</Button>
-      </Stack> */}
-    </>
+      </Row>
+    </Container>
   );
 };
 

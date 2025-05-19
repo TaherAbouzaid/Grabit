@@ -76,7 +76,7 @@ const navigate = useNavigate();
       await setDoc(doc(db, "users", user.uid), userData);
 
       alert("Registered successfully!");
-         navigate("/products");
+         navigate("/shop");
     } catch (error) {
       console.error("Registration error:", error);
       alert("Something went wrong!");
