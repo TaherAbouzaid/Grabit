@@ -90,10 +90,10 @@ const TopRatedItems = () => {
         </h3>
         <div className="slider-header-arrows">
           <button className="trending-arrow me-1" onClick={() => sliderRef.current?.slickPrev()} aria-label="Previous">
-            <FiChevronLeft size={22} />
+            <FiChevronLeft size={24} />
           </button>
           <button className="trending-arrow" onClick={() => sliderRef.current?.slickNext()} aria-label="Next">
-            <FiChevronRight size={22} />
+            <FiChevronRight size={24} />
           </button>
         </div>
       </div>

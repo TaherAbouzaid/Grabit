@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext.jsx"; // Adjust path as neede
 import { db } from "../../firebase/config"; // Adjust path as needed
 import { collection, query, where, getDocs } from "firebase/firestore";
 import './OrderTracker.css';
+import { useTranslation } from "react-i18next";
 
 const orderSteps = [
   { id: 1, name: "Order Confirmed", icon: <CheckCircle2 size={24} /> },
@@ -20,6 +21,7 @@ export default function OrderTracker() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Monitor network status
@@ -138,7 +140,7 @@ export default function OrderTracker() {
     return (
       <Container className="py-5">
         <Alert variant="info" className="text-center">
-          No orders found.
+          {t('profile.No orders found')}.
         </Alert>
       </Container>
     );
@@ -149,24 +151,24 @@ export default function OrderTracker() {
       <Container className="py-5">
         <Alert variant="danger" className="text-center mb-4">
           <XCircle size={24} className="me-2" />
-          Order {orderData.orderNumber} has been canceled.
+          {t('order.Order')} {orderData.orderNumber} {t('order.has been canceled')}.
         </Alert>
         <Row className="mb-4">
           <Col md={4} className="mb-3">
             <Card className="order-card">
-              <h6 className="text-muted">Order</h6>
+              <h6 className="text-muted">{t('order.Order')}</h6>
               <h5 className="fw-semibold">{orderData.orderNumber}</h5>
             </Card>
           </Col>
           <Col md={4} className="mb-3">
             <Card className="order-card">
-              <h6 className="text-muted">Courier</h6>
+              <h6 className="text-muted">{t('order.Courier')}</h6>
               <h5 className="fw-semibold">{orderData.courier} - {orderData.courierCode}</h5>
             </Card>
           </Col>
           <Col md={4} className="mb-3">
             <Card className="order-card">
-              <h6 className="text-muted">Expected Date</h6>
+              <h6 className="text-muted">{t('order.Expected Date')}</h6>
               <h5 className="fw-semibold">{orderData.expectedDate}</h5>
             </Card>
           </Col>
@@ -180,11 +182,11 @@ export default function OrderTracker() {
       {/* Title */}
       <div className="text-center mb-4">
         <h1 className="track-order-title">
-          <span>Track </span>
-          <span>Order</span>
+          <span>{t('order.track')} </span>
+          <span>{t('order.Order')}</span>
         </h1>
         <p className="text-muted mt-2">
-          We delivering happiness and needs, Faster than you can think.
+          {t('order.We delivering happiness and needs, Faster than you can think.')}
         </p>
       </div>
 
@@ -192,19 +194,19 @@ export default function OrderTracker() {
       <Row className="mb-4">
         <Col md={4} className="mb-3">
           <Card className="order-card">
-            <h6 className="text-muted">Order</h6>
+            <h6 className="text-muted">{t('order.Order')}</h6>
             <h5 className="fw-semibold">{orderData.orderNumber}</h5>
           </Card>
         </Col>
         <Col md={4} className="mb-3">
           <Card className="order-card">
-            <h6 className="text-muted">Courier</h6>
+            <h6 className="text-muted">{t('order.Courier')}</h6>
             <h5 className="fw-semibold">{orderData.courier} - {orderData.courierCode}</h5>
           </Card>
         </Col>
         <Col md={4} className="mb-3">
           <Card className="order-card">
-            <h6 className="text-muted">Expected Date</h6>
+            <h6 className="text-muted">{t('order.Expected Date')}</h6>
             <h5 className="fw-semibold">{orderData.expectedDate}</h5>
           </Card>
         </Col>
@@ -242,7 +244,7 @@ export default function OrderTracker() {
                   <small
                     className={`step-label ${step.id <= orderData.currentStep ? "complete" : "inactive"}`}
                   >
-                    {step.name}
+                    {t(`order.${step.name}`)}
                   </small>
                 </div>
               </Col>

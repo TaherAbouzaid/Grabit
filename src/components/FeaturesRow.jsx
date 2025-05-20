@@ -3,6 +3,8 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { FiTruck, FiHeadphones, FiRefreshCw, FiDollarSign } from 'react-icons/fi';
 import './styles.css';
 
+
+
 const features = [
   {
     icon: <FiTruck size={48} color="#5caf90" />,

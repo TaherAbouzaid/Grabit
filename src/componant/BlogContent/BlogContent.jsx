@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from "react";
 import { Container, Row, Col, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -7,6 +6,7 @@ import BlogComments from "../BlogComments/BlogComments";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { db } from "../../firebase/config";
 import { doc, getDoc, updateDoc, increment, collection, query, where, getDocs, runTransaction } from "firebase/firestore";
+import { useTranslation } from "react-i18next";
 import "./BlogContent.css";
 import { BiSolidLike } from "react-icons/bi";
 import { AiTwotoneLike } from "react-icons/ai";
@@ -14,6 +14,7 @@ import { AiTwotoneLike } from "react-icons/ai";
 export default function BlogContent() {
   const { postId } = useParams();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [post, setPost] = useState(null);
   const [commentCount, setCommentCount] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
@@ -34,7 +35,7 @@ export default function BlogContent() {
 
   useEffect(() => {
     if (!isOnline) {
-      setError("You are offline. Post will load when you reconnect.");
+      setError(t("blogContent.errors.offline"));
       setLoading(false);
       return;
     }
@@ -47,7 +48,7 @@ export default function BlogContent() {
         const postSnap = await getDoc(postRef);
 
         if (!postSnap.exists()) {
-          setError("Post not found.");
+          setError(t("blogContent.errors.postNotFound"));
           setPost(null);
           return;
         }
@@ -73,9 +74,9 @@ export default function BlogContent() {
         const postData = postSnap.data();
         setPost({
           id: postSnap.id,
-          title: postData.title || "Untitled",
+          title: postData.title || t("blogContent.untitled"),
           image: postData.image || "/placeholder.svg?height=400&width=800",
-          content: postData.content?.split("\n").filter(p => p.trim()) || ["No content available"],
+          content: postData.content?.split("\n").filter(p => p.trim()) || [t("blogContent.noContent")],
           date: postData.createdAt?.toDate().toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -90,22 +91,22 @@ export default function BlogContent() {
         setHasLiked(userHasLiked);
       } catch (err) {
         console.error("Error fetching post:", err);
-        setError(`Failed to load post: ${err.message || "Please try again."}`);
+        setError(t("blogContent.errors.failedToLoad", { message: err.message || t("blogContent.errors.tryAgain") }));
       } finally {
         setLoading(false);
       }
     };
 
     fetchPostData();
-  }, [postId, isOnline, user]);
+  }, [postId, isOnline, user, t]);
 
   const handleLikePost = async () => {
     if (!user) {
-      setError("Please log in to like this post.");
+      setError(t("blogContent.errors.loginRequired"));
       return;
     }
     if (!isOnline) {
-      setError("You are offline. Please try again when connected.");
+      setError(t("blogContent.errors.offlineAction"));
       return;
     }
 
@@ -114,7 +115,7 @@ export default function BlogContent() {
       const likeRef = doc(collection(db, "likes"));
       await runTransaction(db, async (transaction) => {
         const postSnap = await transaction.get(postRef);
-        if (!postSnap.exists()) throw new Error("Post not found");
+        if (!postSnap.exists()) throw new Error(t("blogContent.errors.postNotFound"));
 
         const likesQuery = query(
           collection(db, "likes"),
@@ -150,14 +151,14 @@ export default function BlogContent() {
       }));
     } catch (err) {
       console.error("Error liking post:", err);
-      setError(`Failed to like post: ${err.message || "Please try again."}`);
+      setError(t("blogContent.errors.failedToLike", { message: err.message || t("blogContent.errors.tryAgain") }));
     }
   };
 
   if (loading) {
     return (
       <Container className="blog-content py-4">
-        <div className="text-center">Loading post...</div>
+        <div className="text-center">{t("blogContent.loading")}</div>
       </Container>
     );
   }
@@ -173,7 +174,7 @@ export default function BlogContent() {
   if (!post) {
     return (
       <Container className="blog-content py-4">
-        <Alert variant="info" className="text-center">Post not found.</Alert>
+        <Alert variant="info" className="text-center">{t("blogContent.errors.postNotFound")}</Alert>
       </Container>
     );
   }
@@ -199,9 +200,9 @@ export default function BlogContent() {
         >
           {hasLiked ? <BiSolidLike className="fs-4" /> : <AiTwotoneLike className="fs-4" />}
         </div>
-        <span>| {post.likesCount} Likes</span>
-        <span>| {commentCount} Comments</span>
-        <span>| {post.views} Views</span>
+        <span>| {t("blogContent.likes", { count: post.likesCount })}</span>
+        <span>| {t("blogContent.comments", { count: commentCount })}</span>
+        <span>| {t("blogContent.views", { count: post.views })}</span>
         <span className="text-muted">| {post.date}</span>
       </div>
 

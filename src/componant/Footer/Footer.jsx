@@ -17,7 +17,7 @@ const Footer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { items: products } = useSelector((state) => state.products);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Extract categories dynamically from products
   const categories = useMemo(() => {
@@ -33,12 +33,12 @@ const Footer = () => {
         p.categoryId.categoryId,
         {
           id: p.categoryId.categoryId,
-          name: p.categoryId.name?.en || t("categories.uncategorized", "Uncategorized"),
+          name: p.categoryId.name?.[i18n.language] || t("categories.uncategorized", "Uncategorized"),
         },
       ])
     );
     return Array.from(categoriesMap.values());
-  }, [products, t]);
+  }, [products, t, i18n.language]);
 
   const handleCategoryClick = (categoryId) => {
     console.log("Category clicked in Footer:", { categoryId });
@@ -48,45 +48,42 @@ const Footer = () => {
   };
 
   return (
-    <footer>
+    <footer dir={i18n.dir()}>
       <Container>
         <Row className="gy-4 gx-2">
-          {/* Logo */}
+          {/* Logo Section */}
           <Col xs={12} sm={6} md={4} lg={3}>
             <img
               src="https://grabit-react-next.maraviyainfotech.com/assets/img/logo/logo.png"
               alt="Grabit Logo"
               className="logo mb-3"
             />
-            <p className="mb-3">
-              Grabit is the biggest market of grocery products. Get your daily
-              needs from our store.
-            </p>
+            <p className="mb-3">{t("footer.description")}</p>
             <div className="app-store-buttons">
               <a href="#" rel="noopener noreferrer">
                 <img
                   src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/android.png"
-                  alt="Google Play"
+                  alt={t("footer.googlePlayAlt")}
                   className="app-store-img"
                 />
               </a>
               <a href="#" rel="noopener noreferrer">
                 <img
                   src="https://grabit-react-next.maraviyainfotech.com/assets/img/app/apple.png"
-                  alt="App Store"
+                  alt={t("footer.appStoreAlt")}
                   className="app-store-img"
                 />
               </a>
             </div>
           </Col>
 
-          {/* Category */}
+          {/* Category Section */}
           <Col xs={6} sm={4} md={3} lg={2}>
-            <h6 className="footer-title">Category</h6>
+            <h6 className="footer-title">{t("footer.category")}</h6>
             {products.length === 0 ? (
-              <div>Loading...</div>
+              <div>{t("common.loading")}</div>
             ) : categories.length === 0 ? (
-              <div>No categories available</div>
+              <div>{t("categories.no_categories", "No categories available")}</div>
             ) : (
               <ul className="footer-list">
                 {categories.map((category) => (
@@ -107,65 +104,63 @@ const Footer = () => {
             )}
           </Col>
 
-          {/* Company */}
+          {/* Company Section */}
           <Col xs={6} sm={4} md={3} lg={2}>
-            <h6 className="footer-title">Company</h6>
+            <h6 className="footer-title">{t("footer.company")}</h6>
             <ul className="footer-list">
-              <li><a href="/AboutUs" className="footer-link">About us</a></li>
-              <li><a href="/OrderTracker" className="footer-link">Delivery</a></li>
-              <li><a href="#" className="footer-link">Legal Notice</a></li>
-              <li><a href="#" className="footer-link">Terms & conditions</a></li>
-              <li><a href="/Checkout" className="footer-link">Secure payment</a></li>
-              <li><a href="/ContactPage" className="footer-link">Contact us</a></li>
+              <li><a href="/AboutUs" className="footer-link">{t("footer.companyLinks.aboutUs")}</a></li>
+              <li><a href="/OrderTracker" className="footer-link">{t("footer.companyLinks.delivery")}</a></li>
+              <li><a href="#" className="footer-link">{t("footer.companyLinks.legalNotice")}</a></li>
+              <li><a href="#" className="footer-link">{t("footer.companyLinks.termsConditions")}</a></li>
+              <li><a href="/Checkout" className="footer-link">{t("footer.companyLinks.securePayment")}</a></li>
+              <li><a href="/ContactPage" className="footer-link">{t("footer.companyLinks.contactUs")}</a></li>
             </ul>
           </Col>
 
-          {/* Account */}
+          {/* Account Section */}
           <Col xs={6} sm={4} md={3} lg={2}>
-            <h6 className="footer-title">Account</h6>
+            <h6 className="footer-title">{t("footer.account")}</h6>
             <ul className="footer-list">
-              <li><a href="/Register" className="footer-link">Sign In</a></li>
-              <li><a href="/Cart" className="footer-link">View Cart</a></li>
-              <li><a href="#" className="footer-link">Return Policy</a></li>
-              <li><a href="#" className="footer-link">Become a Vendor</a></li>
-              <li><a href="#" className="footer-link">Affiliate Program</a></li>
-              <li><a href="Checkout" className="footer-link">Payments</a></li>
+              <li><a href="/Register" className="footer-link">{t("footer.accountLinks.signIn")}</a></li>
+              <li><a href="/Cart" className="footer-link">{t("footer.accountLinks.viewCart")}</a></li>
+              <li><a href="#" className="footer-link">{t("footer.accountLinks.returnPolicy")}</a></li>
+              <li><a href="#" className="footer-link">{t("footer.accountLinks.becomeVendor")}</a></li>
+              <li><a href="#" className="footer-link">{t("footer.accountLinks.affiliateProgram")}</a></li>
+              <li><a href="/Checkout" className="footer-link">{t("footer.accountLinks.payments")}</a></li>
             </ul>
           </Col>
 
-          {/* Contact */}
+          {/* Contact Section */}
           <Col xs={12} sm={6} md={4} lg={3}>
-            <h6 className="footer-title">Contact</h6>
+            <h6 className="footer-title">{t("footer.contact")}</h6>
             <ul className="list-unstyled">
               <li className="d-flex gap-2 align-items-start mb-3">
                 <BiLocationPlus color="#5cac94" size={28} />
-                <span className="contact-text">
-                  2548 Broaddus Maple Court, Madisonville KY 4783, USA.
-                </span>
+                <span className="contact-text">{t("footer.contactInfo.address")}</span>
               </li>
               <li className="d-flex gap-2 align-items-center mb-3">
                 <BiPhone color="#5cac94" size={18} />
-                <span className="contact-text">+00 9876543210</span>
+                <span className="contact-text">{t("footer.contactInfo.phone")}</span>
               </li>
               <li className="d-flex gap-2 align-items-center mb-3">
                 <BiEnvelope color="#5cac94" size={18} />
-                <span className="contact-text">example@email.com</span>
+                <span className="contact-text">{t("footer.contactInfo.email")}</span>
               </li>
             </ul>
 
             {/* Social Icons */}
             <div className="d-flex gap-2 justify-content-center justify-content-md-start mt-2">
               {[
-                { Icon: FaFacebookF, label: "Facebook" },
-                { Icon: FaLinkedinIn, label: "LinkedIn" },
-                { Icon: FaTwitter, label: "Twitter" },
-                { Icon: FaInstagram, label: "Instagram" },
+                { Icon: FaFacebookF, label: t("footer.social.facebook") },
+                { Icon: FaLinkedinIn, label: t("footer.social.linkedin") },
+                { Icon: FaTwitter, label: t("footer.social.twitter") },
+                { Icon: FaInstagram, label: t("footer.social.instagram") },
               ].map(({ Icon, label }, idx) => (
                 <a
                   key={idx}
                   href="#top"
                   className="social-icon"
-                  aria-label={`Follow us on ${label}`}
+                  aria-label={label}
                 >
                   <Icon size={14} />
                 </a>
@@ -177,12 +172,12 @@ const Footer = () => {
         {/* Footer Bottom */}
         <div className="footer-bottom">
           <p className="mb-2 mb-md-0 text-center text-md-start">
-            © Grabit. All rights reserved. Powered by Grabit.
+            {t("footer.copyright")}
           </p>
           <div className="footer-payment d-flex gap-2 justify-content-center">
             <img
               src="https://grabit-react-next.maraviyainfotech.com/assets/img/hero-bg/payment.png"
-              alt="Payment Methods"
+              alt={t("footer.paymentMethodsAlt")}
             />
           </div>
         </div>

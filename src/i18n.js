@@ -46,7 +46,19 @@ i18n
             "items": "ITEMS",
             "vat": "VAT (20%)",
             "noDescription": "No description available",
-            "errorLoadingProducts": "Error loading products"
+            "errorLoadingProducts": "Error loading products",
+            "Payment Secure": "Payment Secure",
+            "Contact us 24 hours a day, 7 days a week": "Contact us 24 hours a day, 7 days a week",
+            "Free Shipping": "Free Shipping",
+            "Free shipping on all US order or order above $200": "Free shipping on all US order or order above $200",
+            "30 Days Return": "30 Days Return",
+            "Simply return it within 30 days for an exchange.": "Simply return it within 30 days for an exchange .",
+            "24X7 Support": "24X7 Support",
+            
+
+
+
+      
           },
 
           // Navigation
@@ -72,7 +84,7 @@ i18n
             "compare": "Compare",
             "faq": "FAQ",
             "viewCart": "View Cart",
-            "checkout": "Check Out"
+            "checkout": "Check Out",
           },
 
           // Categories
@@ -108,6 +120,74 @@ i18n
             "latestPosts": "Latest Posts",
             "tipsAndTricks": "Tips & Tricks"
           },
+          // Blog page
+
+          "blogPage": {
+            "loading": "Loading posts...",
+            "untitled": "Untitled",
+            "noContent": "No content available",
+            "errors": {
+              "noPosts": "No posts found.",
+              "offline": "You are offline. Posts will load when you reconnect.",
+              "failedToLoad": "Failed to load posts: {{message}}",
+              "tryAgain": "Please try again."
+            },
+            "readMore": "Read more about {{title}}",
+            "readMoreLink": "Read More »",
+            "paginationInfo": "Showing {{first}}-{{last}} of {{total}} item(s)",
+            "prev": "Prev",
+            "next": "Next",
+            "prevPage": "Previous page",
+            "nextPage": "Next page",
+            "page": "Page {{number}}"
+          },
+
+          // Blog Content
+
+          "blogContent": {
+            "loading": "Loading post...",
+            "untitled": "Untitled",
+            "noContent": "No content available",
+            "errors": {
+              "offline": "You are offline. Post will load when you reconnect.",
+              "postNotFound": "Post not found.",
+              "loginRequired": "Please log in to like this post.",
+              "offlineAction": "You are offline. Please try again when connected.",
+              "failedToLoad": "Failed to load post: {{message}}",
+              "failedToLike": "Failed to like post: {{message}}",
+              "tryAgain": "Please try again."
+            },
+            "likes": "{{count}} Like{{#count#plural#}}s{{/count#plural#}}",
+            "comments": "{{count}} Comment{{#count#plural#}}s{{/count#plural#}}",
+            "views": "{{count}} View{{#count#plural#}}s{{/count#plural#}}"
+          },
+
+
+          // Blog comment 
+
+          "blogComments": {
+            "loading": "Loading comments...",
+            "errors": {
+              "offline": "You are offline. Comments will load when you reconnect.",
+              "loginRequired": "Please log in to comment.",
+              "offlineAction": "You are offline. Please try again when connected.",
+              "failedToLoad": "Failed to load comments: {{message}}",
+              "failedToAddComment": "Failed to add comment: {{message}}",
+              "failedToAddReply": "Failed to add reply: {{message}}",
+              "failedToLike": "Failed to like {{type}}: {{message}}",
+              "targetNotFound": "{{type}} not found",
+              "tryAgain": "Please try again."
+            },
+            "commentsTitle": "Comments: {{count}}",
+            "leaveCommentTitle": "Leave a Comment",
+            "commentLabel": "Comment *",
+            "like": "Like",
+            "unlike": "Unlike",
+            "reply": "Reply",
+            "replyPlaceholder": "Write a reply...",
+            "postReply": "Post Reply",
+            "postComment": "Post Comment"
+          },
 
           // Cart
           "cart": {
@@ -117,7 +197,46 @@ i18n
             "remove": "Remove",
             "applyDiscount": "Apply Discount",
             "deliveryCharges": "Delivery Charges",
-            "couponDiscount": "Coupon Discount"
+            "couponDiscount": "Coupon Discount",
+            "product": "Product",
+            "price": "Price",
+            "quantity": "Quantity",
+            "total": "Total",
+            "continueShopping": "Continue Shopping",
+            "checkout": "Checkout",
+            "updateCart": "Update Cart",
+            "emptyCart": "Your cart is empty",
+            "loginToContinue": "Please log in to continue",
+            "cartSummary": "Cart Summary",
+            "itemsInCart": "Items in Cart",
+            "actions": "Actions",
+          },
+          // Wishlist
+          "wishlist": {
+            "empty": "Your wishlist is empty",
+            "loginRequired": "Please log in to view your wishlist",
+            "remove": "Remove",
+            "addToCart": "Add to Cart",
+            "product": "Product",
+            "price": "Price",
+            "quantity": "Quantity",
+            "total": "Total",
+            "continueShopping": "Continue Shopping",
+            "checkout": "Checkout",
+            "updateWishlist": "Update Wishlist",
+            "emptyWishlist": "Your wishlist is empty",
+            "loginToContinue": "Please log in to continue",
+            "image": "Image",
+            "productName": "Product Name",
+            "productPrice": "Product Price",
+            "wishlist": "Wishlist",
+            "title": "Your product wish is our first priority.",
+            "shopNow": "Shop Now",
+            "name": "Name",
+            "status": "Status",
+            "actions": "Actions",
+
+
           },
 
           // Brands
@@ -216,6 +335,237 @@ i18n
             "snacks": "Snacks",
             "organic": "Organic Products",
             "spices": "Spices & Herbs"
+          },
+          // prfile
+          "profile": {
+            "accountInformation": "Account Information",
+            "personalDetails": "Personal Details",
+            "addressBook": "Address Book",
+            "UserProfile": "User Profile",
+            "UserHistory": "User History",
+            "changePassword": "Change Password",
+            "editProfile": "Edit Profile",
+            "updateProfile": "Update Profile",
+            "saveChanges": "Save Changes",
+            "cancel": "Cancel",
+            "trackOrder": "Track Order",
+            "cart": "Cart",
+            "checkout": "Checkout",
+            "emailAddress": "Email Address",
+            "contactNumber": "Contact Number",
+            "address": "Address",
+            "phone": "Phone",
+            "email": "Email",
+            "invoice": "Invoice",
+            "fullName": "Full Name",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "streetAddress": "Street Address",
+            "city": "City",
+            "state": "State",
+            "country": "Country",
+            "postalCode": "Postal Code",
+            "profileImage": "Profile Image",
+            "uploadImage": "Upload Image",
+            "Update your personal information": "Update your personal information",
+            "Edit your profile": "Edit your profile",
+            "Enter your full name": "Enter your full name",
+            "Enter your email address": "Enter your email address",
+            "Enter your phone number": "Enter your phone number",
+            "Enter your street address": "Enter your street address",
+            "Enter your city": "Enter your city",
+            "Enter your state": "Enter your state",
+            "Enter your country": "Enter your country",
+            "Enter your postal code": "Enter your postal code",
+            "Enter your password": "Enter your password",
+            "Enter your new password": "Enter your new password",
+            "Enter your confirm password": "Enter your confirm password",
+            "region/State": "Region/State",
+            "SelectState": "Select your state",
+            "save": "Save",
+            "edit": "Edit",
+            "register": "Register",
+            "login": "Login",
+            "Best place to buy and sell digital products.": "Best place to buy and sell digital products.",
+            "password": "Password",
+            "confirmPassword": "Confirm Password",
+            "Already have an account?": "Already have an account?",
+            "Enter your first name": "Enter your first name",
+            "Enter your last name": "Enter your last name",
+            "Enter your email": "Enter your email",
+            "Enter your phone": "Enter your phone",
+            "Enter your address": "Enter your address",
+            "Enter your region/state": "Enter your region/state",
+            "Invalid email address": "Invalid email address",
+            "Password must be at least 6 characters": "Password must be at least 6 characters",
+            "Passwords do not match": "Passwords do not match",
+            "Please enter your password": "Please enter your password",
+            "Please enter your first name": "Please enter your first name",
+            "Please enter your last name": "Please enter your last name",
+            "Please enter your email": "Please enter your email",
+            "Please enter your phone": "Please enter your phone",
+            "Please enter your address": "Please enter your address",
+            "Please enter your region/state": "Please enter your region/state",
+            "Please enter your postal code": "Please enter your postal code",
+            "Please enter your city": "Please enter your city",
+            "Please enter your country": "Please enter your country",
+            "please confirm your password": "Please confirm your password",
+            "Select your country": "Select your country",
+            "Select your city": "Select your city",
+            "Region State": "Region State",
+            "Select your state": "Select your state",
+            "Enter your post code": "Enter your post code",
+            "Get access to your Orders, Wishlist and": "Get access to your Orders, Wishlist and",
+            "Recommendations.": "Recommendations.",
+            "Forgot Password?": "Forgot Password?",
+            "Create Account?": "Create Account?",
+            "Password reset link has been sent": "Password reset link has been sent",
+            "Forgot Password": "Forgot Password",
+            "Enter your email & we will send you a link": "Enter your email & we will send you a link",
+            "Sending...": "Sending...",
+             "Send Reset Link": "Send Reset Link",
+             "Remembered your password?": " Remembered your password?",
+             "Don't have an account?": "Don't have an account?",
+            "Sign Up": "Sign Up",
+            
+            
+            
+            
+
+
+
+          },
+          // Order Tracker
+          "order":{
+            "orderTracker": "Order Tracker",
+            "orderId": "Order ID",
+            "orderDate": "Order Date",
+            "orderStatus": "Order Status",
+            "orderDetails": "Order Details",
+            "trackYourOrder": "Track Your Order",
+            "trackOrder": "Track Order",
+            "orderHistory": "Order History",
+            "orderSummary": "Order Summary",
+            "shippingAddress": "Shipping Address",
+            "billingAddress": "Billing Address",
+            "paymentMethod": "Payment Method",
+            "shippingMethod": "Shipping Method",
+            "orderTotal": "Order Total",
+            "track": "Track",
+            "Order": "Order",
+            "noOrderFound": "No order found ",
+            "has been canceled": "has been canceled",
+            "Courier": "Courier",
+            "Expected Date": "Expected Date",
+            "We delivering happiness and needs, Faster than you can think.": "We delivering happiness and needs, Faster than you can think.",
+            "Product Delivered": "Product Delivered",
+            "Product Dispatched": "Product Dispatched",
+            "Processing Order": "Processing Order",
+            "Quality Check": "Quality Check",
+            "Order Confirmed": "Order Confirmed",
+            "Orders ID": "Orders ID",
+            "Shipping": "Shipping",
+            "Quantity": "Quantity",
+            "Date": "Date",
+            "Price": "Price",
+            "Status": "Status",
+            "No": "No",
+            "pending":"pending",
+            "completed":"completed",
+            "orders found": "orders found",
+            "No completed orders found.": "No completed orders found.",
+            "Pending": "Pending",
+            "Completed": "Completed",
+            "Your product Order is our first priority.": "Your product Order is our first priority.",
+            "delivered": "delivered",
+            "canceled": "canceled",
+            "confirmed": "confirmed",
+
+
+          },
+          // Footer
+          "footer": {
+            "description": "Grabit is the biggest market of grocery products. Get your daily needs from our store.",
+            "googlePlayAlt": "Google Play",
+            "appStoreAlt": "App Store",
+            "category": "Category",
+            "company": "Company",
+            "companyLinks": {
+              "aboutUs": "About us",
+              "delivery": "Delivery",
+              "legalNotice": "Legal Notice",
+              "termsConditions": "Terms & conditions",
+              "securePayment": "Secure payment",
+              "contactUs": "Contact us"
+            },
+            "account": "Account",
+            "accountLinks": {
+              "signIn": "Sign In",
+              "viewCart": "View Cart",
+              "returnPolicy": "Return Policy",
+              "becomeVendor": "Become a Vendor",
+              "affiliateProgram": "Affiliate Program",
+              "payments": "Payments"
+            },
+            "contact": "Contact",
+            "contactInfo": {
+              "address": "2548 Broaddus Maple Court, Madisonville KY 4783, USA.",
+              "phone": "+00 9876543210",
+              "email": "example@email.com"
+            },
+            "social": {
+              "facebook": "Follow us on Facebook",
+              "linkedin": "Follow us on LinkedIn",
+              "twitter": "Follow us on Twitter",
+              "instagram": "Follow us on Instagram"
+            },
+            "copyright": "© Grabit. All rights reserved. Powered by Grabit.",
+            "paymentMethodsAlt": "Payment Methods"
+          },
+
+
+
+          // about us 
+          "aboutUs": {
+            "title": "Who We Are?",
+            "titleHighlight": "Are?",
+            "subtitle": "We're here to serve only the best products for you. Enriching your homes with the best essentials.",
+            "text1": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+            "text2": "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. Lorem Ipsum has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
+            "text3": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+          },
+          "services": {
+            "title": "Our Services",
+            "titleHighlight": "Services",
+            "subtitle": "Customer service should not be a department. It should be the entire company.",
+            "freeShipping": {
+              "title": "Free Shipping",
+              "text": "Free shipping on all US order or order above $200"
+            },
+            "support": {
+              "title": "24x7 Support",
+              "text": "Contact us 24 hours a day, 7 days a week"
+            },
+            "returns": {
+              "title": "30 Days Return",
+              "text": "Simply return it within 30 days for an exchange"
+            },
+            "payment": {
+              "title": "Payment Secure",
+              "text": "Contact us 24 hours a day, 7 days a week"
+            }
+          },
+          "team": {
+            "title": "Our Team",
+            "titleHighlight": "Team",
+            "subtitle": "Meet our expert team members.",
+            "members": [
+              { "name": "Ahmed", "position": "Team Member" },
+              { "name": "Mohamed", "position": "Team Member" },
+              { "name": "Taher", "position": "Leader" },
+              { "name": "Lujain", "position": "Team Member" },
+              { "name": "Nour", "position": "Team Member" }
+            ]
           }
         }
       },
@@ -253,7 +603,15 @@ i18n
             "items": "منتجات",
             "vat": "الضريبة (20%)",
             "noDescription": "لا يوجد وصف متاح",
-            "errorLoadingProducts": "خطأ في تحميل المنتجات"
+            "errorLoadingProducts": "خطأ في تحميل المنتجات",
+            "Payment Secure": "الدفع آمن",
+            "Contact us 24 hours a day, 7 days a week": "اتصل بنا على مدار الساعة طوال أيام الأسبوع",
+            "Free Shipping": "شحن مجاني",
+            "Free shipping on all US order or order above $200": "شحن مجاني على جميع الطلبات الأمريكية أو الطلبات التي تزيد عن 200 دولار",
+            "30 Days Return": "إرجاع خلال 30 يومًا",
+            "Simply return it within 30 days for an exchange.": "يمكنك إرجاعه خلال 30 يومًا لاستبداله.",
+            "24X7 Support": "دعم على مدار الساعة",
+            
           },
 
           // Navigation
@@ -315,6 +673,52 @@ i18n
             "latestPosts": "أحدث المقالات",
             "tipsAndTricks": "نصائح وحيل"
           },
+          // blog contact 
+
+          "blogContent": {
+            "loading": "جارٍ تحميل المنشور...",
+            "untitled": "بلا عنوان",
+            "noContent": "لا يوجد محتوى متاح",
+            "errors": {
+              "offline": "أنت غير متصل. سيتم تحميل المنشور عند إعادة الاتصال.",
+              "postNotFound": "المنشور غير موجود.",
+              "loginRequired": "يرجى تسجيل الدخول لإعجاب هذا المنشور.",
+              "offlineAction": "أنت غير متصل. حاول مرة أخرى عند الاتصال.",
+              "failedToLoad": "فشل في تحميل المنشور: {{message}}",
+              "failedToLike": "فشل في إعجاب المنشور: {{message}}",
+              "tryAgain": "يرجى المحاولة مرة أخرى."
+            },
+            "likes": "{{count}} إعجاب{{#count#plural#}}ات{{/count#plural#}}",
+            "comments": "{{count}} تعليق{{#count#plural#}}ات{{/count#plural#}}",
+            "views": "{{count}} مشاهدة{{#count#plural#}}ات{{/count#plural#}}"
+          },
+
+
+          // Blog Comment 
+
+          "blogComments": {
+            "loading": "جارٍ تحميل التعليقات...",
+            "errors": {
+              "offline": "أنت غير متصل. سيتم تحميل التعليقات عند إعادة الاتصال.",
+              "loginRequired": "يرجى تسجيل الدخول للتعليق.",
+              "offlineAction": "أنت غير متصل. حاول مرة أخرى عند الاتصال.",
+              "failedToLoad": "فشل في تحميل التعليقات: {{message}}",
+              "failedToAddComment": "فشل في إضافة تعليق: {{message}}",
+              "failedToAddReply": "فشل في إضافة رد: {{message}}",
+              "failedToLike": "فشل في إعجاب {{type}}: {{message}}",
+              "targetNotFound": "{{type}} غير موجود",
+              "tryAgain": "يرجى المحاولة مرة أخرى."
+            },
+            "commentsTitle": "التعليقات: {{count}}",
+            "leaveCommentTitle": "اترك تعليقًا",
+            "commentLabel": "التعليق *",
+            "like": "إعجاب",
+            "unlike": "إلغاء الإعجاب",
+            "reply": "رد",
+            "replyPlaceholder": "اكتب ردًا...",
+            "postReply": "نشر الرد",
+            "postComment": "نشر التعليق"
+          },
 
           // Cart
           "cart": {
@@ -324,7 +728,47 @@ i18n
             "remove": "حذف",
             "applyDiscount": "تطبيق الخصم",
             "deliveryCharges": "رسوم التوصيل",
-            "couponDiscount": "خصم الكوبون"
+            "couponDiscount": "خصم الكوبون",
+            "product": "المنتج",
+            "price": "السعر",
+            "quantity": "الكمية",
+            "total": "المجموع",
+            "continueShopping": "متابعة التسوق",
+            "checkout": "إتمام الشراء",
+            "updateCart": "تحديث السلة",
+            "emptyCart": "سلة المشتريات فارغة",
+            "loginToContinue": "يرجى تسجيل الدخول للمتابعة",
+            "cartSummary": "ملخص السلة",
+            "itemsInCart": "المنتجات في السلة",
+            "actions": "الإجراء"
+
+          },
+           // Wishlist
+          "wishlist":{
+            "empty": "قائمة المفضلة فارغة",
+            "loginRequired": "يرجى تسجيل الدخول لعرض قائمة المفضلة",
+            "remove": "حذف",
+            "addToCart": "إضافة إلى السلة",
+            "product": "المنتج",
+            "price": "السعر",
+            "quantity": "الكمية",
+            "total": "المجموع",
+            "continueShopping": "متابعة التسوق",
+            "checkout": "إتمام الشراء",
+            "updateWishlist": "تحديث قائمة المفضلة",
+            "emptyWishlist": "قائمة المفضلة فارغة",
+            "loginToContinue": "يرجى تسجيل الدخول للمتابعة",
+            "image": "الصورة",
+            "productName": "اسم المنتج",
+            "productPrice": "سعر المنتج",
+            "wishlist": "قائمة المفضلة",
+            "title": "قائمة المفضلة الخاصة بك هي أولويتنا الأولى.",
+            "shopNow": "تسوق الآن",
+            "name": "الاسم",
+            "status": "الحالة",
+            "actions": "الإجراءات",
+
+
           },
 
           // Brands
@@ -429,6 +873,236 @@ i18n
             "snacks": "وجبات خفيفة",
             "organic": "منتجات عضوية",
             "spices": "توابل وأعشاب"
+          },
+          // Profile
+          "profile": {
+            "accountInformation": "معلومات الحساب",
+            "personalDetails": "تفاصيل شخصية",
+            "addressBook": "دفتر العناوين",
+            "UserProfile": "الملف الشخصي للمستخدم",
+            "UserHistory": "سجل المستخدم",
+            "changePassword": "تغيير كلمة المرور",
+            "editProfile": "تعديل الملف الشخصي",
+            "updateProfile": "تحديث الملف الشخصي",
+            "saveChanges": "حفظ التغييرات",
+            "cancel": "إلغاء",
+            "trackOrder": "تتبع الطلب",
+            "cart": "السلة",
+            "checkout": "إتمام الشراء",
+            "emailAddress": "عنوان البريد الإلكتروني",
+            "contactNumber": "رقم الاتصال",
+            "address": "العنوان",
+            "phone": "الهاتف",
+            "email": "البريد الإلكتروني",
+            "invoice": "الفاتورة",
+            "fullName": "الاسم الكامل",
+            "firstName": "الاسم الأول",
+            "lastName": "الاسم الأخير",
+            "streetAddress": "عنوان الشارع",
+            "city": "المدينة",
+            "state": "الولاية",
+            "country": "الدولة",
+            "postalCode": "الرمز البريدي",
+            "profileImage": "صورة الملف الشخصي",
+            "uploadImage": "تحميل الصورة",
+            "Update your personal information": "تحديث معلوماتك الشخصية",
+            "Enter your full name": "أدخل اسمك الكامل",
+            "Enter your email address": "أدخل عنوان بريدك الإلكتروني",
+            "Enter your phone number": "أدخل رقم هاتفك",
+            "Enter your address": "أدخل عنوانك",
+            "Enter your city": "أدخل مدينتك",
+            "Enter your state": "أدخل ولايتك",
+            "Enter your country": "أدخل دولتك",
+            "Enter your postal code": "أدخل الرمز البريدي",
+            "Enter your profile image": "أدخل صورة ملفك الشخصي",
+            "Enter your password": "أدخل كلمة المرور",
+            "Enter your new password": "أدخل كلمة المرور الجديدة",
+            "Enter your confirm password": "أدخل تأكيد كلمة المرور",
+            "Enter your current password": "أدخل كلمة المرور الحالية",
+            "region/state": "المنطقة/الولاية",
+            "SelectState": "اختر ولايتك",
+            "save": "حفظ",
+            "edit": "تعديل",
+            "register": "إنشاء حساب",
+            "login": "تسجيل الدخول",
+            "Best place to buy and sell digital products.": "أفضل مكان لشراء وبيع المنتجات الرقمية.",
+            "password": "كلمة المرور",
+            "confirmPassword": "تأكيد كلمة المرور",
+            "Already have an account?": "هل لديك حساب بالفعل؟",
+            "Enter your first name": "أدخل اسمك الأول",
+            "Enter your last name": "أدخل اسمك الأخير",
+            "Enter your email": "أدخل بريدك الإلكتروني",
+            "Enter your phone": "أدخل هاتفك",
+            "Enter your region/state": "أدخل منطقتك/ولايتك",
+            "Invalid email address": "عنوان بريد إلكتروني غير صالح",
+            "Password must be at least 6 characters": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+            "Passwords do not match": "كلمات المرور غير متطابقة",
+            "Please enter your password": "يرجى إدخال كلمة المرور الخاصة بك",
+            "Please enter your first name": "يرجى إدخال اسمك الأول",
+            "Please enter your last name": "يرجى إدخال اسمك الأخير",
+            "Please enter your email": "يرجى إدخال بريدك الإلكتروني",
+            "Please enter your phone": "يرجى إدخال هاتفك",
+            "Please enter your address": "يرجى إدخال عنوانك",
+            "Please enter your region/state": "يرجى إدخال منطقتك/ولايتك",
+            "Please enter your postal code": "يرجى إدخال الرمز البريدي الخاص بك",
+            "Please enter your city": "يرجى إدخال مدينتك",
+            "Please enter your country": "يرجى إدخال دولتك",
+            "please confirm your password": "يرجى تأكيد كلمة المرور الخاصة بك",
+            "Select your country": "اختر دولتك",
+            "Select your region/state": "اختر منطقتك/ولايتك",
+            "Select your city": "اختر مدينتك",
+            "Region State": "المنطقة/الولاية",
+            "Select your state": "اختر ولايتك",
+            "Enter your post code": "أدخل الرمز البريدي الخاص بك",
+            "Get access to your Orders, Wishlist and": "احصل على وصول إلى طلباتك، قائمة المفضلة و",
+            "Recommendations.": "التوصيات.",
+            "Forgot Password?": "نسيت كلمة المرور؟",
+            "Create Account?": "إنشاء حساب؟",
+            "Password reset link has been sent": "تم إرسال رابط إعادة تعيين كلمة المرور",
+            "Forgot Password": "نسيت كلمة المرور",
+            "Enter your email & we will send you a link": "أدخل بريدك الإلكتروني وسنرسل لك رابطًا",
+            "Sending...": "جاري الإرسال...",
+             "Send Reset Link": "إرسال رابط إعادة تعيين",
+             "Remembered your password?": "تذكرت كلمة المرور الخاصة بك؟",
+             "Don't have an account?": "ليس لديك حساب؟",
+            "Sign Up": "إنشاء حساب",
+
+
+            
+
+
+            // Add more translations as needed
+          },
+          // Order Tracker
+          "order":{
+            "orderTracker": "تتبع الطلب",
+            "orderId": "رقم الطلب",
+            "orderDate": "تاريخ الطلب",
+            "orderStatus": "حالة الطلب",
+            "orderDetails": "تفاصيل الطلب",
+            "trackYourOrder": "تتبع طلبك",
+            "trackOrder": "تتبع الطلب",
+            "orderHistory": "سجل الطلبات",
+            "orderSummary": "ملخص الطلب",
+            "shippingAddress": "عنوان الشحن",
+            "billingAddress": "عنوان الفواتير",
+            "paymentMethod": "طريقة الدفع",
+            "shippingMethod": "طريقة الشحن",
+            "orderTotal": "إجمالي الطلب",
+            "track": "تتبع",
+            "Order": "الطلب",
+            "noOrderFound": "لا يوجد طلبات",
+            "has been canceled": "تم إلغاء الطلب",
+            "Courier": "شركة الشحن",
+            "Expected Date": "تاريخ التسليم المتوقع",
+            "We delivering happiness and needs, Faster than you can think.": "نحن نقدم السعادة والاحتياجات، أسرع مما يمكنك التفكير.",
+            "Product Delivered": "تم توصيل المنتج",
+            "Product Dispatched": "تم شحن المنتج",
+            "Quality Check": "فحص الجودة",
+            "Processing Order": "جاري معالجة الطلب",
+            "Order Confirmed": "تم تأكيد الطلب",
+            "Order Cancelled": "تم إلغاء الطلب",
+            "Orders ID": "رقم الطلبات",
+            "Order Status": "حالة الطلب",
+            "Shipping": "الشحن",
+            "Quantity": "الكمية",
+            "Date": "التاريخ",
+            "Price": "السعر",
+            "Status": "الحالة",
+            "No": "لا",
+            "pending" : "معلق",
+            "completed": "مكتمل",
+            "orders found": " توجد طلبات .",
+            "Pending": "معلق",
+            "Completed": "مكتمل",
+            "Your product Order is our first priority.": "طلب المنتج الخاص بك هو أولويتنا الأولى.",
+            "delivered": "تم التوصيل",
+            "canceled": "تم الإلغاء",
+            "confirmed": "تم التأكيد",
+          },
+          // Footer
+          "footer": {
+            "description": "جرابيت هو أكبر سوق لمنتجات البقالة. احصل على احتياجاتك اليومية من متجرنا.",
+            "googlePlayAlt": "متجر جوجل بلاي",
+            "appStoreAlt": "متجر التطبيقات",
+            "category": "الفئة",
+            "company": "الشركة",
+            "companyLinks": {
+              "aboutUs": "معلومات عنا",
+              "delivery": "التوصيل",
+              "legalNotice": "إشعار قانوني",
+              "termsConditions": "الشروط والأحكام",
+              "securePayment": "الدفع الآمن",
+              "contactUs": "اتصل بنا"
+            },
+            "account": "الحساب",
+            "accountLinks": {
+              "signIn": "تسجيل الدخول",
+              "viewCart": "عرض السلة",
+              "returnPolicy": "سياسة الإرجاع",
+              "becomeVendor": "كن بائعًا",
+              "affiliateProgram": "برنامج الإحالة",
+              "payments": "المدفوعات"
+            },
+            "contact": "الاتصال",
+            "contactInfo": {
+              "address": "2548 برودوس مابل كورت، ماديسونفيل كنتاكي 4783، الولايات المتحدة الأمريكية.",
+              "phone": "+00 9876543210",
+              "email": "example@email.com"
+            },
+            "social": {
+              "facebook": "تابعنا على فيسبوك",
+              "linkedin": "تابعنا على لينكدإن",
+              "twitter": "تابعنا على تويتر",
+              "instagram": "تابعنا على إنستجرام"
+            },
+            "copyright": "© جرابيت. جميع الحقوق محفوظة. مدعوم من جرابيت.",
+            "paymentMethodsAlt": "طرق الدفع"
+          },
+
+
+
+          // about us 
+          "aboutUs": {
+            "title": "من نحن؟",
+            "titleHighlight": "نحن؟",
+            "subtitle": "نحن هنا لتقديم أفضل المنتجات لكم. نعمل على إثراء منازلكم بأفضل الأساسيات.",
+            "text1": "لوريم إيبسوم هو نص وهمي بسيط من صناعة الطباعة والتنضيد. لقد كان لوريم إيبسوم النص الوهمي القياسي في الصناعة منذ القرن الخامس عشر، عندما أخذ طابع مجهول صفيحة من الحروف وخلطها لصنع كتاب عينة.",
+            "text2": "لقد صمد ليس فقط لخمسة قرون، بل أيضًا مع الانتقال إلى التنضيد الإلكتروني، وبقي دون تغيير جوهري. لقد صمد لوريم إيبسوم ليس فقط لخمسة قرون، بل أيضًا مع الانتقال إلى التنضيد الإلكتروني، وبقي دون تغيير جوهري.",
+            "text3": "لوريم إيبسوم هو نص وهمي بسيط من صناعة الطباعة والتنضيد. لقد كان لوريم إيبسوم النص الوهمي القياسي في الصناعة منذ القرن الخامس عشر، عندما أخذ طابع مجهول صفيحة من الحروف وخلطها لصنع كتاب عينة."
+          },
+          "services": {
+            "title": "خدماتنا",
+            "titleHighlight": "خدماتنا",
+            "subtitle": "خدمة العملاء لا يجب أن تكون قسمًا. يجب أن تكون الشركة بأكملها.",
+            "freeShipping": {
+              "title": "شحن مجاني",
+              "text": "شحن مجاني على جميع الطلبات في الولايات المتحدة أو الطلبات التي تزيد عن 200 دولار"
+            },
+            "support": {
+              "title": "دعم على مدار الساعة",
+              "text": "تواصلوا معنا 24 ساعة في اليوم، 7 أيام في الأسبوع"
+            },
+            "returns": {
+              "title": "إرجاع خلال 30 يومًا",
+              "text": "أعيدوا المنتج خلال 30 يومًا للاستبدال"
+            },
+            "payment": {
+              "title": "دفع آمن",
+              "text": "تواصلوا معنا 24 ساعة في اليوم، 7 أيام في الأسبوع"
+            }
+          },
+          "team": {
+            "title": "فريقنا",
+            "titleHighlight": "فريقنا",
+            "subtitle": "تعرفوا على أعضاء فريقنا المختصين.",
+            "members": [
+              { "name": "أحمد", "position": "عضو الفريق" },
+              { "name": "محمد", "position": "عضو الفريق" },
+              { "name": "طاهر", "position": "القائد" },
+              { "name": "لجين", "position": "عضو الفريق" },
+              { "name": "نور", "position": "عضو الفريق" }
+            ]
           }
         }
       }

@@ -1,5 +1,3 @@
-
-"use client";
 import { useState, useEffect } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,11 +6,13 @@ import { db } from "../../firebase/config";
 import {
   collection, query, where, getDocs, doc, getDoc, arrayUnion, runTransaction, increment
 } from "firebase/firestore";
-// import "./BlogComments.css";
+import { useTranslation } from "react-i18next";
+
 import "../BlogContent/BlogContent.css";
 
 export default function BlogComments({ postId }) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [replyInputs, setReplyInputs] = useState({});
@@ -55,7 +55,7 @@ export default function BlogComments({ postId }) {
 
   useEffect(() => {
     if (!isOnline) {
-      setError("You are offline. Comments will load when you reconnect.");
+      setError(t("blogComments.errors.offline"));
       setLoading(false);
       return;
     }
@@ -127,23 +127,23 @@ export default function BlogComments({ postId }) {
         setComments(commentsData);
       } catch (err) {
         console.error("Error fetching comments:", err);
-        setError(`Failed to load comments: ${err.message || "Please try again."}`);
+        setError(t("blogComments.errors.failedToLoad", { message: err.message || t("blogComments.errors.tryAgain") }));
       } finally {
         setLoading(false);
       }
     };
 
     fetchComments();
-  }, [postId, isOnline, user]);
+  }, [postId, isOnline, user, t]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      setError("Please log in to comment.");
+      setError(t("blogComments.errors.loginRequired"));
       return;
     }
     if (!isOnline) {
-      setError("You are offline. Please try again when connected.");
+      setError(t("blogComments.errors.offlineAction"));
       return;
     }
     if (!newComment.trim()) return;
@@ -180,17 +180,17 @@ export default function BlogComments({ postId }) {
       setNewComment("");
     } catch (err) {
       console.error("Error adding comment:", err);
-      setError(`Failed to add comment: ${err.message || "Please try again."}`);
+      setError(t("blogComments.errors.failedToAddComment", { message: err.message || t("blogComments.errors.tryAgain") }));
     }
   };
 
   const handleReplySubmit = async (commentId, replyContent) => {
     if (!user) {
-      setError("Please log in to reply.");
+      setError(t("blogComments.errors.loginRequired"));
       return;
     }
     if (!isOnline) {
-      setError("You are offline. Please try again when connected.");
+      setError(t("blogComments.errors.offlineAction"));
       return;
     }
     if (!replyContent.trim()) return;
@@ -227,17 +227,17 @@ export default function BlogComments({ postId }) {
       setReplyInputs({ ...replyInputs, [commentId]: "" });
     } catch (err) {
       console.error("Error adding reply:", err);
-      setError(`Failed to add reply: ${err.message || "Please try again."}`);
+      setError(t("blogComments.errors.failedToAddReply", { message: err.message || t("blogComments.errors.tryAgain") }));
     }
   };
 
   const handleLike = async (targetId, targetType, isComment, commentId) => {
     if (!user) {
-      setError("Please log in to like.");
+      setError(t("blogComments.errors.loginRequired"));
       return;
     }
     if (!isOnline) {
-      setError("You are offline. Please try again when connected.");
+      setError(t("blogComments.errors.offlineAction"));
       return;
     }
 
@@ -246,7 +246,7 @@ export default function BlogComments({ postId }) {
       const targetRef = doc(db, isComment ? "comments" : "replies", targetId);
       await runTransaction(db, async (transaction) => {
         const targetSnap = await transaction.get(targetRef);
-        if (!targetSnap.exists()) throw new Error(`${targetType} not found`);
+        if (!targetSnap.exists()) throw new Error(t("blogComments.errors.targetNotFound", { type: targetType }));
 
         const likesQuery = query(
           collection(db, "likes"),
@@ -296,13 +296,13 @@ export default function BlogComments({ postId }) {
         return comment;
       }));
     } catch (err) {
-      console.error(`Error liking ${targetType}:`, err);
-      setError(`Failed to like ${targetType}: ${err.message || "Please try again."}`);
+      console.error(`Error liking ${targetType}:, err`);
+      setError(t("blogComments.errors.failedToLike", { type: targetType, message: err.message || t("blogComments.errors.tryAgain") }));
     }
   };
 
   if (loading) {
-    return <Container className="blog-comments py-4"><div className="text-center">Loading comments...</div></Container>;
+    return <Container className="blog-comments py-4"><div className="text-center">{t("blogComments.loading")}</div></Container>;
   }
 
   if (error) {
@@ -312,7 +312,7 @@ export default function BlogComments({ postId }) {
   return (
     <Container className="blog-comments py-4">
       <div className="comments-section p-3 p-md-4 rounded">
-        <h4 className="commentNumber mb-4" >Comments: {comments.length}</h4>
+        <h4 className="commentNumber mb-4">{t("blogComments.commentsTitle", { count: comments.length })}</h4>
 
         {comments.map((comment) => (
           <div key={comment.id} className="comment-item d-flex flex-column flex-md-row mb-4 gap-2">
@@ -330,14 +330,14 @@ export default function BlogComments({ postId }) {
                   onClick={() => handleLike(comment.id, "comment", true)}
                   disabled={!user || !isOnline}
                 >
-                  {comment.hasLiked ? "Unlike" : "Like"} ({comment.likesCount})
+                  {comment.hasLiked ? t("blogComments.unlike") : t("blogComments.like")} ({comment.likesCount})
                 </Button>
                 <Button
                   variant="link"
                   className="text-success p-0"
                   onClick={() => setReplyInputs({ ...replyInputs, [comment.id]: replyInputs[comment.id] || "" })}
                 >
-                  Reply ({comment.replyCount})
+                  {t("blogComments.reply")} ({comment.replyCount})
                 </Button>
               </div>
               {replyInputs[comment.id] !== undefined && (
@@ -354,13 +354,13 @@ export default function BlogComments({ postId }) {
                       rows={3}
                       value={replyInputs[comment.id]}
                       onChange={(e) => setReplyInputs({ ...replyInputs, [comment.id]: e.target.value })}
-                      placeholder="Write a reply..."
+                      placeholder={t("blogComments.replyPlaceholder")}
                       required
                       className="w-100"
                     />
                   </Form.Group>
                   <Button variant="success" type="submit" size="sm" className="mt-2">
-                    Post Reply
+                    {t("blogComments.postReply")}
                   </Button>
                 </Form>
               )}
@@ -379,7 +379,7 @@ export default function BlogComments({ postId }) {
                       onClick={() => handleLike(reply.id, "reply", false, comment.id)}
                       disabled={!user || !isOnline}
                     >
-                      {reply.hasLiked ? "Unlike" : "Like"} ({reply.likesCount})
+                      {reply.hasLiked ? t("blogComments.unlike") : t("blogComments.like")} ({reply.likesCount})
                     </Button>
                   </div>
                 </div>
@@ -389,10 +389,10 @@ export default function BlogComments({ postId }) {
         ))}
 
         <div className="comment-form mt-5">
-          <h4 className="commentNumber mb-4">Leave a Comment</h4>
+          <h4 className="commentNumber mb-4">{t("blogComments.leaveCommentTitle")}</h4>
           <Form onSubmit={handleCommentSubmit}>
             <Form.Group className="mb-3" controlId="commentContent">
-              <Form.Label>Comment *</Form.Label>
+              <Form.Label>{t("blogComments.commentLabel")}</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
@@ -404,7 +404,7 @@ export default function BlogComments({ postId }) {
               />
             </Form.Group>
             <Button variant="success" type="submit" disabled={!user || !isOnline}>
-              Post Comment
+              {t("blogComments.postComment")}
             </Button>
           </Form>
         </div>

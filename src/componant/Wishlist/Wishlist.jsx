@@ -12,6 +12,8 @@ import { fetchUserWishlist, loadLocalWishlist, removeFromLocalWishlist, removeFr
 import { addToCart } from '../../Store/Slices/cartSlice';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Wishlist = () => {
   const dispatch = useDispatch();
@@ -19,6 +21,10 @@ const Wishlist = () => {
   const { items: wishlistItems, error } = useSelector((state) => state.wishlist);
   const { loading: cartLoading } = useSelector((state) => state.cart);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { currentLanguage } = useLanguage();
+  
+  
 
 
 
@@ -79,11 +85,11 @@ const Wishlist = () => {
     <Container fluid className="p-4">
       <ToastContainer />
       <div className="nav d-flex justify-content-between p-3">
-        <p>Wishlist</p>
-        <Breadcrumb>
+        <p>{t('wishlist.wishlist')}</p>
+        {/* <Breadcrumb>
           <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-          <Breadcrumb.Item active style={{ color: "#5caf90" }}>Wishlist</Breadcrumb.Item>
-        </Breadcrumb>
+          <Breadcrumb.Item active style={{ color: "#5caf90" }}>{t('wishlist.wishlist')}</Breadcrumb.Item>
+        </Breadcrumb> */}
       </div>
 
       <Row className="wishlist-header">
@@ -91,7 +97,7 @@ const Wishlist = () => {
           <h2 className="text-center fw-bold">
             Product <span>Wishlist</span>
           </h2>
-          <p className="text-center text-muted">Your product wish is our first priority.</p>
+          <p className="text-center text-muted">{t('wishlist.title')}</p>
         </Col>
       </Row>
 
@@ -99,18 +105,18 @@ const Wishlist = () => {
         <Col>
           <div className="wishlist-card border rounded p-3 bg-white shadow-sm">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="fw-bold mb-0">WISHLIST</h5>
-              <Button variant="success">Shop Now</Button>
+              <h5 className="fw-bold mb-0">{t('wishlist.wishlist')}</h5>
+              <Button variant="success">{t('wishlist.shopNow')}</Button>
             </div>
 
             <Table responsive hover className="wishlist-table">
               <thead>
                 <tr>
-                  <th>Image</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th>{t('wishlist.image')}</th>
+                  <th className='w-50'>{t('wishlist.name')}</th>
+                  <th>{t('wishlist.price')}</th>
+                  {/* <th>{t('wishlist.status')}</th> */}
+                  <th>{t('wishlist.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,9 +126,9 @@ const Wishlist = () => {
                       <td>
                         <Image src={item.mainImage} width="50" />
                       </td>
-                      <td>{item.title?.en}</td>
+                      <td>{item.title?.[currentLanguage]}</td>
                       <td>${item.price}</td>
-                      <td className="text-success">Available</td>
+                      {/* <td className="text-success">Available</td> */}
                       <td>
                         <Button
                           variant="success"
@@ -162,8 +168,7 @@ const Wishlist = () => {
                 ) : (
                   <tr>
                     <td colSpan="5" className="text-center text-muted">
-                      No items in your wishlist.
-                    </td>
+                       {t('wishlist.empty')}                    </td>
                   </tr>
                 )}
               </tbody>

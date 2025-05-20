@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Container, Row, Col, Button, ButtonGroup } from "react-bootstrap";
 import './UserProfile.css';
+import { useTranslation } from "react-i18next";
 
 const UserProfile = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+    const { t } = useTranslation();
+  
 
   const handleEdit = () => {
     navigate("/edit-profile");
@@ -21,12 +24,12 @@ const UserProfile = () => {
         {/* Sidebar with Button Group */}
         <Col xs={12} md={3}>
           <ButtonGroup vertical className="btn-grp w-100">
-            <Button variant="secondary">User Profile</Button>
-            <Button variant="secondary" onClick={()=>navigate("/userHistory")}>User History</Button>
-            <Button variant="secondary" onClick={() => navigate("/Cart")}>Cart</Button>
-            <Button variant="secondary" onClick={() => navigate("/checkout")}>Checkout</Button>
-            <Button variant="secondary" onClick={() => navigate("/OrderTracker")}>Track Order</Button>
-            <Button variant="secondary">Invoice</Button>
+            <Button variant="secondary">{t('profile.UserProfile')}</Button>
+            <Button variant="secondary" onClick={() => navigate("/userHistory")}>{t('profile.UserHistory')}</Button>
+            <Button variant="secondary" onClick={() => navigate("/Cart")}>{t('profile.cart')}</Button>
+            <Button variant="secondary" onClick={() => navigate("/checkout")}>{t('profile.checkout')}</Button>
+            <Button variant="secondary" onClick={() => navigate("/OrderTracker")}>{t('profile.trackOrder')}</Button>
+            <Button variant="secondary">{t('profile.invoice')}</Button>
           </ButtonGroup>
         </Col>
 
@@ -36,7 +39,7 @@ const UserProfile = () => {
           <Row className="user-banner mb-3">
             <div className="avatar-container">
               <img
-                src={user.profileImage || "/placeholder-user.jpg"}
+                src={user.profileImage}
                 alt="avatar"
                 className="user-avatar"
               />
@@ -46,7 +49,7 @@ const UserProfile = () => {
             </div>
             <div className="edit-btn">
               <Button variant="light" onClick={handleEdit}>
-                Edit ✏️
+                {t('profile.edit')} ✏️
               </Button>
             </div>
           </Row>
@@ -54,36 +57,36 @@ const UserProfile = () => {
           {/* Account Information */}
           <Row className="gi-vendor-profile-card">
             <div className="gi-vendor-card-body p-4">
-              <h4 className="mb-3">Account Information</h4>
+              <h4 className="mb-3">{t('profile.accountInformation')}</h4>
               <Row className="g-3">
                 <Col xs={12} md={6}>
                   <div className="gi-vendor-detail-block">
-                    <h6>Email Address</h6>
+                    <h6>{t('profile.emailAddress')}</h6>
                     <ul>
                       <li>
-                        <strong>Email: </strong>{user.email || "Not provided"}
+                        <strong>{t('profile.email')}: </strong>{user.email || "Not provided"}
                       </li>
                     </ul>
                   </div>
                 </Col>
                 <Col xs={12} md={6}>
                   <div className="gi-vendor-detail-block">
-                    <h6>Contact Number</h6>
+                    <h6>{t('profile.contactNumber')}</h6>
                     <ul>
                       <li>
-                        <strong>Phone: </strong>{user.phone || "Not provided"}
+                        <strong>{t('profile.phone')}: </strong>{user.phone || "Not provided"}
                       </li>
                     </ul>
                   </div>
                 </Col>
                 <Col xs={12}>
                   <div className="gi-vendor-detail-block">
-                    <h6>Address</h6>
+                    <h6>{t('profile.address')}</h6>
                     <ul>
                       {user.address && user.address.length > 0 ? (
                         user.address.map((addr, index) => (
                           <li key={index}>
-                            <strong>Address {index + 1}: </strong>
+                            <strong>{t('profile.address')} {index + 1}: </strong>
                             {`${addr.street}, ${addr.city}, ${addr.regionState}, ${addr.country}, ${addr.postalCode}`}
                           </li>
                         ))
@@ -103,4 +106,3 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-

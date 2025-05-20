@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Toast, ToastContainer, Spinner } from 'react-bootstrap';
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../firebase/config";
+import { useTranslation } from 'react-i18next';
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [toast, setToast] = useState({ show: false, type: "", text: "" });
   const [loading, setLoading] = useState(false);
+      const { t } = useTranslation();
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) {
-      setToast({ show: true, type: "danger", text: "please enter you email   " });
+      setToast({ show: true, type: "danger", text: t("please enter you email") });
       return;
     }
 
@@ -19,7 +22,7 @@ const ForgetPassword = () => {
 
     try {
       await sendPasswordResetEmail(auth, email);
-      setToast({ show: true, type: "success", text: "Password reset link has been sent" });
+      setToast({ show: true, type: "success", text: t("Password reset link has been sent") });
     } catch (error) {
       console.error(error);
       setToast({ show: true, type: "danger", text: " Error: " + error.message });
@@ -30,9 +33,9 @@ const ForgetPassword = () => {
 
   return (
     <Container className="my-5">
-      <h2 className="text-center mb-2">Forgot Password</h2>
+      <h2 className="text-center mb-2">{t('profile.Forgot Password')}</h2>
       <p className="text-center text-muted mb-1">
-        Enter your email & we will send you a link
+        {t('profile.Enter your email & we will send you a link')}
       </p>
       
       <Row className="justify-content-center">
@@ -40,17 +43,17 @@ const ForgetPassword = () => {
           <div className="login-box p-4">
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="formEmail" className="mb-3">
-                <Form.Label>Email Address*</Form.Label>
+                <Form.Label>{t('profile.emailAddress')}*</Form.Label>
                 <Form.Control
                   type="email"
-                  placeholder="Enter your email address"
+                  placeholder={t("profile.Enter your email address")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </Form.Group>
 
               <div className="d-flex justify-content-between align-items-center">
-                <Button className="login-btn" type="submit" disabled={loading}>
+                <Button className="login-btn " type="submit" disabled={loading}>
                   {loading ? (
                     <>
                       <Spinner
@@ -59,25 +62,25 @@ const ForgetPassword = () => {
                         size="sm"
                         role="status"
                         aria-hidden="true"
-                      /> Sending...
+                      /> {t('profile.Sending...')}
                     </>
                   ) : (
-                    "Send Reset Link"
+                   t("profile.Send Reset Link")
                   )}
                 </Button>
               </div>
             </Form>
             <div className="text-center mt-3">
               <p>
-                Remembered your password?{" "}
+               {t('profile.Remembered your password?')}{" "}
                 <a href="/login" className="text-primary">
-                  Login
+                  {t('profile.login')}
                 </a>
               </p>
               <p>
-                Don't have an account?{" "}
+               {t("Don't have an account?")}{" "}
                 <a href="/register" className="text-primary">
-                  Sign Up
+                 {t('profile.Sign Up')}
                 </a>
               </p>
 

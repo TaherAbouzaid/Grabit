@@ -1,15 +1,16 @@
-"use client";
 import { useState, useEffect } from "react";
 import { Container, Row, Col, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext.jsx"; // Adjust path
-import { db } from "../../firebase/config"; // Adjust path
+import { useAuth } from "../../context/AuthContext.jsx"; 
+import { db } from "../../firebase/config"; 
 import { collection, getDocs } from "firebase/firestore";
+import { useTranslation } from "react-i18next";
 import "./BlogPage.css";
 
 export default function BlogPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -33,7 +34,7 @@ export default function BlogPage() {
 
   useEffect(() => {
     if (!isOnline) {
-      setError("You are offline. Posts will load when you reconnect.");
+      setError(t("blogPage.errors.offline"));
       setLoading(false);
       return;
     }
@@ -49,26 +50,26 @@ export default function BlogPage() {
         const fetchedPosts = querySnapshot.docs.map(doc => ({
           id: doc.id,
           image: doc.data().image || "/placeholder.svg",
-          title: doc.data().title || "Untitled",
+          title: doc.data().title || t("blogPage.untitled"),
           date: doc.data().createdAt?.toDate().toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
           }) || "N/A",
           category: "General", // Placeholder; adjust if category exists
-          excerpt: doc.data().content?.substring(0, 100) + (doc.data().content?.length > 100 ? "..." : "") || "No content available",
+          excerpt: doc.data().content?.substring(0, 100) + (doc.data().content?.length > 100 ? "..." : "") || t("blogPage.noContent"),
         }));
 
         setPosts(fetchedPosts);
         if (fetchedPosts.length === 0) {
-          setError("No posts found.");
+          setError(t("blogPage.errors.noPosts"));
         }
       } catch (err) {
         console.error("Error fetching posts:", err);
         if (err.message.includes("client is offline")) {
-          setError("You are offline. Posts will load when you reconnect.");
+          setError(t("blogPage.errors.offline"));
         } else {
-          setError(`Failed to load posts: ${err.message || "Please try again."}`);
+          setError(t("blogPage.errors.failedToLoad", { message: err.message || t("blogPage.errors.tryAgain") }));
         }
       } finally {
         setLoading(false);
@@ -76,7 +77,7 @@ export default function BlogPage() {
     };
 
     fetchPosts();
-  }, [isOnline]);
+  }, [isOnline, t]);
 
   // Pagination logic
   const totalPages = Math.ceil(posts.length / postsPerPage);
@@ -90,7 +91,7 @@ export default function BlogPage() {
     return (
       <div className="py-5 bg-white">
         <Container>
-          <div className="text-center">Loading posts...</div>
+          <div className="text-center">{t("blogPage.loading")}</div>
         </Container>
       </div>
     );
@@ -132,9 +133,9 @@ export default function BlogPage() {
                   <Link
                     to={`/BlogPage/${post.id}`}
                     className="blog-link text-decoration-none"
-                    aria-label={`Read more about ${post.title}`}
+                    aria-label={t("blogPage.readMore", { title: post.title })}
                   >
-                    Read More »
+                    {t("blogPage.readMoreLink")}
                   </Link>
                 </div>
               </div>
@@ -146,16 +147,20 @@ export default function BlogPage() {
           <Row className="mt-5">
             <Col className="d-flex justify-content-between align-items-center">
               <div className="pagination-info text-muted">
-                Showing {indexOfFirstPost + 1}-{Math.min(indexOfLastPost, posts.length)} of {posts.length} item(s)
+                {t("blogPage.paginationInfo", {
+                  first: indexOfFirstPost + 1,
+                  last: Math.min(indexOfLastPost, posts.length),
+                  total: posts.length,
+                })}
               </div>
               <div className="pagination-controls d-flex">
                 <button
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1}
                   className={`pagination-btn ${currentPage === 1 ? "disabled" : ""}`}
-                  aria-label="Previous page"
+                  aria-label={t("blogPage.prevPage")}
                 >
-                  Prev
+                  {t("blogPage.prev")}
                 </button>
 
                 {[...Array(totalPages).keys()].map((number) => (
@@ -163,7 +168,7 @@ export default function BlogPage() {
                     key={number + 1}
                     onClick={() => paginate(number + 1)}
                     className={`pagination-btn ${currentPage === number + 1 ? "active" : ""}`}
-                    aria-label={`Page ${number + 1}`}
+                    aria-label={t("blogPage.page", { number: number + 1 })}
                     aria-current={currentPage === number + 1 ? "page" : undefined}
                   >
                     {number + 1}
@@ -174,9 +179,9 @@ export default function BlogPage() {
                   onClick={() => paginate(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className={`pagination-btn next-btn ${currentPage === totalPages ? "disabled" : ""}`}
-                  aria-label="Next page"
+                  aria-label={t("blogPage.nextPage")}
                 >
-                  Next
+                  {t("blogPage.next")}
                 </button>
               </div>
             </Col>

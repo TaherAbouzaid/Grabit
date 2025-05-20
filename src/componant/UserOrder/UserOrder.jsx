@@ -5,6 +5,8 @@ import { useAuth } from "../../context/AuthContext.jsx"; // Adjust path as neede
 import { db } from "../../firebase/config"; // Adjust path as needed
 import { collection, query, where, getDocs } from "firebase/firestore";
 import "./UserOrder.css";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../context/LanguageContext.jsx";
 
 const OrderList = () => {
   const { user } = useAuth();
@@ -14,6 +16,8 @@ const OrderList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+    const { t } = useTranslation();
+    const { currentLanguage } = useLanguage();
 
   useEffect(() => {
     // Monitor network status
@@ -110,19 +114,19 @@ const OrderList = () => {
     <Table bordered responsive className="mb-0 custom-table">
       <thead className="table-header">
         <tr className="text-secondary">
-          <th>Orders ID</th>
-          <th>Shipping</th>
-          <th>Quantity</th>
-          <th>Date</th>
-          <th>Price</th>
-          <th>Status</th>
+          <th>{t('order.Orders ID')}</th>
+          <th>{t('order.Shipping')}</th>
+          <th>{t('order.Quantity')}</th>
+          <th>{t('order.Date')}</th>
+          <th>{t('order.Price')}</th>
+          <th>{t('order.Status')}</th>
         </tr>
       </thead>
       <tbody>
         {orders.length === 0 ? (
           <tr>
             <td colSpan="7" className="text-center text-muted">
-              No {isCompleted ? "completed" : "pending"} orders found.
+              {t('order.No')} {isCompleted ? t('order.completed') : t('order.pending')} {t('order.orders found')}.
             </td>
           </tr>
         ) : (
@@ -133,7 +137,7 @@ const OrderList = () => {
               <td>{order.quantity}</td>
               <td>{order.date}</td>
               <td>{order.price}</td>
-              <td style={{ color: isCompleted ? "#e58a8a" : "#5cc28c" }}>{order.status}</td>
+              <td style={{ color: isCompleted ? "#e58a8a" : "#5cc28c" }}>{t(`order.${order.status}`)}</td>
          
             </tr>
           ))

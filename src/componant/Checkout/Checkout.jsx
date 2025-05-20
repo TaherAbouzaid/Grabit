@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Container, Row, Col, Form, Button, Card, ListGroup, FormCheck, Alert } from "react-bootstrap";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
@@ -11,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { Country, State, City } from 'country-state-city';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from "../../context/LanguageContext.jsx";
 
 export default function CheckoutPage() {
   const { user } = useAuth();
@@ -23,6 +25,7 @@ export default function CheckoutPage() {
   const { items: cart, loading: cartLoading, error: cartError } = cartState;
   const { items: products, loading: productsLoading, error: productsError } = productsState;
   const { userData, loading: userLoading, error: userError } = userState;
+  const { currentLanguage } = useLanguage();
 
   const [addressOption, setAddressOption] = useState("new");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cod");
@@ -143,8 +146,6 @@ export default function CheckoutPage() {
   const validateForm = () => {
     const errors = {};
     if (addressOption === "new") {
-      if (!formData.firstName) errors.firstName = "First name is required";
-      if (!formData.lastName) errors.lastName = "Last name is required";
       if (!formData.street) errors.street = "Street address is required";
       if (!formData.country) errors.country = "Country is required";
       if (!formData.regionState) errors.regionState = "Region/State is required";
@@ -154,7 +155,7 @@ export default function CheckoutPage() {
       errors.address = "Please select an existing address";
     }
     if (!selectedPaymentMethod) errors.paymentMethod = "Please select a payment method";
-    console.log("Validation errors:", errors); // Debug validation
+    console.log("Validation errors:", errors);
     return errors;
   };
 
@@ -235,15 +236,14 @@ export default function CheckoutPage() {
       const userRef = doc(db, "users", user.uid);
       const newAddress = {
         street: formData.street,
-        country: formData.country,
-        regionState: formData.regionState,
+        country: countries.find(c => c.isoCode === formData.country)?.name || formData.country,
+        regionState: states.find(s => s.isoCode === formData.regionState)?.name || formData.regionState,
         city: formData.city,
         postalCode: formData.postalCode,
       };
       console.log("Adding new address:", JSON.stringify(newAddress, null, 2));
       await updateDoc(userRef, {
         address: arrayUnion(newAddress),
-        fullName: `${formData.firstName} ${formData.lastName}`,
       });
       await dispatch(fetchUserData(user.uid));
       setAddressOption("existing");
@@ -259,8 +259,8 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("handleSubmit triggered"); // Debug form submission
-    console.log("State:", { addressOption, selectedAddress, selectedPaymentMethod, cart: cart?.products, userData }); // Debug state
+    console.log("handleSubmit triggered");
+    console.log("State:", { addressOption, selectedAddress, selectedPaymentMethod, cart: cart?.products, userData });
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -289,7 +289,7 @@ export default function CheckoutPage() {
           address: address.street,
           city: address.city,
           country: address.country,
-          name: userData.fullName || `${formData.firstName} ${formData.lastName}`,
+          name: userData.fullName || "Unknown User",
           phone: userData.phone || "",
           postalCode: address.postalCode,
         };
@@ -297,8 +297,8 @@ export default function CheckoutPage() {
       } else {
         const newAddress = {
           street: formData.street,
-          country: formData.country,
-          regionState: formData.regionState,
+          country: countries.find(c => c.isoCode === formData.country)?.name || formData.country,
+          regionState: states.find(s => s.isoCode === formData.regionState)?.name || formData.regionState,
           city: formData.city,
           postalCode: formData.postalCode,
         };
@@ -306,13 +306,12 @@ export default function CheckoutPage() {
         console.log("Saving new address:", JSON.stringify(newAddress, null, 2));
         await updateDoc(userRef, {
           address: arrayUnion(newAddress),
-          fullName: `${formData.firstName} ${formData.lastName}`,
         });
         shippingAddress = {
           address: newAddress.street,
           city: newAddress.city,
           country: newAddress.country,
-          name: `${formData.firstName} ${formData.lastName}`,
+          name: userData.fullName || "Unknown User",
           phone: userData.phone || "",
           postalCode: newAddress.postalCode,
         };
@@ -336,11 +335,6 @@ export default function CheckoutPage() {
       }
     }
   };
-
-  const shippingMethods = [
-    { label: "Free Shipping", rate: "$0.00", value: "free" },
-    { label: "Flat Rate", rate: "$5.00", value: "flat" },
-  ];
 
   const paymentMethods = [
     { label: "Cash On Delivery", value: "cod" },
@@ -411,7 +405,7 @@ export default function CheckoutPage() {
                           <ProductItem
                             key={item.productId}
                             image={product?.mainImage || "https://via.placeholder.com/80"}
-                            name={product?.title?.en || "Product not found"}
+                            name={product?.title?.[currentLanguage] || "Product not found"}
                             rating={product?.ratingSummary?.average || 0}
                             originalPrice={product?.price ? `$${product.price.toFixed(2)}` : null}
                             discountedPrice={`$${(product?.discountPrice || item.ItemsPrice / item.itemQuantity).toFixed(2)}`}
@@ -419,39 +413,6 @@ export default function CheckoutPage() {
                         );
                       })}
                     </div>
-                  </Card.Body>
-                </Card>
-
-                <Card className="mb-4 shadow-sm rounded-4">
-                  <Card.Body>
-                    <h5 className="fw-bold">{t('checkout.deliveryMethod')}</h5>
-                    <p className="text-muted">
-                      {t('checkout.deliveryMethodDescription')}
-                    </p>
-                    <Form>
-                      {shippingMethods.map((method, index) => (
-                        <Form.Check
-                          type="radio"
-                          id={`shipping-${method.value}`}
-                          name="shipping"
-                          label={`${method.label} - Rate ${method.rate}`}
-                          value={method.value}
-                          key={index}
-                          className="mb-2"
-                          defaultChecked={method.value === "free"}
-                        />
-                      ))}
-                      <Form.Group controlId="deliveryComments" className="mt-3">
-                        <Form.Label className="fw-semibold">
-                          {t('checkout.deliveryComments')}
-                        </Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          placeholder={t('checkout.deliveryCommentsPlaceholder')}
-                        />
-                      </Form.Group>
-                    </Form>
                   </Card.Body>
                 </Card>
 
@@ -508,28 +469,27 @@ export default function CheckoutPage() {
                                     address: address.street,
                                     city: address.city,
                                     country: address.country,
-                                    name: userData.fullName || `${formData.firstName} ${formData.lastName}`,
+                                    name: userData.fullName || "Unknown User",
                                     phone: userData.phone || "",
                                     postalCode: address.postalCode,
                                   };
                                 } else {
                                   const newAddress = {
                                     street: formData.street,
-                                    country: formData.country,
-                                    regionState: formData.regionState,
+                                    country: countries.find(c => c.isoCode === formData.country)?.name || formData.country,
+                                    regionState: states.find(s => s.isoCode === formData.regionState)?.name || formData.regionState,
                                     city: formData.city,
                                     postalCode: formData.postalCode,
                                   };
                                   const userRef = doc(db, "users", user.uid);
                                   await updateDoc(userRef, {
                                     address: arrayUnion(newAddress),
-                                    fullName: `${formData.firstName} ${formData.lastName}`,
                                   });
                                   shippingAddress = {
                                     address: newAddress.street,
                                     city: newAddress.city,
                                     country: newAddress.country,
-                                    name: `${formData.firstName} ${formData.lastName}`,
+                                    name: userData.fullName || "Unknown User",
                                     phone: userData.phone || "",
                                     postalCode: newAddress.postalCode,
                                   };
@@ -555,27 +515,6 @@ export default function CheckoutPage() {
                           />
                         </div>
                       )}
-                      <Form.Group controlId="paymentComments" className="mt-3">
-                        <Form.Label className="fw-semibold">
-                          {t('checkout.paymentComments')}
-                        </Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          placeholder={t('checkout.paymentCommentsPlaceholder')}
-                        />
-                      </Form.Group>
-
-                      <Form.Check
-                        type="checkbox"
-                        id="terms"
-                        label={
-                          <>
-                            {t('checkout.terms')}
-                          </>
-                        }
-                        className="mt-3"
-                      />
                     </Form>
                   </Card.Body>
                 </Card>
@@ -632,7 +571,7 @@ export default function CheckoutPage() {
                                   onChange={() => setSelectedAddress(index)}
                                   className="me-3"
                                 />
-                                   <div className="d-flex flex-row justify-content-around w-100">
+                                <div className="d-flex flex-row justify-content-around w-100">
                                   <div>
                                     <div className="d-flex align-items-center">
                                       <p className="fw-bold">{t('checkout.name')}: </p> <p> {userData.fullName}</p>
@@ -669,41 +608,6 @@ export default function CheckoutPage() {
                         <div className="text-muted mb-4">{t('checkout.noSavedAddresses')}</div>
                       ) : (
                         <>
-                          <Row className="mb-3">
-                            <Col md={6}>
-                              <Form.Group className="mb-3">
-                                <Form.Label>{t('checkout.firstName')}</Form.Label>
-                                <Form.Control
-                                  type="text"
-                                  name="firstName"
-                                  value={formData.firstName}
-                                  onChange={handleInputChange}
-                                  placeholder={t('checkout.firstNamePlaceholder')}
-                                  isInvalid={!!formErrors.firstName}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                  {formErrors.firstName}
-                                </Form.Control.Feedback>
-                              </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                              <Form.Group className="mb-3">
-                                <Form.Label>{t('checkout.lastName')}</Form.Label>
-                                <Form.Control
-                                  type="text"
-                                  name="lastName"
-                                  value={formData.lastName}
-                                  onChange={handleInputChange}
-                                  placeholder={t('checkout.lastNamePlaceholder')}
-                                  isInvalid={!!formErrors.lastName}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                  {formErrors.lastName}
-                                </Form.Control.Feedback>
-                              </Form.Group>
-                            </Col>
-                          </Row>
-
                           <Form.Group className="mb-3">
                             <Form.Label>{t('checkout.address')}</Form.Label>
                             <Form.Control

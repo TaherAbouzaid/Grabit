@@ -9,10 +9,13 @@ import { fetchProducts } from '../../Store/Slices/productsSlice';
 import { fetchUserData } from '../../Store/Slices/userSlice';
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 
 // Cart Item Component to avoid hooks inside map
 const CartItem = ({ cartProduct, cartLoading, handleQuantityChange, handleRemoveProduct, productLoading, products }) => {
   const product = products.find(p => p.id === cartProduct.productId);
+  const { currentLanguage } = useLanguage();
+
 
   return (
     <tr key={cartProduct.productId}>
@@ -27,7 +30,7 @@ const CartItem = ({ cartProduct, cartLoading, handleQuantityChange, handleRemove
               height="40"
               className="me-2"
             />
-            {product?.title?.en || "Product not found"}
+            {product?.title?.[currentLanguage] || "Product not found"}
           </>
         )}
       </td>
@@ -94,6 +97,7 @@ const Cart = () => {
   const { items: products, loading: productLoading, error: productError } = productsState;
   const { userData, loading: userLoading, error: userError } = userState;
   const { t } = useTranslation();
+  
 
   // Log userState immediately after useSelector
   console.log("useSelector - userState:", JSON.stringify(userState, null, 2));
@@ -217,11 +221,11 @@ const Cart = () => {
           <Table responsive className="align-middle mb-0">
             <thead>
               <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Action</th>
+                <th>{t('cart.product')}</th>
+                <th>{t('cart.price')}</th>
+                <th>{t('cart.quantity')}</th>
+                <th>{t('cart.total')}</th>
+                <th>{t('cart.actions')}</th>
               </tr>
             </thead>
             <tbody>

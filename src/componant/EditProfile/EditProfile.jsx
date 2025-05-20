@@ -9,6 +9,8 @@ import { Country, State, City } from "country-state-city";
 import {  ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./EditProfile.css";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../context/LanguageContext";
 
 const EditProfile = () => {
   const [form, setForm] = useState({
@@ -34,6 +36,11 @@ const EditProfile = () => {
   const [cities, setCities] = useState([]);
   const [resetMessage, setResetMessage] = useState({ type: "", text: "" });
   const navigate = useNavigate();
+      const { t } = useTranslation();
+        const { currentLanguage } = useLanguage();
+      
+
+  
 
   const countries = Country.getAllCountries();
 
@@ -274,8 +281,8 @@ const EditProfile = () => {
       <Row className="justify-content-center">
         <Col xs={12} md={8} lg={6}>
           <div className="login-box p-4 shadow-sm rounded">
-            <h3 className="mb-3">Edit Profile</h3>
-            <p className="text-muted mb-4">Update your personal information</p>
+            <h3 className="mb-3">{t('profile.editProfile')}</h3>
+            <p className="text-muted mb-4">{t('profile.Update your personal information')}</p>
 
             {errors.submit && <Alert variant="danger">{errors.submit}</Alert>}
             {resetMessage.text && (
@@ -286,7 +293,7 @@ const EditProfile = () => {
 
             <Form onSubmit={handleSave}>
               <Form.Group controlId="formFullName" className="mb-3">
-                <Form.Label>Full Name*</Form.Label>
+                <Form.Label>{t('profile.fullName')}*</Form.Label>
                 <Form.Control
                   type="text"
                   name="fullName"
@@ -299,7 +306,7 @@ const EditProfile = () => {
               </Form.Group>
 
               <Form.Group controlId="formEmail" className="mb-3">
-                <Form.Label>Email*</Form.Label>
+                <Form.Label>{t('profile.email')}*</Form.Label>
                 <Form.Control
                   type="email"
                   name="email"
@@ -312,7 +319,7 @@ const EditProfile = () => {
               </Form.Group>
 
               <Form.Group controlId="formPhone" className="mb-3">
-                <Form.Label>Phone</Form.Label>
+                <Form.Label>{t('profile.phone')}</Form.Label>
                 <Form.Control
                   type="tel"
                   name="phone"
@@ -323,7 +330,7 @@ const EditProfile = () => {
               </Form.Group>
 
               <Form.Group controlId="formAddressStreet" className="mb-3">
-                <Form.Label>Street Address*</Form.Label>
+                <Form.Label>{t('profile.streetAddress')}*</Form.Label>
                 <Form.Control
                   type="text"
                   name="address.street"
@@ -336,14 +343,14 @@ const EditProfile = () => {
               </Form.Group>
 
               <Form.Group controlId="formAddressCountry" className="mb-3">
-                <Form.Label>Country*</Form.Label>
+                <Form.Label>{t('profile.country')}*</Form.Label>
                 <Form.Select
                   name="address.countryCode"
                   value={form.address.countryCode}
                   onChange={handleCountryChange}
                   isInvalid={!!errors["address.country"]}
                 >
-                  <option value="">Select Country</option>
+                  <option value="">{t('profile.selectCountry')}</option>
                   {countries.map((country) => (
                     <option key={country.isoCode} value={country.isoCode}>
                       {country.name}
@@ -356,7 +363,7 @@ const EditProfile = () => {
               <Row className="mb-3">
                 <Col xs={12} md={6}>
                   <Form.Group controlId="formAddressState">
-                    <Form.Label>Region/State*</Form.Label>
+                    <Form.Label>{t('profile.region/state')}*</Form.Label>
                     <Form.Select
                       name="address.stateCode"
                       value={form.address.stateCode}
@@ -364,7 +371,7 @@ const EditProfile = () => {
                       disabled={!form.address.countryCode}
                       isInvalid={!!errors["address.regionState"]}
                     >
-                      <option value="">Select State</option>
+                      <option value="">{t('profile.SelectState')}</option>
                       {states.map((state) => (
                         <option key={state.isoCode} value={state.isoCode}>
                           {state.name}
@@ -376,7 +383,7 @@ const EditProfile = () => {
                 </Col>
                 <Col xs={12} md={6}>
                   <Form.Group controlId="formAddressCity">
-                    <Form.Label>City*</Form.Label>
+                    <Form.Label>{t('profile.city')}*</Form.Label>
                     <Form.Select
                       name="address.cityCode"
                       value={form.address.cityCode}
@@ -397,7 +404,7 @@ const EditProfile = () => {
               </Row>
 
               <Form.Group controlId="formAddressPostalCode" className="mb-3">
-                <Form.Label>Postal Code*</Form.Label>
+                <Form.Label>{t('profile.postalCode')}*</Form.Label>
                 <Form.Control
                   type="text"
                   name="address.postalCode"
@@ -410,7 +417,7 @@ const EditProfile = () => {
               </Form.Group>
 
               <Form.Group controlId="formProfileImage" className="mb-3">
-                <Form.Label>Profile Image</Form.Label>
+                <Form.Label>{t('profile.profileImage')}</Form.Label>
                 <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
                 {form.profileImage && (
                   <div className="mt-2">
@@ -425,15 +432,15 @@ const EditProfile = () => {
 
              <div>
 
-              <Link to="/ChangePassword" > Change Your Password</Link>
+              <Link to="/ChangePassword" > {t('profile.changePassword')}</Link>
              </div>
 
               <div className="d-flex justify-content-between ">
                 <Button variant="secondary" onClick={() => navigate("/profile")}>
-                  Cancel
+                  {t('profile.cancel')}
                 </Button>
                 <Button variant="success" type="submit">
-                  Save
+                  {t('profile.save')}
                 </Button>
               </div>
             </Form>
