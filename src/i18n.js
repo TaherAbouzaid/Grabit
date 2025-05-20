@@ -85,6 +85,8 @@ i18n
             "faq": "FAQ",
             "viewCart": "View Cart",
             "checkout": "Check Out",
+            "guest": "Guest",
+            "hi": "Hi",
           },
 
           // Categories
@@ -647,7 +649,9 @@ i18n
             "compare": "مقارنة",
             "faq": "الأسئلة الشائعة",
             "viewCart": "عرض السلة",
-            "checkout": "إتمام الشراء"
+            "checkout": "إتمام الشراء",
+            "guest": "زائر",
+            "hi": "مرحبًا",
           },
 
           // Categories
