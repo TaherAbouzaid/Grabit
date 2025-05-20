@@ -141,6 +141,16 @@ i18n
             "nextPage": "Next page",
             "page": "Page {{number}}"
           },
+                   // sidebar
+          "sidebarFilter": {
+    "filterTitle": "Filter",
+    "category": "Category",
+    "price": "Price (Max: ${{maxPrice}})",
+    "tags": "Tags",
+    "all": "All",
+    "uncategorized": "Uncategorized"
+  },
+
 
           // Blog Content
 
@@ -1020,6 +1030,8 @@ i18n
             "canceled": "تم الإلغاء",
             "confirmed": "تم التأكيد",
           },
+ 
+
           // Footer
           "footer": {
             "description": "جرابيت هو أكبر سوق لمنتجات البقالة. احصل على احتياجاتك اليومية من متجرنا.",
@@ -1059,6 +1071,15 @@ i18n
             "copyright": "© جرابيت. جميع الحقوق محفوظة. مدعوم من جرابيت.",
             "paymentMethodsAlt": "طرق الدفع"
           },
+          // sidebar
+  "sidebarFilter": {
+    "filterTitle": "تصفية",
+    "category": "الفئة",
+    "price": "السعر (الحد الأقصى: ${{maxPrice}})",
+    "tags": "الوسوم",
+    "all": "الكل",
+    "uncategorized": "غير مصنف"
+  },
 
 
 

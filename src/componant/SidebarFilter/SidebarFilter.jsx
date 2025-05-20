@@ -1,14 +1,18 @@
-
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Accordion, Badge, Form } from 'react-bootstrap';
 import { setCategory, setPriceRange, toggleTag } from '../../Store/Slices/filtersSlice';
+import { useTranslation } from 'react-i18next';
 import './SidebarFilter.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 const SidebarFilter = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { category, priceRange, tags } = useSelector((state) => state.filter);
   const products = useSelector((state) => state.products.items);
+    const { currentLanguage } = useLanguage();
+  
 
   const categories = [...new Map(products
     .filter(p => p.categoryId && p.categoryId.categoryId) // Skip products with missing categoryId
@@ -23,7 +27,7 @@ const SidebarFilter = () => {
       }
       return [p.categoryId.categoryId, {
         id: p.categoryId.categoryId,
-        name: p.categoryId.name?.en || 'Uncategorized' // Fallback to Uncategorized
+        name: p.categoryId.name?.[currentLanguage] || t('sidebarFilter.uncategorized') // Fallback to translated Uncategorized
       }];
     })
   ).values()];
@@ -59,11 +63,11 @@ const SidebarFilter = () => {
 
   return (
     <div className="Catsidebar-filter p-2 mt-4">
-      <h4>Filter</h4>
+      <h4>{t('sidebarFilter.filterTitle')}</h4>
       <Accordion alwaysOpen>
         {/* Category Filter */}
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Category</Accordion.Header>
+          <Accordion.Header>{t('sidebarFilter.category')}</Accordion.Header>
           <Accordion.Body>
             {categories.map((cat) => (
               <Form.Check
@@ -76,7 +80,7 @@ const SidebarFilter = () => {
             ))}
             <Form.Check
               type="radio"
-              label="All"
+              label={t('sidebarFilter.all')}
               checked={category === null}
               onChange={() => handleCategoryChange(null)}
             />
@@ -85,7 +89,7 @@ const SidebarFilter = () => {
 
         {/* Price Filter */}
         <Accordion.Item eventKey="2">
-          <Accordion.Header>Price (Max: ${maxPrice})</Accordion.Header>
+          <Accordion.Header>{t('sidebarFilter.price', { maxPrice })}</Accordion.Header>
           <Accordion.Body>
             <Form.Range
               min={0}
@@ -98,7 +102,7 @@ const SidebarFilter = () => {
 
         {/* Tags Filter */}
         <Accordion.Item eventKey="3">
-          <Accordion.Header>Tags</Accordion.Header>
+          <Accordion.Header>{t('sidebarFilter.tags')}</Accordion.Header>
           <Accordion.Body>
             <div className="d-flex flex-wrap gap-2">
               {allTags.map((tag) => (
