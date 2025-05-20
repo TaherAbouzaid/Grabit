@@ -1,0 +1,124 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap');
+
+/* في ملف CSS الخاص بيك */
+/* .container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  @media (min-width: 768px) {
+    .container {
+      max-width: 750px;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .container {
+      max-width: 970px;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .container {
+      max-width: 1170px;
+    }
+  }
+   */
+   body {
+    font-family: "Manrope", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+
+
+@keyframes fadeinUp {
+   0% {
+    opacity: 0;
+    -webkit-transform: translateY(30px);
+    -ms-transform: translateY(30px);
+    transform: translateY(30px);
+}
+100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    -ms-transform: translateY(0);
+    transform: translateY(0);
+}
+}
+
+.fadeInUp{
+    animation: fadeinUp 2s  ease-in-out;
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .me-2 {
+  margin-right: 0 !important;
+  margin-left: 0.5rem !important;
+}
+
+[dir="rtl"] .me-3 {
+  margin-right: 0 !important;
+  margin-left: 1rem !important;
+}
+
+[dir="rtl"] .ms-2 {
+  margin-left: 0 !important;
+  margin-right: 0.5rem !important;
+}
+
+[dir="rtl"] .ms-3 {
+  margin-left: 0 !important;
+  margin-right: 1rem !important;
+}
+
+[dir="rtl"] .ps-2 {
+  padding-right: 0.5rem !important;
+  padding-left: 0 !important;
+}
+
+[dir="rtl"] .pe-2 {
+  padding-left: 0.5rem !important;
+  padding-right: 0 !important;
+}
+
+[dir="rtl"] .dropdown-menu {
+  text-align: right;
+}
+
+[dir="rtl"] .form-check {
+  padding-right: 1.5rem;
+  padding-left: 0;
+}
+
+[dir="rtl"] .form-check-input {
+  margin-right: -1.5rem;
+  margin-left: 0;
+}
+
+[dir="rtl"] .input-group > .form-control {
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+[dir="rtl"] .input-group > .btn {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+[dir="rtl"] .input-group > .form-control:not(:last-child) {
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+[dir="rtl"] .input-group > .form-control:not(:first-child) {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+

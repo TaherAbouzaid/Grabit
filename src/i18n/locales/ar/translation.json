@@ -1,0 +1,28 @@
+{
+  "offers": {
+    "title": "العروض الخاصة",
+    "subtitle": "اكتشف أحدث العروض والترويجات الخاصة",
+    "noOffers": "لا توجد عروض نشطة حالياً",
+    "endsIn": "ينتهي خلال",
+    "validUntil": "صالح حتى",
+    "addToCart": "أضف إلى السلة"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "search": "بحث",
+    "loadingResults": "جارٍ تحميل النتائج...",
+    "searchError": "فشل في التحميل: {{message}}",
+    "searchResults": "نتائج البحث عن \"{{query}}\"",
+    "noResults": "لا توجد منتجات مطابقة لبحثك.",
+    "enterQuery": "يرجى إدخال كلمة بحث."
+  },
+  "categories": {
+    "home_kitchen": "المنزل والمطبخ",
+    "electronics": "الإلكترونيات",
+    "clothing": "الملابس",
+    "health_beauty": "الصحة والجمال",
+    "food": "الطعام",
+    "other": "أخرى"
+  }
+} 

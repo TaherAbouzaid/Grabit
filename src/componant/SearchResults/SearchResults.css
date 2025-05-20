@@ -1,0 +1,28 @@
+.search-results {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.search-results h2 {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  margin-bottom: 1.5rem;
+}
+
+.search-results .row {
+  row-gap: 1.5rem;
+}
+
+.search-results .alert {
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
+}
+
+@media (max-width: 576px) {
+  .search-results {
+    padding: 1rem;
+  }
+
+  .search-results h2 {
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+  }
+}

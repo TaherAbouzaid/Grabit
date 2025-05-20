@@ -1,0 +1,28 @@
+{
+  "offers": {
+    "title": "Special Offers",
+    "subtitle": "Discover our latest deals and special promotions",
+    "noOffers": "No active offers at the moment",
+    "endsIn": "Ends in",
+    "validUntil": "Valid until",
+    "addToCart": "Add to Cart"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "search": "Search",
+    "loadingResults": "Loading results...",
+    "searchError": "Failed to load: {{message}}",
+    "searchResults": "Search Results for \"{{query}}\"",
+    "noResults": "No products match your search.",
+    "enterQuery": "Please enter a search query."
+  },
+  "categories": {
+    "home_kitchen": "Home & Kitchen",
+    "electronics": "Electronics",
+    "clothing": "Clothing",
+    "health_beauty": "Health & Beauty",
+    "food": "Food",
+    "other": "Other"
+  }
+} 

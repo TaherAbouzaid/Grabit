@@ -1,0 +1,247 @@
+/* Existing AboutUs styles */
+image-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* المسافة بين الصورتين الصغيرتين */
+}
+
+.image-container {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.image-container img {
+  transition: transform 0.3s ease;
+  object-fit: cover; /* ضمان ملاءمة الصور */
+}
+
+.image-container:hover img {
+  transform: scale(1.05); /* تأثير التكبير عند التمرير */
+}
+
+.small-image {
+  height: 200px; /* ارتفاع الصورتين الصغيرتين */
+}
+
+.main-image {
+  height: 420px; /* ارتفاع الصورة الرئيسية = الصورتين + المسافة بينهما */
+  object-fit: cover;
+}
+
+.content-section {
+  padding: 20px;
+
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.same-size {
+  font-size: inherit;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.section-text {
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+/* التصميم التكيفي (Responsive) */
+@media (max-width: 991px) {
+  .image-grid {
+    gap: 15px;
+  }
+  .small-image {
+    height: 150px; /* تصغير الصورتين الصغيرتين */
+  }
+  .main-image {
+    height: 300px; /* تصغير الصورة الرئيسية */
+  }
+  .content-section {
+    padding: 15px;
+   transform: translateX(-50px);
+  }
+}
+
+@media (max-width: 767px) {
+  .image-column {
+    margin-bottom: 20px; /* مسافة أسفل الصور */
+  }
+  .small-image {
+    height: 120px;
+  }
+  .main-image {
+    height: 260px;
+  }
+  /* .content-section {
+    padding: 10px;
+    transform: translateX(-30px);
+  } */
+}
+
+@media (max-width: 576px) {
+  .small-image {
+    height: 100px;
+  }
+  .main-image {
+    height: 220px;
+  }
+  .section-title {
+    font-size: 2rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+  }
+  .section-text {
+    font-size: 0.9rem;
+  }
+}
+/* Services Section styles */
+.services-section {
+  padding: 60px 0;
+}
+
+.text-success {
+  color: #5cac94 !important;
+}
+
+.section-subtitle {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.service-card {
+  border: 1px solid #e9e9e9;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.service-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.icon-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid #5cac94;
+  margin-bottom: 1rem;
+}
+
+.service-icon {
+  width: 30px;
+  height: 30px;
+  color: #5cac94;
+}
+
+.service-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.service-text {
+  color: #6c757d;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Team Section styles */
+.team-section {
+  padding: 60px 0;
+}
+
+.team-slider-wrapper {
+  overflow: hidden; 
+  width: 100%;
+}
+
+.team-slider {
+  display: flex;
+  width: calc(200% + 20px); 
+  animation: slideHorizontal 15s linear infinite; /* الحركة التلقائية */
+}
+
+.team-card {
+  flex: 0 0 12.5%; 
+  margin-right: 20px; 
+  transition: all 0.3s ease;
+  padding: 15px;
+  text-align: center;
+}
+
+.team-card:hover {
+  transform: translateY(-5px); 
+}
+
+.team-image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.team-image {
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.team-image-container:hover .team-image {
+  transform: scale(1.05);
+}
+
+.team-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 10px 0 5px;
+  color: #333;
+}
+
+.team-position {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 10px;
+}
+
+
+@keyframes slideHorizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%); 
+  }
+}
+
+/* التصميم التكيفي (Responsive) */
+@media (max-width: 991px) {
+  .team-card {
+    flex: 0 0 20%; 
+  }
+}
+
+@media (max-width: 767px) {
+  .team-card {
+    flex: 0 0 33.33%;
+  }
+}
+
+@media (max-width: 576px) {
+  .team-card {
+    flex: 0 0 50%; 
+  }
+}

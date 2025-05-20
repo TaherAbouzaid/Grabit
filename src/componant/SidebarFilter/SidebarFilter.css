@@ -1,0 +1,219 @@
+/* Sidebar Filter Container */
+.Catsidebar-filter {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #f8f9fa !important;
+
+}
+
+.Catsidebar-filter h4 {
+  color: #333;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* Accordion Styles */
+.Catsidebar-filter .accordion {
+  border: none;
+}
+
+.Catsidebar-filter .accordion-item {
+  border: none;
+  border-bottom: 1px solid #eee;
+  background-color: #eee !important;
+}
+
+.Catsidebar-filter .accordion-button {
+  padding: 1rem 0;
+  font-size: 1rem;
+  color: #333;
+  background: none;
+  box-shadow: none;
+  position: relative;
+}
+
+.Catsidebar-filter .accordion-button:not(.collapsed) {
+  color: #5cac94;
+  background: none;
+  box-shadow: none;
+}
+
+.Catsidebar-filter .accordion-button:focus {
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.Catsidebar-filter .accordion-button::after {
+  background-size: 1.2rem;
+  transition: all 0.2s ease;
+  background-color: transparent;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.Catsidebar-filter .accordion-button:not(.collapsed)::after {
+  background-color: transparent;
+  transform: rotate(-180deg);
+}
+
+.Catsidebar-filter .accordion-body {
+  padding: 1rem 0;
+}
+
+/* Form Check Styles */
+.Catsidebar-filter .form-check {
+  padding: 0.5rem 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  min-height: 1.5rem;
+  position: relative;
+}
+
+.Catsidebar-filter .form-check-input[type="radio"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  border: 2px solid #ced4da;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  opacity: 1;
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: all 0.2s ease;
+}
+
+.Catsidebar-filter .form-check-input[type="radio"]:checked {
+  background-color: #5cac94;
+  border-color: #5cac94;
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
+.Catsidebar-filter .form-check-input[type="radio"]:hover {
+  border-color: #5cac94;
+}
+
+.Catsidebar-filter .form-check-input[type="radio"]:focus {
+  box-shadow: none;
+  border-color: #5cac94;
+  outline: none;
+}
+
+.Catsidebar-filter .form-check-label {
+  color: #666;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding-left: 0.75rem;
+  transition: all 0.2s ease;
+  margin: 0;
+  line-height: 1.1rem;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+}
+
+.Catsidebar-filter .form-check-label:hover {
+  color: #5cac94;
+}
+
+/* Range Input Styles */
+.Catsidebar-filter .form-range {
+  width: 100%;
+  height: 1.5rem;
+  padding: 0;
+  background-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.Catsidebar-filter .form-range::-webkit-slider-thumb {
+  width: 1rem;
+  height: 1rem;
+  margin-top: -0.25rem;
+  background-color: #5cac94;
+  border: 0;
+  border-radius: 1rem;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.Catsidebar-filter .form-range::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  background-color: #5cac94;
+  border: 0;
+  border-radius: 1rem;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.Catsidebar-filter .form-range::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 0.5rem;
+  color: transparent;
+  cursor: pointer;
+  background-color: #e9ecef;
+  border-color: transparent;
+  border-radius: 1rem;
+}
+
+.Catsidebar-filter .form-range::-moz-range-track {
+  width: 100%;
+  height: 0.5rem;
+  color: transparent;
+  cursor: pointer;
+  background-color: #e9ecef;
+  border-color: transparent;
+  border-radius: 1rem;
+}
+
+.Catsidebar-filter .form-range:focus {
+  outline: none;
+}
+
+.Catsidebar-filter .form-range:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.25rem rgba(92, 172, 148, 0.25);
+}
+
+.Catsidebar-filter .form-range:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.25rem rgba(92, 172, 148, 0.25);
+}
+
+/* Badge Styles */
+.Catsidebar-filter .badge {
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.Catsidebar-filter .badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.Catsidebar-filter .badge.bg-success {
+  background-color: #5cac94 !important;
+}
+
+.Catsidebar-filter .badge.bg-light {
+  background-color: #fff !important;
+  color: #666 !important;
+  border: 1px solid #ced4da;
+}
+
+.Catsidebar-filter .badge.bg-light:hover {
+  background-color: #f8f9fa !important;
+  border-color: #5cac94;
+}

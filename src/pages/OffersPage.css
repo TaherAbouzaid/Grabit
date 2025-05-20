@@ -1,0 +1,166 @@
+/* General Styles */
+.offers-container {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Title and Subtitle */
+.offers-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 1.5rem;
+}
+
+.offers-subtitle {
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: #6c757d;
+}
+
+/* Offer Card */
+.offer-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.offer-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Offer Image Container */
+.offer-image-container {
+  position: relative;
+  padding-top: 75%; /* نسبة عرض إلى ارتفاع 4:3 */
+  overflow: hidden;
+}
+
+.offer-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* عرض الصورة كاملة */
+  transition: transform 0.3s ease;
+}
+
+.offer-card:hover .offer-image {
+  transform: scale(1.05);
+}
+
+/* Offer Badge */
+.offer-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: #ff6f61;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.offer-badge-rtl {
+  left: auto;
+  right: 15px;
+}
+
+/* Offer Content */
+.offer-content {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Offer Title */
+.offer-title {
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: #212529;
+  margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.offer-title:hover {
+  color: #5cac94;
+}
+
+/* Offer Description */
+.offer-excerpt {
+  flex-grow: 1;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: #6c757d;
+  line-height: 1.5;
+  max-height: 3.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: max-height 0.3s ease;
+}
+
+.offer-card:hover .offer-excerpt {
+  max-height: 10em;
+}
+
+/* Timer and Validity */
+.time-left {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.offer-validity {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* Action Link */
+.offer-link {
+  color: #007bff;
+  font-weight: 500;
+  background: none !important;
+  border: none;
+  padding: 0;
+}
+
+.offer-link:hover {
+  color: #5cac94 !important;
+}
+
+/* Section Divider */
+.section-divider {
+  margin: 3rem 0;
+}
+
+.section-divider hr {
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  opacity: 0.5;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+  .offers-title {
+    font-size: 2rem;
+  }
+
+  .offers-subtitle {
+    font-size: 1rem;
+  }
+
+  .offer-image-container {
+    padding-top: 100%; /* نسبة مربعة على الشاشات الصغيرة */
+  }
+
+  .offer-title {
+    font-size: 1.125rem;
+  }
+}
