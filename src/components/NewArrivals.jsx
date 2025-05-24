@@ -3,11 +3,15 @@ import { collection, getDocs, query, orderBy, limit, where, getDocs as getSubDoc
 import { db } from "../firebase/config";
 import ProductCard from "./ProductCard";
 import { Container, Row, Col, Spinner, Nav } from "react-bootstrap";
+import { useLanguage } from "../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 
 const NewArrivals = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
+  const { currentLanguage } = useLanguage();
+  useTranslation();
 
   const categories = [
     { id: "all", name: "All" },
@@ -53,10 +57,7 @@ const NewArrivals = () => {
           
           products.push(productData);
         }
-        
-        console.log("Active Category:", activeCategory);
-        console.log("All products:", products);
-        
+      
         setProducts(products);
       } catch (error) {
         console.error("Error fetching new arrivals:", error);
@@ -72,25 +73,28 @@ const NewArrivals = () => {
       <Row className="align-items-center mb-4">
         <Col>
           <h2 className="mb-2" style={{ fontWeight: 700 }}>
-            New <span style={{ color: '#5caf90' }}>Arrivals</span>
+            {currentLanguage === 'ar' ? 'وصل' : 'New'} <span style={{ color: '#5caf90', fontSize: '2rem' }}>{currentLanguage === 'ar' ? 'حديثاً' : 'Arrivals'}</span>
           </h2>
           <p className="mb-0" style={{ color: '#888' }}>
-            Shop online for new arrivals and get free shipping!
+            {currentLanguage === 'ar' ? 'تسوق عبر الإنترنت للمنتجات الجديدة واحصل على شحن مجاني!' : 'Shop online for new arrivals and get free shipping!'}
           </p>
         </Col>
-        <Col xs="auto">
-          <Nav className="category-tabs">
+        <Col xs="auto" className={currentLanguage === 'ar' ? 'me-auto' : 'ms-auto'}>
+          <Nav className="category-tabs flex-nowrap overflow-auto">
             {categories.map((category) => (
               <Nav.Item key={category.id}>
                 <Nav.Link
                   active={activeCategory === category.id}
                   onClick={() => {
-                    console.log("Category clicked:", category.id);
                     setActiveCategory(category.id);
                   }}
                   className={`category-tab ${activeCategory === category.id ? 'active' : ''}`}
                 >
-                  {category.name}
+                  {currentLanguage === 'ar' && category.id === 'all' ? 'الكل' : 
+                   currentLanguage === 'ar' && category.id === 'Home & Kitchen' ? 'المنزل والمطبخ' :
+                   currentLanguage === 'ar' && category.id === 'Food' ? 'الطعام' :
+                   currentLanguage === 'ar' && category.id === 'Health & Beauty' ? 'الصحة والجمال' :
+                   category.name}
                 </Nav.Link>
               </Nav.Item>
             ))}

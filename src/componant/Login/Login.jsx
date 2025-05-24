@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import './Login.css'; 
 import { useTranslation } from "react-i18next";
+import { showToast } from "../../components/SimpleToastUtils";
 
 
 
@@ -21,10 +22,9 @@ const Login = () => {
       const res = await signInWithEmailAndPassword(auth, data.email, data.password);
       const userDoc = await getDoc(doc(db, "users", res.user.uid));
       if (userDoc.exists()) {
-        console.log("User data:", userDoc.data());
         navigate("/");
       } else {
-        console.log("No such user data in Firestore!");
+        showToast("No such user data in Firestore!", 'error', 3000);
       }
     } catch (error) {
     console.error("Login error:", error);

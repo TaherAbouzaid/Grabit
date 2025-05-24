@@ -11,6 +11,9 @@ import "./BlogContent.css";
 import { BiSolidLike } from "react-icons/bi";
 import { AiTwotoneLike } from "react-icons/ai";
 
+// تعريف الصورة الافتراضية في بداية الملف
+const DEFAULT_POST_IMAGE = "https://images.pexels.com/photos/31067936/pexels-photo-31067936/free-photo-of-minimalist-architectural-white-wall-with-blue-sky.jpeg";
+
 export default function BlogContent() {
   const { postId } = useParams();
   const { user } = useAuth();
@@ -43,7 +46,6 @@ export default function BlogContent() {
     const fetchPostData = async () => {
       try {
         setLoading(true);
-        console.log("Fetching post with ID:", postId);
         const postRef = doc(db, "posts", postId);
         const postSnap = await getDoc(postRef);
 
@@ -75,7 +77,7 @@ export default function BlogContent() {
         setPost({
           id: postSnap.id,
           title: postData.title || t("blogContent.untitled"),
-          image: postData.image || "/placeholder.svg?height=400&width=800",
+          image: postData.image || DEFAULT_POST_IMAGE,
           content: postData.content?.split("\n").filter(p => p.trim()) || [t("blogContent.noContent")],
           date: postData.createdAt?.toDate().toLocaleDateString("en-US", {
             month: "short",
@@ -85,7 +87,7 @@ export default function BlogContent() {
           category: "General",
           authorId: postData.authorId || "Unknown",
           likesCount: postData.likesCount || 0,
-          views: (postData.views || 0) + 1,
+          views: postData.views || 0,
         });
         setCommentCount(commentCount);
         setHasLiked(userHasLiked);
@@ -200,9 +202,9 @@ export default function BlogContent() {
         >
           {hasLiked ? <BiSolidLike className="fs-4" /> : <AiTwotoneLike className="fs-4" />}
         </div>
-        <span>| {t("blogContent.likes", { count: post.likesCount })}</span>
-        <span>| {t("blogContent.comments", { count: commentCount })}</span>
-        <span>| {t("blogContent.views", { count: post.views })}</span>
+        <span>| {post.likesCount} {post.likesCount === 1 ? t("blogContent.like") : t("blogContent.likes")}</span>
+        <span>| {commentCount} {commentCount === 1 ? t("blogContent.comment") : t("blogContent.comments")}</span>
+        <span>| {post.views} {post.views === 1 ? t("blogContent.view") : t("blogContent.views")}</span>
         <span className="text-muted">| {post.date}</span>
       </div>
 

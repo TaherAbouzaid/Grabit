@@ -1,11 +1,10 @@
-
-import React, { useMemo } from 'react';
-import { Container, Row, Col, Nav, Spinner, Accordion } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { setCategory, setSubcategory } from '../../Store/Slices/filtersSlice';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import './MegaMenu.css';
+import React, { useMemo, useEffect } from "react";
+import { Container, Row, Col, Nav, Spinner, Accordion } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { setCategory, setSubcategory } from "../../Store/Slices/filtersSlice";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "./MegaMenu.css";
 
 const NewMega = () => {
   const dispatch = useDispatch();
@@ -16,20 +15,42 @@ const NewMega = () => {
 
   // Extract categories dynamically
   const categories = useMemo(() => {
-    const filteredProducts = products.filter(p => {
+    const filteredProducts = products.filter((p) => {
       if (!p.categoryId || !p.categoryId.categoryId) {
-        console.log('Product missing categoryId:', p);
+        
         return false;
       }
       return true;
     });
-    const categoriesMap = new Map(filteredProducts.map(p => [
-      p.categoryId.categoryId,
-      {
-        id: p.categoryId.categoryId,
-        name: p.categoryId.name?.[i18n.language] || t('categories.uncategorized', 'Uncategorized')
-      }
-    ]));
+    const categoriesMap = new Map(
+      filteredProducts.map((p) => {
+        let name = "";
+        // إذا كان name كائن متعدد اللغات
+        if (
+          typeof p.categoryId.name === "object" &&
+          p.categoryId.name !== null
+        ) {
+          name =
+            p.categoryId.name[i18n.language] ||
+            Object.values(p.categoryId.name)[0];
+        }
+        // إذا كان name نص فقط
+        else if (typeof p.categoryId.name === "string") {
+          name = p.categoryId.name;
+        }
+        // fallback
+        else {
+          name = t("categories.uncategorized", "Uncategorized");
+        }
+        return [
+          p.categoryId.categoryId,
+          {
+            id: p.categoryId.categoryId,
+            name,
+          },
+        ];
+      })
+    );
     return Array.from(categoriesMap.values());
   }, [products, t, i18n.language]);
 
@@ -39,14 +60,20 @@ const NewMega = () => {
     products.forEach((p) => {
       const sub = p.subCategoryId;
       if (sub?.subcategoryId && !subcategoriesMap.has(sub.subcategoryId)) {
+        let subName = "";
+        if (typeof sub.name === "object" && sub.name !== null) {
+          subName = sub.name[i18n.language] || Object.values(sub.name)[0];
+        } else if (typeof sub.name === "string") {
+          subName = sub.name;
+        } else {
+          subName = t("categories.uncategorized", "Uncategorized");
+        }
         subcategoriesMap.set(sub.subcategoryId, {
           id: sub.subcategoryId,
-          name: sub.name?.[i18n.language] || sub.subcategoryId,
-          categoryId: p.categoryId?.categoryId
+          name: subName,
+          categoryId: p.categoryId?.categoryId,
         });
-      } else if (!sub?.subcategoryId) {
-        console.log('Product missing subCategoryId:', p);
-      }
+      } 
     });
     return Array.from(subcategoriesMap.values()).reduce((acc, sub) => {
       if (sub.categoryId) {
@@ -55,13 +82,13 @@ const NewMega = () => {
       }
       return acc;
     }, {});
-  }, [products, i18n.language]);
+  }, [products, i18n.language, t]);
 
   // Handle subcategory click to update filters and navigate to shop
   const handleSubcategoryClick = (categoryId, subcategoryId) => {
     dispatch(setCategory(categoryId));
     dispatch(setSubcategory(subcategoryId));
-    navigate('/shop');
+    navigate("/shop");
   };
 
   // Simulate loading for UX
@@ -71,11 +98,52 @@ const NewMega = () => {
     return () => clearTimeout(timer);
   }, [products]);
 
+  useEffect(() => {
+    // Function to prevent horizontal scroll when mega menu is open
+    const handleMenuOpen = () => {
+      document.body.classList.add('mega-menu-open');
+    };
+    
+    const handleMenuClose = () => {
+      document.body.classList.remove('mega-menu-open');
+    };
+    
+    const megaMenuWrapper = document.querySelector('.header-mega-wrapper');
+    const navDropdown = document.querySelector('.header-nav-dropdown');
+    
+    if (navDropdown) {
+      navDropdown.addEventListener('mouseenter', handleMenuOpen);
+      navDropdown.addEventListener('mouseleave', handleMenuClose);
+    }
+    
+    if (megaMenuWrapper) {
+      megaMenuWrapper.addEventListener('mouseenter', handleMenuOpen);
+      megaMenuWrapper.addEventListener('mouseleave', handleMenuClose);
+    }
+    
+    return () => {
+      if (navDropdown) {
+        navDropdown.removeEventListener('mouseenter', handleMenuOpen);
+        navDropdown.removeEventListener('mouseleave', handleMenuClose);
+      }
+      
+      if (megaMenuWrapper) {
+        megaMenuWrapper.removeEventListener('mouseenter', handleMenuOpen);
+        megaMenuWrapper.removeEventListener('mouseleave', handleMenuClose);
+      }
+      
+      document.body.classList.remove('mega-menu-open');
+    };
+  }, []);
+
   return (
     <div className="mega-menu">
       <Container>
         {isLoading ? (
-          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100px' }}>
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ minHeight: "100px" }}
+          >
             <Spinner animation="border" variant="success" />
           </div>
         ) : (
@@ -84,7 +152,14 @@ const NewMega = () => {
             <Row className="d-none d-md-flex">
               {categories.length > 0 ? (
                 categories.map((category) => (
-                  <Col xs={12} sm={6} md={4} lg={2} key={category.id} className="mega-menu-col">
+                  <Col
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={2}
+                    key={category.id}
+                    className="mega-menu-col"
+                  >
                     <h5>{category.name}</h5>
                     {subcategories[category.id]?.length > 0 ? (
                       <ul className="list-unstyled">
@@ -92,7 +167,12 @@ const NewMega = () => {
                           <li key={subcategory.id} className="mb-2">
                             <Nav.Link
                               href={`#subcategory-${subcategory.id}`}
-                              onClick={() => handleSubcategoryClick(category.id, subcategory.id)}
+                              onClick={() =>
+                                handleSubcategoryClick(
+                                  category.id,
+                                  subcategory.id
+                                )
+                              }
                               className="p-0"
                             >
                               {subcategory.name}
@@ -101,13 +181,17 @@ const NewMega = () => {
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-muted small">{t('categories.no_subcategories', 'No subcategories')}</p>
+                      <p className="text-muted small">
+                        {t("categories.no_subcategories", "No subcategories")}
+                      </p>
                     )}
                   </Col>
                 ))
               ) : (
                 <Col>
-                  <p className="text-muted">{t('categories.no_categories', 'No categories available')}</p>
+                  <p className="text-muted">
+                    {t("categories.no_categories", "No categories available")}
+                  </p>
                 </Col>
               )}
             </Row>
@@ -125,7 +209,12 @@ const NewMega = () => {
                             <li key={subcategory.id} className="mb-2">
                               <Nav.Link
                                 href={`#subcategory-${subcategory.id}`}
-                                onClick={() => handleSubcategoryClick(category.id, subcategory.id)}
+                                onClick={() =>
+                                  handleSubcategoryClick(
+                                    category.id,
+                                    subcategory.id
+                                  )
+                                }
                                 className="p-0"
                               >
                                 {subcategory.name}
@@ -134,13 +223,17 @@ const NewMega = () => {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-muted small">{t('categories.no_subcategories', 'No subcategories')}</p>
+                        <p className="text-muted small">
+                          {t("categories.no_subcategories", "No subcategories")}
+                        </p>
                       )}
                     </Accordion.Body>
                   </Accordion.Item>
                 ))
               ) : (
-                <p className="text-muted">{t('categories.no_categories', 'No categories available')}</p>
+                <p className="text-muted">
+                  {t("categories.no_categories", "No categories available")}
+                </p>
               )}
             </Accordion>
           </>
@@ -150,4 +243,5 @@ const NewMega = () => {
   );
 };
 
-export default NewMega;
+// eslint-disable-next-line no-irregular-whitespace
+export default NewMega;

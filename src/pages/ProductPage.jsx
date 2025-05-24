@@ -5,13 +5,13 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { fetchProductById } from "../services/productService";
+import { incrementProductViews } from "../services/productStatsService"; // تصحيح مسار الاستيراد
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../Store/Slices/cartSlice';
 import { addReview, getProductReviews } from '../Store/Slices/reviewSlice';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { showToast } from '../components/SimpleToastUtils';
 
 const NextArrow = (props) => (
   <div
@@ -76,6 +76,9 @@ const ProductPage = () => {
         
         if (productData) {
           setProduct(productData);
+          
+          // زيادة عدد المشاهدات
+          await incrementProductViews(productId);
           
           // If it's a variant product, set the first variant's data
           if (productData.productType === "variant" && productData.variants?.length > 0) {
@@ -207,27 +210,28 @@ const ProductPage = () => {
 
   const handleReviewSubmit = async () => {
     if (!user) {
-      toast.error("Please login to write a review!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      // استخدام SimpleToast بدلاً من toast
+      showToast(
+        currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لكتابة مراجعة!" : "Please login to write a review!",
+        "error"
+      );
       navigate("/login");
       return;
     }
 
     if (rating === 0) {
-      toast.error("Please select a rating!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' ? "الرجاء اختيار تقييم!" : "Please select a rating!",
+        "error"
+      );
       return;
     }
 
     if (!review.trim()) {
-      toast.error("Please write a review!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' ? "الرجاء كتابة مراجعة!" : "Please write a review!",
+        "error"
+      );
       return;
     }
 
@@ -240,18 +244,19 @@ const ProductPage = () => {
         comment: review.trim()
       })).unwrap();
 
-      toast.success("Review submitted successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' ? "تم إرسال المراجعة بنجاح!" : "Review submitted successfully!",
+        "success"
+      );
       setShowReviewForm(false);
       setRating(0);
       setReview("");
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      toast.error("Failed to submit review. Please try again.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' ? "فشل في إرسال المراجعة. يرجى المحاولة مرة أخرى." : "Failed to submit review. Please try again.",
+        "error"
+      );
     }
   };
 
@@ -280,19 +285,21 @@ const ProductPage = () => {
 
   const handleAddToCart = async () => {
     if (!user) {
-      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      // استخدام SimpleToast بدلاً من toast
+      showToast(
+        currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!",
+        "error"
+      );
       navigate("/login");
       return;
     }
 
     if (getCurrentQuantity() === 0) {
-      toast.error(currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      // استخدام SimpleToast بدلاً من toast
+      showToast(
+        currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!",
+        "error"
+      );
       return;
     }
 
@@ -328,16 +335,18 @@ const ProductPage = () => {
 
       console.log('Adding to cart:', cartItem); // للتأكد من البيانات
       await dispatch(addToCart(cartItem));
-      toast.success(currentLanguage === 'ar' ? `تمت إضافة ${cartItem.title} إلى السلة!` : `${cartItem.title} added to cart!`, {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      // استخدام SimpleToast بدلاً من toast
+      showToast(
+        currentLanguage === 'ar' ? `تمت إضافة ${cartItem.title} إلى السلة!` : `${cartItem.title} added to cart!`,
+        "success"
+      );
     } catch (error) {
       console.error('Error adding to cart:', error); // للتأكد من الأخطاء
-      toast.error(currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      // استخدام SimpleToast بدلاً من toast
+      showToast(
+        currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!",
+        "error"
+      );
     }
   };
 
@@ -398,7 +407,6 @@ const ProductPage = () => {
 
   return (
     <div className="container my-5">
-      <ToastContainer />
       <div className="row g-4 align-items-start">
         <div className="col-12 col-md-6 col-lg-6">
           <div

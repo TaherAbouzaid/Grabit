@@ -1,3 +1,174 @@
+/* Main header layout */
+.logo-container {
+  flex: 0 0 auto;
+}
+
+.search-container {
+  flex: 1 1 auto;
+  max-width: 600px;
+}
+
+.icons-container {
+  flex: 0 0 auto;
+}
+
+/* Navbar collapse transition styles */
+.navbar-collapse {
+  transition: all 0.5s ease-in-out !important;
+  overflow: hidden;
+}
+
+.navbar-collapse.show {
+  height: auto !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+/* Ensure the transition is smooth */
+.navbar-collapse.collapsing {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s ease-in-out !important;
+}
+
+/* Slow fade-in effect for menu items */
+.navbar-collapse .nav-item {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+  transition-delay: calc(0.05s * var(--item-index, 0));
+}
+
+.navbar-collapse.show .nav-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Add delay to each nav item to create a cascade effect */
+.navbar-collapse .nav-item:nth-child(1) { --item-index: 1; }
+.navbar-collapse .nav-item:nth-child(2) { --item-index: 2; }
+.navbar-collapse .nav-item:nth-child(3) { --item-index: 3; }
+.navbar-collapse .nav-item:nth-child(4) { --item-index: 4; }
+.navbar-collapse .nav-item:nth-child(5) { --item-index: 5; }
+.navbar-collapse .nav-item:nth-child(6) { --item-index: 6; }
+.navbar-collapse .nav-item:nth-child(7) { --item-index: 7; }
+.navbar-collapse .nav-item:nth-child(8) { --item-index: 8; }
+
+/* Custom toggle button with slower transition */
+.navbar-toggler {
+  transition: transform 0.4s ease-in-out !important;
+}
+
+.navbar-toggler[aria-expanded="true"] {
+  transform: rotate(90deg);
+}
+
+/* Slow down the dropdown animations */
+.dropdown-menu {
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s ease;
+}
+
+.dropdown-menu.show,
+.hover-dropdown:hover .dropdown-menu,
+.hover-dropdown:hover .user-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-dropdown {
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s ease;
+}
+
+/* Slow down the header nav item underline animation */
+.header-nav-item::after {
+  transition: width 0.5s ease-in-out;
+}
+
+/* Fix for navbar toggle */
+.navbar-collapse.collapsing {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.35s ease;
+}
+
+/* Custom toggle button */
+.custom-navbar-toggler {
+  background: transparent;
+  border: none;
+  color: #505e64;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  z-index: 1050;
+}
+
+.custom-navbar-toggler:hover {
+  color: #5cac94;
+}
+
+.custom-navbar-toggler:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Ensure the navbar stays open/closed as needed */
+@media (max-width: 991.98px) {
+  .navbar-collapse:not(.show) {
+    display: none !important;
+    height: 0 !important;
+    visibility: hidden;
+  }
+  
+  .navbar-collapse.show {
+    display: block !important;
+    height: auto !important;
+    visibility: visible;
+  }
+  
+  /* Remove underline for mobile/tablet view */
+  .header-nav-item::after {
+    display: none !important;
+  }
+}
+
+/* Medium screen navigation */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .search-container {
+    max-width: calc(100% - 60px);
+  }
+  
+  /* Navigation links for medium screens */
+  .d-md-flex.d-lg-none a {
+    font-size: 14px;
+    font-weight: 500;
+    color: #505e64 !important;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+  }
+  
+  .d-md-flex.d-lg-none a:hover {
+    color: #5cac94 !important;
+    text-decoration: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .icons-container {
+    margin-left: auto;
+  }
+}
+
 .hover-dropdown {
   position: relative;
 }
@@ -278,4 +449,648 @@
 .border-start,
 .border {
   border: none !important;
+}
+
+/* Header navigation items */
+.header-nav-item {
+  position: relative;
+  color: #505e64;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.header-nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #5cac94;
+  transition: width 0.3s ease;
+}
+
+.header-nav-item:hover {
+  color: #5cac94;
+}
+
+.header-nav-item:hover::after {
+  width: 100%;
+}
+
+/* Remove underline when navbar is collapsed */
+.navbar-collapse:not(.show) .header-nav-item::after {
+  display: none !important;
+}
+
+/* Special case for no-underline items */
+.header-nav-no-underline::after {
+  display: none !important;
+}
+
+.header-nav-icon {
+  color: #5cac94;
+}
+
+/* Add cursor pointer to clickable elements */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Header dropdown styling */
+.header-nav-dropdown {
+  position: relative;
+}
+
+.header-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  min-width: 200px;
+  padding: 10px 0;
+  margin: 0;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-top: 3px solid #5cac94;
+}
+
+.header-dropdown-item {
+  color: #505e64;
+  font-weight: 500;
+  padding: 8px 20px;
+  transition: all 0.3s ease;
+}
+
+.header-dropdown-item:hover {
+  background-color: rgba(92, 172, 148, 0.1);
+  color: #5cac94;
+}
+
+/* Header mega menu container */
+.header-mega-wrapper {
+  position: absolute;
+  z-index: 1000;
+  display: none;
+  padding-top: 0;
+  width: 100%;
+  left: 0;
+  right: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Ensure MegaMenu is visible on large screens */
+@media (min-width: 992px) {
+  .header-nav-dropdown {
+    position: static !important;
+  }
+  
+  .header-mega-wrapper {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+  }
+  
+  .header-mega-wrapper .mega-menu {
+    display: block !important;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    border-top: 3px solid #5cac94;
+    border-radius: 0 0 8px 8px;
+  }
+  
+  /* Create invisible bridge to prevent gap */
+  .header-nav-dropdown:after {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 20px;
+    bottom: -20px;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+  }
+}
+
+/* Ensure MegaMenu is hidden on mobile */
+@media (max-width: 991.98px) {
+  .header-mega-wrapper {
+    display: none !important;
+  }
+}
+
+/* Hover behavior */
+.header-nav-dropdown:hover .header-dropdown {
+  display: block;
+}
+
+.header-nav-dropdown:hover .header-mega-wrapper {
+  display: block;
+}
+
+/* Make sure MegaMenu component is visible inside the wrapper */
+.header-mega-wrapper .mega-menu {
+  display: block !important;
+  width: 100%;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+/* Ensure MegaMenu is visible on large screens */
+@media (min-width: 992px) {
+  .header-mega-wrapper {
+    position: absolute;
+    left: 0;
+    width: 100vw;
+    transform: translateX(calc((100vw - 100%) / -2));
+  }
+  
+  .header-mega-wrapper .mega-menu {
+    width: 100%;
+    border-top: 3px solid #5cac94;
+  }
+}
+
+/* Add responsive styles for header */
+@media (max-width: 991.98px) {
+  .user-actions {
+    width: 100%;
+    justify-content: space-around;
+    margin-top: 1rem;
+  }
+  
+  .user-hover .user-dropdown {
+    left: 0;
+    right: auto;
+  }
+  
+  .header-nav-dropdown .dropdown-toggle-custom {
+    padding: 0.5rem 0;
+  }
+  
+  /* Improve mobile navigation */
+  .navbar-collapse {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 15px 0;
+  }
+  
+  .header-dropdown {
+    border: none;
+    box-shadow: none;
+    padding-left: 1rem;
+    background-color: rgba(92, 172, 148, 0.05);
+    border-radius: 8px;
+  }
+  
+  .header-nav-item::after {
+    display: none;
+  }
+}
+
+/* Ensure MegaMenu is hidden on mobile */
+@media (max-width: 991.98px) {
+  .header-mega-wrapper {
+    display: none !important;
+  }
+}
+
+/* Improve top bar styling */
+.small-border-bottom {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Improve user actions styling */
+.user-actions a {
+  transition: all 0.3s ease;
+}
+
+.user-actions a:hover {
+  color: #5cac94 !important;
+}
+
+.user-dropdown {
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Fix for horizontal scroll */
+.header-mega-wrapper {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Ensure the mega menu doesn't cause horizontal scroll */
+.header-nav-dropdown {
+  position: static;
+}
+
+/* Fix dropdown hover behavior */
+.header-nav-dropdown {
+  position: relative;
+}
+
+.header-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  min-width: 200px;
+  padding: 10px 0;
+  margin: 0;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-top: 3px solid #5cac94;
+}
+
+.header-dropdown-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.header-dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #5cac94;
+}
+
+/* Fix for dropdown disappearing */
+.header-nav-dropdown:after {
+  content: '';
+  display: block;
+  position: absolute;
+  height: 20px;
+  width: 100%;
+  bottom: -10px;
+  left: 0;
+  z-index: 999;
+  background-color: transparent;
+}
+
+.header-dropdown:before {
+  content: '';
+  display: block;
+  position: absolute;
+  height: 20px;
+  width: 100%;
+  top: -20px;
+  left: 0;
+  z-index: 999;
+  background-color: transparent;
+}
+
+/* Hover behavior */
+.header-nav-dropdown:hover .header-dropdown {
+  display: block;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 767.98px) {
+  /* Hide Categories text on mobile */
+  .header-nav-dropdown .header-nav-item {
+    display: none;
+  }
+}
+
+/* Header nav item styles */
+.header-nav-item {
+  position: relative;
+  color: #505e64;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.header-nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #5cac94;
+  transition: width 0.3s ease;
+}
+
+.header-nav-item:hover {
+  color: #5cac94;
+}
+
+.header-nav-item:hover::after {
+  width: 100%;
+}
+
+/* Dropdown styles */
+.hover-dropdown {
+  position: relative;
+}
+
+.hover-dropdown:hover .user-dropdown {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 150px;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 8px 16px;
+  color: #505e64;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #5cac94;
+}
+
+/* All categories button */
+.all-category-btn {
+  transition: background-color 0.3s;
+}
+
+.all-category-btn:hover {
+  background-color: #4a9a84 !important;
+}
+
+/* Small border bottom */
+.small-border-bottom {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile and tablet styles */
+@media (max-width: 991.98px) {
+  .header-nav-item::after {
+    display: none;
+  }
+  
+  .navbar-collapse {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+/* RTL support for toggle button */
+[dir="rtl"] .custom-navbar-toggler {
+  margin-right: 0 !important;
+  margin-left: 0.5rem !important;
+}
+
+[dir="rtl"] .me-2 {
+  margin-right: 0 !important;
+  margin-left: 0.5rem !important;
+}
+
+[dir="rtl"] .me-3 {
+  margin-right: 0 !important;
+  margin-left: 1rem !important;
+}
+
+/* Mobile layout adjustments */
+@media (max-width: 767.98px) {
+  .search-container {
+    max-width: 60%;
+  }
+  
+  .logo-container img {
+    max-height: 30px;
+  }
+  
+  .custom-navbar-toggler {
+    padding: 4px !important;
+  }
+  
+  /* Hide the old mobile layout */
+  .d-flex.d-md-none.flex-column {
+    display: none !important;
+  }
+}
+
+/* Adjust header layout for very small screens */
+@media (max-width: 577px) {
+  .d-flex.d-md-none {
+    flex-wrap: nowrap;
+    gap: 0.5rem; /* Reduce gap between items */
+  }
+  
+  .search-container {
+    flex-shrink: 1;
+    min-width: 0;
+    width: auto; /* Allow width to be determined by flex */
+    max-width: none; /* Remove max-width constraint */
+    margin-left: 0.5rem; /* Adjust margins */
+    margin-right: 0.5rem;
+  }
+  
+  .logo-container {
+    flex-shrink: 0;
+  }
+
+  .custom-navbar-toggler {
+    flex-shrink: 0;
+  }
+}
+
+/* Medium screen layout adjustments */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .search-container {
+    width: 100%;
+  }
+}
+
+/* Fix for desktop navigation */
+@media (min-width: 992px) {
+  /* Ensure desktop navigation is always visible */
+  .d-none.d-lg-flex {
+    display: flex !important;
+  }
+  
+  /* Fix for Categories dropdown */
+  .header-nav-dropdown {
+    position: relative;
+    display: block;
+  }
+  
+  .header-nav-dropdown .header-nav-item {
+    display: flex !important;
+    align-items: center;
+  }
+  
+  /* Fix for mega menu positioning */
+  .header-mega-wrapper {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100vw;
+    z-index: 1000;
+  }
+  
+  /* Fix for hover behavior */
+  .header-nav-dropdown:hover .header-mega-wrapper {
+    display: block;
+  }
+  
+  /* Fix for dropdown visibility */
+  .header-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+    z-index: 1000;
+    padding: 0.5rem 0;
+  }
+  
+  .header-nav-dropdown:hover .header-dropdown {
+    display: block;
+  }
+}
+
+/* Fix for mobile navigation */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #fff;
+    border-top: 1px solid rgba(0,0,0,.1);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+    padding: 1rem;
+  }
+  
+  .navbar-collapse.show {
+    display: block !important;
+  }
+}
+
+/* Fix for header nav items */
+.header-nav-item {
+  position: relative;
+  color: #505e64;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: inline-block;
+}
+
+.header-nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #5cac94;
+  transition: width 0.3s ease;
+}
+
+.header-nav-item:hover {
+  color: #5cac94;
+}
+
+.header-nav-item:hover::after {
+  width: 100%;
+}
+
+/* Fix for header-nav-no-underline */
+.header-nav-no-underline::after {
+  display: none !important;
+}
+
+/* Fix for cursor pointer */
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+/* Fix for mega menu visibility */
+.header-mega-wrapper {
+  display: none;
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+.header-nav-dropdown .header-nav-item:hover ~ .header-mega-wrapper {
+  display: block;
+}
+
+/* Fix for dropdown items */
+.header-dropdown-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.header-dropdown-item:hover {
+  background-color: rgba(92, 172, 148, 0.1);
+  color: #5cac94;
+}
+
+/* Fix for cart offcanvas */
+.cart-offcanvas {
+  z-index: 1060 !important; /* Higher z-index to ensure it's above other elements */
+}
+
+.cart-offcanvas .navbar-toggler,
+.cart-offcanvas .custom-navbar-toggler {
+  display: none !important; /* Hide any toggle buttons inside cart offcanvas */
+}
+
+/* Ensure cart offcanvas scrolls properly */
+.cart-offcanvas .offcanvas-body {
+  overflow-y: auto;
+}
+
+.cart-offcanvas .offcanvas-body .overflow-auto {
+  max-height: calc(100vh - 200px);
+}
+
+/* Prevent navbar elements from showing in cart offcanvas */
+.cart-offcanvas .navbar,
+.cart-offcanvas .navbar-collapse,
+.cart-offcanvas #main-navbar {
+  display: none !important;
+}
+
+.header-nav-dropdown .header-nav-item:hover ~ .header-mega-wrapper,
+.header-nav-dropdown .header-nav-item:hover ~ .header-mega-wrapper {
+  display: block;
+}
+
+a{
+  cursor: pointer;
 }

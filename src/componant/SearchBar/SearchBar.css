@@ -30,3 +30,24 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Extra small screens (mobile) */
+@media (max-width: 575.98px) {
+  .search-bar-container {
+    margin: 0 !important;
+  }
+  
+  .search-bar-group {
+    width: 100% !important;
+  }
+  
+  .search-input {
+    padding: 0.5rem !important;
+    font-size: 14px !important;
+  }
+  
+  /* Hide search button on mobile */
+  .search-button {
+    display: none !important;
+  }
+}

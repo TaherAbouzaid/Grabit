@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { fetchCart, updateCartQuantity, removeFromCart } from '../../Store/Slices/cartSlice';
 import { fetchProducts } from '../../Store/Slices/productsSlice';
-import { fetchUserData } from '../../Store/Slices/userSlice';
+import { fetchUserData } from '../../store/Slices/userSlice';
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../context/LanguageContext.jsx';
@@ -83,10 +83,8 @@ const CartItem = ({ cartProduct, cartLoading, handleQuantityChange, handleRemove
 const Cart = () => {
   const renderCount = useRef(0);
   renderCount.current += 1;
-  console.log(`Cart component render count: ${renderCount.current}`);
 
   const { user } = useAuth();
-  console.log("useAuth - user:", JSON.stringify(user, null, 2));
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -95,24 +93,17 @@ const Cart = () => {
   const userState = useSelector(state => state.user, shallowEqual);
   const { items: cart, loading: cartLoading, error: cartError } = cartState;
   const { items: products, loading: productLoading, error: productError } = productsState;
-  const { userData, loading: userLoading, error: userError } = userState;
+  const { loading: userLoading, error: userError } = userState;
   const { t } = useTranslation();
   
 
   // Log userState immediately after useSelector
-  console.log("useSelector - userState:", JSON.stringify(userState, null, 2));
-  console.log("useSelector - userData:", JSON.stringify(userData, null, 2));
-  console.log("useSelector - userData.address:", JSON.stringify(userData?.address, null, 2));
-
+ 
   // Fetch cart, products, and user data when component mounts
   useEffect(() => {
-    console.log("Cart component mounted");
     if (user && user.uid) {
-      console.log("Fetching cart for userId:", user.uid);
       dispatch(fetchCart(user.uid));
-      console.log("Fetching all products");
       dispatch(fetchProducts());
-      console.log("Fetching user data for userId:", user.uid);
       dispatch(fetchUserData(user.uid));
     }
   }, [dispatch, user]);
@@ -120,20 +111,16 @@ const Cart = () => {
   // Handle quantity change
   const handleQuantityChange = (productId, change) => {
     if (!user || !user.uid) {
-      console.log("No user logged in");
       return;
     }
-    console.log("Updating quantity for productId:", productId, "change:", change);
     dispatch(updateCartQuantity({ userId: user.uid, productId, change }));
   };
 
   // Handle remove product
   const handleRemoveProduct = (productId) => {
     if (!user || !user.uid) {
-      console.log("No user logged in");
       return;
     }
-    console.log("Removing productId:", productId);
     dispatch(removeFromCart({ userId: user.uid, productId }));
   };
 
@@ -144,8 +131,7 @@ const Cart = () => {
   };
 
   // Static delivery charges (can be made dynamic later)
-  const deliveryCharges = 24.00;
-  const totalAmount = calculateSubTotal() + deliveryCharges;
+  // const deliveryCharges = 24.00;
 
   const goToCheckout = () => {
     if (user) {
@@ -156,9 +142,7 @@ const Cart = () => {
   };
 
   // Log Form values
-  console.log("Form - userData.address:", JSON.stringify(userData?.address, null, 2));
-  console.log("Form - userData.address?.length:", userData?.address?.length);
-  console.log("Form - Country value:", Array.isArray(userData?.address) && userData.address.length > 0 ? userData.address[0].country : "N/A");
+ 
 
   if (!user) {
     return (

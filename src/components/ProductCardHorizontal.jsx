@@ -84,6 +84,7 @@ const ProductCardHorizontal = ({ product }) => {
         position: "top-right",
         autoClose: 3000,
       });
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error(currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!", {
         position: "top-right",

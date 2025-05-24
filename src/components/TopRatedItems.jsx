@@ -86,20 +86,44 @@ const TopRatedItems = () => {
     <div className="slider-section-fixed-width">
       <div className="slider-header-row d-flex align-items-center justify-content-between mb-3">
         <h3 className="slider-header-title mb-0">
-          {currentLanguage === 'ar' ? 'الأعلى' : 'Top'} <span style={{ color: '#5caf90' }}>{currentLanguage === 'ar' ? 'تقييماً' : 'Rated'}</span>
+          {currentLanguage === "ar" ? "الأعلى" : "Top"}{" "}
+          <span style={{ color: "#5caf90", fontSize: "1.5rem" }}>
+            {currentLanguage === "ar" ? "تقييماً" : "Rated"}
+          </span>
         </h3>
         <div className="slider-header-arrows">
-          <button className="trending-arrow me-1" onClick={() => sliderRef.current?.slickPrev()} aria-label="Previous">
+          <button
+            className="trending-arrow me-1"
+            onClick={() => sliderRef.current?.slickPrev()}
+            aria-label="Previous"
+            style={
+              currentLanguage === "ar" ? { transform: "rotate(180deg)" } : {}
+            }
+          >
             <FiChevronLeft size={24} />
           </button>
-          <button className="trending-arrow" onClick={() => sliderRef.current?.slickNext()} aria-label="Next">
+          <button
+            className="trending-arrow"
+            onClick={() => sliderRef.current?.slickNext()}
+            aria-label="Next"
+            style={
+              currentLanguage === "ar" ? { transform: "rotate(180deg)" } : {}
+            }
+          >
             <FiChevronRight size={24} />
           </button>
         </div>
       </div>
       {isLoading ? (
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 300 }}>
-          <Spinner animation="border" variant="success" style={{ width: "3rem", height: "3rem" }} />
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: 300 }}
+        >
+          <Spinner
+            animation="border"
+            variant="success"
+            style={{ width: "3rem", height: "3rem" }}
+          />
         </div>
       ) : (
         <div className="slider-wrapper-centered">

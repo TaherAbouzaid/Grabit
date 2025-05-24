@@ -8,8 +8,11 @@ import { collection, getDocs } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import "./BlogPage.css";
 
+// تعريف الصورة الافتراضية في بداية الملف
+const DEFAULT_POST_IMAGE = "https://images.pexels.com/photos/31067936/pexels-photo-31067936/free-photo-of-minimalist-architectural-white-wall-with-blue-sky.jpeg";
+
 export default function BlogPage() {
-  const { user } = useAuth();
+  useAuth();
   const { t } = useTranslation();
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,14 +45,12 @@ export default function BlogPage() {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        console.log("Querying posts collection");
         const postsRef = collection(db, "posts");
         const querySnapshot = await getDocs(postsRef);
-        console.log("Query result:", querySnapshot.docs.map(doc => doc.data()));
 
         const fetchedPosts = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          image: doc.data().image || "/placeholder.svg",
+          image: doc.data().image || DEFAULT_POST_IMAGE,
           title: doc.data().title || t("blogPage.untitled"),
           date: doc.data().createdAt?.toDate().toLocaleDateString("en-US", {
             month: "short",
@@ -122,6 +123,9 @@ export default function BlogPage() {
                     alt={post.title}
                     className="img-fluid rounded"
                     loading="lazy"
+                    onError={(e) => {
+                      e.target.src = DEFAULT_POST_IMAGE;
+                    }}
                   />
                 </div>
                 <div className="blog-content">

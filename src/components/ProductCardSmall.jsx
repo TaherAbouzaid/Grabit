@@ -1,14 +1,14 @@
 import React from "react";
-import { Card } from "react-bootstrap";
-import { FaShoppingBasket } from "react-icons/fa";
-import "./styles.css";
+import { Card, Badge } from "react-bootstrap";
+import { GiRoundStar } from "react-icons/gi";
+import { FiHeart } from "react-icons/fi";
+import { FaHeart, FaShoppingBasket } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../Store/Slices/cartSlice';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { showToast } from './SimpleToastUtils';
 
 const ProductCardSmall = ({ product }) => {
   const dispatch = useDispatch();
@@ -32,19 +32,13 @@ const ProductCardSmall = ({ product }) => {
 
   const handleAddToCart = async () => {
     if (!user) {
-      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' 
+          ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" 
+          : "Please login to add items to cart!", 
+        "error"
+      );
       navigate("/login");
-      return;
-    }
-
-    if (quantity === 0) {
-      toast.error(currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
       return;
     }
 
@@ -54,21 +48,28 @@ const ProductCardSmall = ({ product }) => {
         productId: product.id, 
         price: discountPrice || price
       }));
-      toast.success(currentLanguage === 'ar' ? `تمت إضافة ${title?.[currentLanguage]} إلى السلة!` : `${title?.en} added to cart!`, {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' 
+          ? `تمت إضافة ${title?.[currentLanguage]} إلى السلة!` 
+          : `${title?.en} added to cart!`, 
+        "success"
+      );
     } catch (error) {
-      toast.error(currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      console.error("Error adding to cart:", error);
+      showToast(
+        currentLanguage === 'ar' 
+          ? "فشل في إضافة المنتج إلى السلة!" 
+          : "Failed to add to cart!", 
+        "error"
+      );
     }
   };
 
+  // Remove unused function or add a button that uses it
+  // If you want to keep the wishlist functionality, you'll need to add a wishlist button to your UI
+
   return (
     <>
-      <ToastContainer />
       <Card 
         className="product-card-small shadow-sm product-card-small-hover" 
         style={{ 

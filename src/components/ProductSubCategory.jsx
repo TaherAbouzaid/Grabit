@@ -54,12 +54,7 @@ const ProductSubCategory = () => {
 
   // Log filter values for debugging
   useEffect(() => {
-    console.log('Current filters:', {
-      category: filter.category,
-      subcategory: filter.subcategory,
-      priceRange: filter.priceRange,
-      tags: filter.tags
-    });
+   
   }, [filter]);
 
   // Apply filters
@@ -74,7 +69,6 @@ const ProductSubCategory = () => {
     // Subcategory filter
     if (filter.subcategory) {
       if (!product.subCategoryId || product.subCategoryId.subcategoryId !== filter.subcategory) {
-        console.log('Product filtered out due to subcategory mismatch:', product);
         return false;
       }
     }
@@ -99,7 +93,6 @@ const ProductSubCategory = () => {
 
   // Log filtered products for debugging
   useEffect(() => {
-    console.log('Filtered products:', filteredProducts);
   }, [filteredProducts]);
 
   // Reset page when filters change

@@ -14,11 +14,11 @@ const MegaMenuProduct = () => {
     dispatch(fetchCategoriesWithSub());
   }, [dispatch]);
 
-  const handleCategoryClick = (categoryId) => {
+  const handleCategoryClick = () => {
     navigate(`/shop`);
   };
 
-  const handleSubCategoryClick = (categoryId, subCategoryId) => {
+  const handleSubCategoryClick = () => {
     navigate(`/shop`);
   };
 

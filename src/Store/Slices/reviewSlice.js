@@ -55,7 +55,6 @@ export const getProductReviews = createAsyncThunk(
   'reviews/getProductReviews',
   async (productId) => {
     try {
-      console.log('Getting reviews for product ID:', productId);
       
       const q = query(collection(db, 'reviews'), where('productId', '==', productId));
       const querySnapshot = await getDocs(q);
@@ -69,27 +68,18 @@ export const getProductReviews = createAsyncThunk(
         };
       });
 
-      console.log('Fetched reviews:', reviews);
 
       // Calculate RatingSummary
       if (reviews.length > 0) {
         const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
         const averageRating = totalRating / reviews.length;
 
-        console.log('Calculated RatingSummary:', {
-          average: averageRating,
-          count: reviews.length
-        });
-
         // Update product's RatingSummary
         const productRef = doc(db, 'allproducts', productId);
-        console.log('Attempting to update product:', productId);
         
         const productDoc = await getDoc(productRef);
-        console.log('Product exists:', productDoc.exists());
         
         if (productDoc.exists()) {
-          console.log('Current product data:', productDoc.data());
           
           await updateDoc(productRef, {
             ratingSummary: {
@@ -98,17 +88,10 @@ export const getProductReviews = createAsyncThunk(
             }
           });
 
-          console.log('Updated RatingSummary in product');
         } else {
-          console.log('Product not found with ID:', productId);
           // Try to get all products to check if the ID exists
-          const productsSnapshot = await getDocs(collection(db, 'allproducts'));
-          const products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          console.log('Available product IDs:', products.map(p => p.id));
         }
-      } else {
-        console.log('No reviews found for this product');
-      }
+      } 
 
       return reviews;
     } catch (error) {

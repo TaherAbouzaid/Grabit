@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 export default function OrdersTable() {
   const { user } = useAuth();
   const dispatch = useDispatch();
-  const { items: products, loading: productLoading, error: productError } = useSelector(state => state.products);
+  const { items: products, loading: productLoading } = useSelector(state => state.products);
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,11 +49,9 @@ export default function OrdersTable() {
     const fetchLatestOrder = async () => {
       try {
         setLoading(true);
-        console.log("Querying orders for userId:", user.uid);
         const ordersRef = collection(db, "orders");
         const q = query(ordersRef, where("userId", "==", user.uid));
         const querySnapshot = await getDocs(q);
-        console.log("Query result:", querySnapshot.docs.map(doc => doc.data()));
 
         if (querySnapshot.empty) {
           setError("No orders found.");

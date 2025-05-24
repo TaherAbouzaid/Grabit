@@ -16,12 +16,9 @@ const SearchBar = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim()) {
-      console.log("Dispatching search query:", query.trim());
       dispatch(setSearchQuery(query.trim()));
       navigate("/search");
       setQuery("");
-    } else {
-      console.log("Empty query, no dispatch");
     }
   };
 

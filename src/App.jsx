@@ -5,8 +5,9 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import Shop from "./pages/Shop";
 import ProductPage from "./pages/ProductPage";
-import { AuthProvider } from './context/AuthContext';
-import { LanguageProvider } from './context/LanguageContext';
+import { AuthProvider } from "./context/AuthContext";
+import { LanguageProvider } from "./context/LanguageContext";
+import ChatbotButton from "./componant/AIChat/ChatbotButton";
 
 import Cart from "./componant/Cart/Cart";
 import Wishlist from "./componant/Wishlist/Wishlist";
@@ -21,7 +22,7 @@ import UserProfile from "./componant/UserProfile/UserProfile";
 import EditProfile from "./componant/EditProfile/EditProfile";
 import OrderTracker from "./componant/OrderTracker/OrderTracker";
 
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { fetchCategoriesWithSub } from "./Store/Slices/categorySlicees";
 import OrderConfirmation from "./componant/Checkout/OrderConfirmation";
 import MegaMenuProduct from "./componant/MegaMenuProduct/MegaMenuProduct";
@@ -29,11 +30,14 @@ import ChangePassword from "./componant/ChangePassward/ChangePassward";
 import OrderList from "./componant/UserOrder/UserOrder";
 import ContactPage from "./componant/ContactUs/ContactUs";
 import OrdersTable from "./componant/UserHistory/UserHistory";
-import OffersPage from './pages/OffersPage';
+import OffersPage from "./pages/OffersPage";
 import BlogContent from "./componant/BlogContent/BlogContent";
 import BlogPage from "./componant/BlogPage/BlogPage";
 import AboutUs from "./componant/AboutUs/AboutUs";
 import SearchResults from "./componant/SearchResults/SearchResults";
+import "./i18n"; // تأكد من أن هذا هو الملف الصحيح
+import { loadLocalWishlist } from './store/Slices/wishlistSlice';
+
 
 function App() {
   useEffect(() => {
@@ -43,57 +47,72 @@ function App() {
     });
 
     return () => {
-      AOS.refresh(); 
+      AOS.refresh();
     };
   }, []);
 
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchCategoriesWithSub());
-  },[dispatch]);
-  
+  }, [dispatch]);
+
+  useEffect(() => {
+    // تحميل المفضلة المحلية عند بدء التطبيق
+    dispatch(loadLocalWishlist());
+  }, [dispatch]);
+
   return (
     <AuthProvider>
       <LanguageProvider>
         <BrowserRouter>
           <div className="d-flex flex-column min-vh-100">
-            <Header/>
+            <Header />
             <main className="flex-grow-1">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/shop/:productId" element={<ProductPage />} />
-                <Route path="/MegaMenuProduct" element={<MegaMenuProduct/>}/>
-                <Route path="/Cart" element={<Cart/>}/>
-                <Route path="/Wishlist" element={<Wishlist/>}/>
-                <Route path="/register" element={<Register/>}/>
-                <Route path="/login" element={<Login/>}/>
-                <Route path="/ForgetPassword" element={<ForgetPassword/>}/>
-                <Route path="/checkout" element={ <Checkout />}/>
+                <Route path="/MegaMenuProduct" element={<MegaMenuProduct />} />
+                <Route path="/Cart" element={<Cart />} />
+                <Route path="/Wishlist" element={<Wishlist />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/ForgetPassword" element={<ForgetPassword />} />
+                <Route path="/checkout" element={<Checkout />} />
                 <Route path="/ChangePassword" element={<ChangePassword />} />
                 <Route path="/profile" element={<UserProfile />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
-                <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                <Route
+                  path="/order-confirmation"
+                  element={<OrderConfirmation />}
+                />
                 <Route path="/ContactPage" element={<ContactPage />} />
                 <Route path="/userHistory" element={<OrdersTable />} />
-                <Route path="/OrderTracker" element={<OrderTracker/>}/>
+                <Route path="/OrderTracker" element={<OrderTracker />} />
                 <Route path="/OrderList" element={<OrderList />} />
                 <Route path="/offers" element={<OffersPage />} />
-                <Route path="/category/:categoryId" element={<CategoryPage />} />
-                <Route path="/category/:categoryId/:subCategoryId" element={<CategoryPage />} />
-                <Route path="/category/:categoryId/:subCategoryId/:subSubCategoryId" element={<CategoryPage />} />
-                <Route path="/category" element={<CategoryPage/>} />
-                <Route path="/BlogPage" element={<BlogPage/>} />
-                <Route path="/BlogPage/:postId" element={<BlogContent/>} />
+                <Route
+                  path="/category/:categoryId"
+                  element={<CategoryPage />}
+                />
+                <Route
+                  path="/category/:categoryId/:subCategoryId"
+                  element={<CategoryPage />}
+                />
+                <Route
+                  path="/category/:categoryId/:subCategoryId/:subSubCategoryId"
+                  element={<CategoryPage />}
+                />
+                <Route path="/category" element={<CategoryPage />} />
+                <Route path="/BlogPage" element={<BlogPage />} />
+                <Route path="/BlogPage/:postId" element={<BlogContent />} />
                 <Route path="/AboutUs" element={<AboutUs />} />
                 <Route path="/search" element={<SearchResults />} />
-
-
-
               </Routes>
             </main>
-            <Footer/>
+            <Footer />
+            <ChatbotButton />
           </div>
         </BrowserRouter>
       </LanguageProvider>

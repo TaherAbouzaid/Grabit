@@ -1,13 +1,5 @@
 {
-  "offers": {
-    "title": "Special Offers",
-    "subtitle": "Discover our latest deals and special promotions",
-    "noOffers": "No active offers at the moment",
-    "endsIn": "Ends in",
-    "validUntil": "Valid until",
-    "addToCart": "Add to Cart"
-  },
-  "common": {
+    "common": {
     "loading": "Loading...",
     "error": "An error occurred",
     "search": "Search",
@@ -17,6 +9,15 @@
     "noResults": "No products match your search.",
     "enterQuery": "Please enter a search query."
   },
+  "offers": {
+    "title": "Special Offers",
+    "subtitle": "Discover our latest deals and special promotions",
+    "noOffers": "No active offers at the moment",
+    "endsIn": "Ends in",
+    "validUntil": "Valid until",
+    "addToCart": "Add to Cart"
+  },
+
   "categories": {
     "home_kitchen": "Home & Kitchen",
     "electronics": "Electronics",
@@ -24,5 +25,54 @@
     "health_beauty": "Health & Beauty",
     "food": "Food",
     "other": "Other"
+  },
+  "order": {
+    "Orders ID": "Orders ID",
+    "Shipping": "Shipping",
+    "Quantity": "Quantity",
+    "Date": "Date",
+    "Price": "Price",
+    "Status": "Status",
+    "No": "No",
+    "completed": "Completed",
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "canceled": "Canceled",
+    "orders found": "orders found",
+    "Processing Order": "Processing Order",
+    "Product Dispatched": "Product Dispatched",
+    "Product Delivered": "Product Delivered"
+  },
+  "blogContent": {
+    "loading": "Loading post...",
+    "untitled": "Untitled",
+    "noContent": "No content available",
+    "errors": {
+      "offline": "You are offline. Post will load when you reconnect.",
+      "postNotFound": "Post not found.",
+      "loginRequired": "Please log in to like this post.",
+      "offlineAction": "You are offline. Please try again when connected.",
+      "failedToLoad": "Failed to load post: {{message}}",
+      "failedToLike": "Failed to like post: {{message}}",
+      "tryAgain": "Please try again."
+    },
+    "like": "Like",
+    "likes": "Likes",
+    "comment": "Comment",
+    "comments": "Comments",
+    "view": "View",
+    "views": "Views"
+  },
+  "chatbot": {
+    "title": "AI Assistant",
+    "welcome": "Hello! How can I help you today?",
+    "greeting": "Hello! How can I assist you with your shopping today?",
+    "productHelp": "We have a wide range of products. You can browse our shop or tell me what you're looking for.",
+    "orderHelp": "For order and shipping inquiries, you can check your order status in your profile or I can help you track a specific order.",
+    "default": "I'm not sure I understand. Could you rephrase your question?",
+    "inputPlaceholder": "Type your message here...",
+    "error": "Sorry, I'm having trouble connecting. Please try again later."
   }
 } 

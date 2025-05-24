@@ -9,11 +9,10 @@ import "./styles.css";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../Store/Slices/cartSlice';
-import { addToWishlist, addToLocalWishlist, removeFromWishlist, removeFromLocalWishlist } from '../Store/Slices/wishlistSlice';
+import { addToWishlist, addToLocalWishlist, removeFromWishlist, removeFromLocalWishlist } from '../store/Slices/wishlistSlice';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { showToast } from './SimpleToastUtils';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -68,19 +67,23 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = async () => {
     if (!user) {
-      toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' 
+          ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" 
+          : "Please login to add items to cart!", 
+        "error"
+      );
       navigate("/login");
       return;
     }
 
     if (quantity === 0) {
-      toast.error(currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' 
+          ? "هذا المنتج غير متوفر في المخزون!" 
+          : "This product is out of stock!", 
+        "error"
+      );
       return;
     }
 
@@ -90,55 +93,104 @@ const ProductCard = ({ product }) => {
         productId: product.id, 
         price: discountPrice || price 
       }));
-      toast.success(currentLanguage === 'ar' ? `تمت إضافة ${title?.[currentLanguage]} إلى السلة!` : `${title?.en} added to cart!`, {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' 
+          ? `تمت إضافة ${title?.[currentLanguage]} إلى السلة!` 
+          : `${title?.en} added to cart!`, 
+        "success"
+      );
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      toast.error(currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      showToast(
+        currentLanguage === 'ar' 
+          ? "فشل في إضافة المنتج إلى السلة!" 
+          : "Failed to add to cart!", 
+        "error"
+      );
     }
   };
 
-  const handleWishlistToggle = () => {
-    // if (!user) {
-    //   toast.error(currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى المفضلة!" : "Please login to add items to wishlist!", {
-    //     position: "top-right",
-    //     autoClose: 3000,
-    //   });
-    //   navigate("/login");
-    //   return;
-    // }
-
+  const handleAddToWishlist = () => {
     if (isInWishlist) {
       if (user) {
-        dispatch(removeFromWishlist({ productId: product.id, userId: user.uid }));
-        toast.success(currentLanguage === 'ar' ? `تمت إزالة ${title?.[currentLanguage]} من المفضلة!` : `${title?.en} removed from wishlist!`, {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        dispatch(removeFromWishlist({ productId: product.id, userId: user.uid }))
+          .then(() => {
+            showToast(
+              currentLanguage === 'ar' 
+                ? "تمت إزالة المنتج من المفضلة!" 
+                : "Product removed from wishlist!", 
+              "success"
+            );
+          })
+          .catch(error => {
+            console.error("Error removing from wishlist:", error);
+            showToast(
+              currentLanguage === 'ar' 
+                ? "فشل في إزالة المنتج من المفضلة!" 
+                : "Failed to remove from wishlist!", 
+              "error"
+            );
+          });
       } else {
-        dispatch(removeFromLocalWishlist(product.id));
-        toast.success(currentLanguage === 'ar' ? `تمت إزالة ${title?.[currentLanguage]} من المفضلة!` : `${title?.en} removed from wishlist!`, {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        dispatch(removeFromLocalWishlist(product.id))
+          .then(() => {
+            showToast(
+              currentLanguage === 'ar' 
+                ? "تمت إزالة المنتج من المفضلة!" 
+                : "Product removed from wishlist!", 
+              "success"
+            );
+          })
+          .catch(error => {
+            console.error("Error removing from local wishlist:", error);
+            showToast(
+              currentLanguage === 'ar' 
+                ? "فشل في إزالة المنتج من المفضلة!" 
+                : "Failed to remove from wishlist!", 
+              "error"
+            );
+          });
       }
     } else {
       if (user) {
-        dispatch(addToWishlist({ product, userId: user.uid }));
-        toast.success(currentLanguage === 'ar' ? `تمت إضافة ${title?.[currentLanguage]} إلى المفضلة!` : `${title?.en} added to wishlist!`, {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        dispatch(addToWishlist({ product, userId: user.uid }))
+          .then(() => {
+            showToast(
+              currentLanguage === 'ar' 
+                ? "تمت إضافة المنتج إلى المفضلة!" 
+                : "Product added to wishlist!", 
+              "success"
+            );
+          })
+          .catch(error => {
+            console.error("Error adding to wishlist:", error);
+            showToast(
+              currentLanguage === 'ar' 
+                ? "فشل في إضافة المنتج إلى المفضلة!" 
+                : "Failed to add to wishlist!", 
+              "error"
+            );
+          });
       } else {
-        dispatch(addToLocalWishlist(product));
-        toast.success(currentLanguage === 'ar' ? `تمت إضافة ${title?.[currentLanguage]} إلى المفضلة!` : `${title?.en} added to wishlist!`, {
-          position: "top-right",
-          autoClose: 3000,
-        });
+       
+        dispatch(addToLocalWishlist(product))
+          .then(() => {
+            showToast(
+              currentLanguage === 'ar' 
+                ? "تمت إضافة المنتج إلى المفضلة!" 
+                : "Product added to wishlist!", 
+              "success"
+            );
+          })
+          .catch(error => {
+            console.error("Error adding to local wishlist:", error);
+            showToast(
+              currentLanguage === 'ar' 
+                ? "فشل في إضافة المنتج إلى المفضلة!" 
+                : "Failed to add to wishlist!", 
+              "error"
+            );
+          });
       }
     }
   };
@@ -173,7 +225,6 @@ const ProductCard = ({ product }) => {
 
   return (
     <>
-      <ToastContainer />
       <Card 
         className="h-100 shadow-sm product-card"
         onMouseEnter={handleMouseEnter}
@@ -210,7 +261,7 @@ const ProductCard = ({ product }) => {
             <button 
               className="icon-btn" 
               title={isInWishlist ? (currentLanguage === 'ar' ? "إزالة من المفضلة" : "Remove from Wishlist") : (currentLanguage === 'ar' ? "إضافة إلى المفضلة" : "Add to Wishlist")}
-              onClick={handleWishlistToggle}
+              onClick={handleAddToWishlist}
               style={{ color: isInWishlist ? "#ff4d4d" : "inherit" }}
             >
               {isInWishlist ? <FaHeart /> : <FiHeart />}

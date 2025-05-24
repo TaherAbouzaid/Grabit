@@ -1,32 +1,40 @@
-
-
-import React, { useEffect } from 'react';
-import { Container, Table, Button, Row, Col, Image, Breadcrumb } from 'react-bootstrap';
+import React, { useEffect } from "react";
+import {
+  Container,
+  Table,
+  Button,
+  Row,
+  Col,
+  Image,
+  Breadcrumb,
+} from "react-bootstrap";
 import { IoCloseSharp } from "react-icons/io5";
 import { GiGymBag } from "react-icons/gi";
-import { useDispatch, useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import './Wishlist.css';
-import { fetchUserWishlist, loadLocalWishlist, removeFromLocalWishlist, removeFromWishlist } from '../../Store/Slices/wishlistSlice';
-import { addToCart } from '../../Store/Slices/cartSlice';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useLanguage } from '../../context/LanguageContext';
+import { useDispatch, useSelector } from "react-redux";
+import { showToast } from "../../components/SimpleToastUtils";
+import "./Wishlist.css";
+import {
+  fetchUserWishlist,
+  loadLocalWishlist,
+  removeFromLocalWishlist,
+  removeFromWishlist,
+} from "../../store/Slices/wishlistSlice";
+import { addToCart } from "../../Store/Slices/cartSlice";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../context/LanguageContext";
 
 const Wishlist = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
-  const { items: wishlistItems, error } = useSelector((state) => state.wishlist);
+  const { items: wishlistItems, error } = useSelector(
+    (state) => state.wishlist
+  );
   const { loading: cartLoading } = useSelector((state) => state.cart);
-  const navigate = useNavigate();
+  useNavigate();
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
-  
-  
-
-
 
   // ✅ تحميل wishlist من localStorage أو Firestore
   useEffect(() => {
@@ -40,18 +48,9 @@ const Wishlist = () => {
   // ✅ عرض toast إذا كان المنتج موجود بالفعل
   useEffect(() => {
     if (error === "Product already in wishlist") {
-      toast.warn("Product is already in your wishlist!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      showToast("Product is already in your wishlist!", "warning");
     }
   }, [error]);
-
-
 
   // ✅ إزالة منتج من الـ wishlist
   const handleRemoveItem = (productId) => {
@@ -60,32 +59,32 @@ const Wishlist = () => {
     } else {
       dispatch(removeFromLocalWishlist(productId));
     }
-    console.log("Remove item with ID:", productId);
   };
 
   // ✅ إضافة منتج إلى الـ cart
   const handleAddToCart = (item) => {
     if (cartLoading) return;
-    dispatch(addToCart({
-      userId: user?.uid || null,
-      productId: item.id,
-      price: item.price,
-    }));
-    toast.success(`${item.title?.en} added to cart!`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
+
+    dispatch(
+      addToCart({
+        userId: user?.uid || null,
+        productId: item.id,
+        price: item.price,
+      })
+    );
+
+    showToast(
+      currentLanguage === "ar"
+        ? "تمت إضافة المنتج إلى السلة!"
+        : "Product added to cart!",
+      "success"
+    );
   };
 
   return (
     <Container fluid className="p-4">
-      <ToastContainer />
       <div className="nav d-flex justify-content-between p-3">
-        <p>{t('wishlist.wishlist')}</p>
+        <p>{t("wishlist.wishlist")}</p>
         {/* <Breadcrumb>
           <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
           <Breadcrumb.Item active style={{ color: "#5caf90" }}>{t('wishlist.wishlist')}</Breadcrumb.Item>
@@ -94,10 +93,8 @@ const Wishlist = () => {
 
       <Row className="wishlist-header">
         <Col>
-          <h2 className="text-center fw-bold">
-            Product <span>Wishlist</span>
-          </h2>
-          <p className="text-center text-muted">{t('wishlist.title')}</p>
+          <h2 className="text-center fw-bold mt-4">{t("wishlist.wishlist")}</h2>
+          <p className="text-center text-muted">{t("wishlist.title")}</p>
         </Col>
       </Row>
 
@@ -105,18 +102,18 @@ const Wishlist = () => {
         <Col>
           <div className="wishlist-card border rounded p-3 bg-white shadow-sm">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="fw-bold mb-0">{t('wishlist.wishlist')}</h5>
-              <Button variant="success">{t('wishlist.shopNow')}</Button>
+              <h5 className="fw-bold mb-0">{t("wishlist.wishlist")}</h5>
+              <Button variant="success">{t("wishlist.shopNow")}</Button>
             </div>
 
             <Table responsive hover className="wishlist-table">
               <thead>
                 <tr>
-                  <th>{t('wishlist.image')}</th>
-                  <th className='w-50'>{t('wishlist.name')}</th>
-                  <th>{t('wishlist.price')}</th>
+                  <th>{t("wishlist.image")}</th>
+                  <th className="w-50">{t("wishlist.name")}</th>
+                  <th>{t("wishlist.price")}</th>
                   {/* <th>{t('wishlist.status')}</th> */}
-                  <th>{t('wishlist.actions')}</th>
+                  <th>{t("wishlist.actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -134,25 +131,8 @@ const Wishlist = () => {
                           variant="success"
                           size="sm"
                           className="me-2"
-                          onClick={() =>{
-                            if(!user)
-                               {
-                              toast.error("Please login to add items to cart!", {
-                                position: "top-right",
-                                autoClose: 3000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                                
-                              })
-                              navigate("/login")
-                            
-                            } else {
-                             handleAddToCart(item)}
-                              // disabled={cartLoading}
-                          } }
-                          >
+                          onClick={() => handleAddToCart(item)}
+                        >
                           <GiGymBag />
                         </Button>
                         <Button
@@ -168,7 +148,8 @@ const Wishlist = () => {
                 ) : (
                   <tr>
                     <td colSpan="5" className="text-center text-muted">
-                       {t('wishlist.empty')}                    </td>
+                      {t("wishlist.empty")}{" "}
+                    </td>
                   </tr>
                 )}
               </tbody>

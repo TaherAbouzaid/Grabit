@@ -22,31 +22,36 @@ const TopSellingItems = () => {
         setIsLoading(true);
         const productsRef = collection(db, "allproducts");
         const snapshot = await getDocs(productsRef);
-        const products = [];
+        const productsArray = [];
 
-        // Fetch each product and its variants if it's a variant product
         for (const doc of snapshot.docs) {
           const productData = { id: doc.id, ...doc.data() };
-          
-          // If it's a variant product, fetch its variants
+
           if (productData.productType === "variant") {
-            const variantsSnapshot = await getSubDocs(collection(db, `allproducts/${doc.id}/variants`));
+            const variantsSnapshot = await getSubDocs(
+              collection(db, `allproducts/${doc.id}/variants`)
+            );
             const variants = [];
             variantsSnapshot.forEach((variantDoc) => {
               variants.push({ id: variantDoc.id, ...variantDoc.data() });
             });
             productData.variants = variants;
           }
-          
-          products.push(productData);
+
+          productsArray.push(productData);
         }
 
-        // Sort products by soldCount
-        const sortedProducts = products
-          .filter(product => product.soldCount > 0)
-          .sort((a, b) => b.soldCount - a.soldCount)
+        // Sort products by soldCount (default to 0 if undefined), take top 6
+        let sortedProducts = productsArray
+          .sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0))
           .slice(0, 6);
 
+        // Fallback to first 6 products if none available
+        if (sortedProducts.length === 0) {
+          sortedProducts = productsArray.slice(0, 6);
+        }
+
+      
         setProducts(sortedProducts);
       } catch (error) {
         console.error("Error fetching top selling products:", error);
@@ -54,23 +59,24 @@ const TopSellingItems = () => {
         setIsLoading(false);
       }
     };
+
     fetchTopSellingProducts();
   }, []);
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: products.length >= 3, // Infinite only if enough products
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    rows: 3,
+    rows: products.length >= 3 ? 3 : products.length || 1, // Adjust rows dynamically
     slidesPerRow: 1,
     arrows: false,
     responsive: [
       {
         breakpoint: 992,
         settings: {
-          rows: 2,
+          rows: products.length >= 2 ? 2 : 1,
         },
       },
       {
@@ -86,20 +92,55 @@ const TopSellingItems = () => {
     <div className="slider-section-fixed-width">
       <div className="slider-header-row d-flex align-items-center justify-content-between mb-3">
         <h3 className="slider-header-title mb-0">
-          {currentLanguage === 'ar' ? 'الأكثر' : 'Top'} <span style={{ color: '#5caf90' }}>{currentLanguage === 'ar' ? 'مبيعاً' : 'Selling'}</span>
+          {currentLanguage === "ar" ? "الأكثر" : "Top"}{" "}
+          <span style={{ color: "#5caf90", fontSize: "1.5rem" }}>
+            {currentLanguage === "ar" ? "مبيعاً" : "Selling"}
+          </span>
         </h3>
         <div className="slider-header-arrows">
-          <button className="trending-arrow me-1" onClick={() => sliderRef.current?.slickPrev()} aria-label="Previous">
-            <FiChevronLeft size={22} />
+          <button
+            style={
+              currentLanguage === "ar" ? { transform: "rotate(180deg)" } : {}
+            }
+            className="trending-arrow me-1"
+            onClick={() => sliderRef.current?.slickPrev()}
+            aria-label="Previous"
+          >
+            <FiChevronLeft size={24} />
           </button>
-          <button className="trending-arrow" onClick={() => sliderRef.current?.slickNext()} aria-label="Next">
-            <FiChevronRight size={22} />
+          <button
+            style={
+              currentLanguage === "ar" ? { transform: "rotate(180deg)" } : {}
+            }
+            className="trending-arrow"
+            onClick={() => sliderRef.current?.slickNext()}
+            aria-label="Next"
+          >
+            <FiChevronRight size={24} />
           </button>
         </div>
       </div>
       {isLoading ? (
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 300 }}>
-          <Spinner animation="border" variant="success" style={{ width: "3rem", height: "3rem" }} />
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: 300 }}
+        >
+          <Spinner
+            animation="border"
+            variant="success"
+            style={{ width: "3rem", height: "3rem" }}
+          />
+        </div>
+      ) : products.length === 0 ? (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: 300 }}
+        >
+          <p>
+            {currentLanguage === "ar"
+              ? "لا توجد منتجات متاحة"
+              : "No products available"}
+          </p>
         </div>
       ) : (
         <div className="slider-wrapper-centered">
@@ -116,4 +157,4 @@ const TopSellingItems = () => {
   );
 };
 
-export default TopSellingItems; 
+export default TopSellingItems;

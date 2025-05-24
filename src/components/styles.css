@@ -94,7 +94,7 @@
 }
 
 .gi-banner {
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   padding-top: 40px;
   padding-bottom: 40px;
 }
@@ -104,8 +104,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-end;
-  text-align: right;
+  align-items: flex-start; /* اتجاه ثابت لـ LTR */
+  text-align: left; /* اتجاه ثابت لـ LTR */
   position: relative;
   padding: 80px 100px;
 }
@@ -119,7 +119,7 @@
   position: relative;
 }
 
-.gi-animated-banner .gi-bnr-detail h3 {
+.gi-animated-banner .gi-bnr-detail p {
   margin-top: 15px;
   margin-bottom: 15px;
   color: rgb(92, 175, 144);
@@ -137,6 +137,31 @@
   padding: 10px 15px;
   border-radius: 5px;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* دعم Swiper */
+.mySwiper {
+  direction: ltr; /* اتجاه ثابت */
+}
+
+.gi-bnr-detail {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.gi-bnr-detail.visible {
+  opacity: 1;
+}
+
+.gi-bnr-detail.hidden {
+  opacity: 0;
+}
+
+.gi-slide-item {
+  text-align: left; /* اتجاه ثابت لـ LTR */
+  min-height: 300px; /* لضمان ظهور السلايدات */
 }
 
 /* Responsiveness */
@@ -163,16 +188,19 @@ h2, h3, h4, h5, h6 {
   display: flex;
   gap: 10px;
   border: none;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .category-tab {
-  color: #666;
+  color: #2c2929 !important;
   border: none;
   padding: 8px 16px;
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: transparent;
+  background: transparent ;
+  font-weight: 500 !important;
 }
 
 .category-tab:hover {
@@ -181,8 +209,8 @@ h2, h3, h4, h5, h6 {
 }
 
 .category-tab.active {
-  color: #fff;
-  background: #5caf90;
+  color: #fff !important;
+  background: #5caf90 !important;
 }
 
 /* Dual Banners Styles */
@@ -613,15 +641,15 @@ h2, h3, h4, h5, h6 {
   position: absolute;
   right: 14px;
   bottom: 10px;
-  opacity: 0;
-  transform: translateY(20px);
+  opacity: 0 !important;
+  transform: translateY(10px);
   transition: opacity 0.3s, transform 0.3s;
   pointer-events: none;
   cursor: pointer;
 }
 
 .product-card-small-hover:hover .product-card-small-basket-icon {
-  opacity: 1;
+  opacity: 1 !important;
   transform: translateY(0);
   pointer-events: auto;
   cursor: pointer;

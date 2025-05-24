@@ -28,13 +28,11 @@ export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (_, { rejectWithValue }) => {
     try {
-      console.log("Fetching all products from allproducts collection");
       const querySnapshot = await getDocs(collection(db, "allproducts"));
       const products = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...convertTimestamps(doc.data()),
       }));
-      console.log("Fetched products:", products);
       return products;
     } catch (error) {
       console.error("Error fetching products:", error.message);
@@ -48,12 +46,10 @@ export const fetchProductById = createAsyncThunk(
   "products/fetchProductById",
   async (productId, { rejectWithValue }) => {
     try {
-      console.log("Fetching product with ID:", productId);
       const docRef = doc(db, "allproducts", productId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const product = { id: docSnap.id, ...convertTimestamps(docSnap.data()) };
-        console.log("Fetched product:", product);
         return product;
       } else {
         console.error("Product not found for ID:", productId);

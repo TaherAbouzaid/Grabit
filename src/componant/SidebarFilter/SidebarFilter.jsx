@@ -17,14 +17,6 @@ const SidebarFilter = () => {
   const categories = [...new Map(products
     .filter(p => p.categoryId && p.categoryId.categoryId) // Skip products with missing categoryId
     .map(p => {
-      if (!p.categoryId?.name?.en) {
-        console.log('Product with missing category name:', {
-          productId: p.id || 'unknown',
-          categoryId: p.categoryId?.categoryId || 'missing',
-          categoryName: p.categoryId?.name || 'missing',
-          fullProduct: p
-        });
-      }
       return [p.categoryId.categoryId, {
         id: p.categoryId.categoryId,
         name: p.categoryId.name?.[currentLanguage] || t('sidebarFilter.uncategorized') // Fallback to translated Uncategorized

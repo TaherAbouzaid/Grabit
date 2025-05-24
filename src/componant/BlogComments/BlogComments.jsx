@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -9,6 +9,25 @@ import {
 import { useTranslation } from "react-i18next";
 
 import "../BlogContent/BlogContent.css";
+
+// دالة لتنسيق التاريخ
+const formatDate = (timestamp) => {
+  if (!timestamp) return "N/A";
+  
+  try {
+    // تحويل الطابع الزمني إلى كائن Date
+    const date = timestamp instanceof Date ? timestamp : timestamp.toDate();
+    
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "N/A";
+  }
+};
 
 export default function BlogComments({ postId }) {
   const { user } = useAuth();
@@ -32,26 +51,60 @@ export default function BlogComments({ postId }) {
     };
   }, []);
 
-  const fetchUserProfile = async (uid) => {
-    if (userCache[uid]) return userCache[uid];
-    try {
-      const userRef = doc(db, "users", uid);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        const userData = userSnap.data();
-        const profile = {
-          displayName: userData.fullName || userData.email || uid,
-          photoURL: userData.profileImage || "/placeholder.svg?height=50&width=50",
-        };
-        setUserCache(prev => ({ ...prev, [uid]: profile }));
-        return profile;
-      }
-      return { displayName: uid, photoURL: "/placeholder.svg?height=50&width=50" };
-    } catch (err) {
-      console.error("Error fetching user profile:", err);
-      return { displayName: uid, photoURL: "/placeholder.svg?height=50&width=50" };
+  // إضافة صورة افتراضية للمستخدم
+  const DEFAULT_AVATAR = "https://via.placeholder.com/40";
+
+  const fetchUserProfile = useCallback(async (userId) => {
+    if (!userId) {
+      return { displayName: "Anonymous User", photoURL: DEFAULT_AVATAR };
     }
-  };
+
+    // Check cache first
+    if (userCache[userId]) {
+      return userCache[userId];
+    }
+
+    try {
+      console.log("Fetching user profile for userId:", userId);
+      const userDoc = await getDoc(doc(db, "users", userId));
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        console.log("User data found:", userData);
+        
+        // استخدام الحقول الصحيحة من سكيما المستخدم
+        const userProfile = {
+          displayName: userData.fullName || "Anonymous User",
+          photoURL: userData.profileImage || DEFAULT_AVATAR,
+        };
+        
+        console.log("Processed user profile:", userProfile);
+        
+        // Update cache
+        setUserCache(prev => ({ ...prev, [userId]: userProfile }));
+        
+        return userProfile;
+      } else {
+        console.log("No user document found for userId:", userId);
+        // User document doesn't exist
+        const defaultProfile = { 
+          displayName: "Anonymous User", 
+          photoURL: DEFAULT_AVATAR 
+        };
+        
+        // Cache the default profile too to avoid repeated lookups
+        setUserCache(prev => ({ ...prev, [userId]: defaultProfile }));
+        
+        return defaultProfile;
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error, "for userId:", userId);
+      return { 
+        displayName: "Anonymous User", 
+        photoURL: DEFAULT_AVATAR 
+      };
+    }
+  }, [userCache]);
 
   useEffect(() => {
     if (!isOnline) {
@@ -67,17 +120,50 @@ export default function BlogComments({ postId }) {
         const commentsQuery = query(collection(db, "comments"), where("postId", "==", postId));
         const commentsSnap = await getDocs(commentsQuery);
 
+        if (commentsSnap.empty) {
+          console.log("No comments found for post:", postId);
+          setComments([]);
+          setLoading(false);
+          return;
+        }
+
+        console.log(`Found ${commentsSnap.size} comments for post:`, postId);
+        
         const commentsData = [];
         for (const commentDoc of commentsSnap.docs) {
           const commentData = commentDoc.data();
-          const userProfile = await fetchUserProfile(commentData.authorId);
+          console.log("Comment data:", commentData);
+          
+          // استخدام الحقل الصحيح للمستخدم (authorId أو userId)
+          const userId = commentData.authorId || commentData.userId;
+          console.log("Using userId for comment:", userId);
+          
+          // Fetch user profile for comment author
+          const userProfile = await fetchUserProfile(userId);
+          console.log("User profile for comment:", userProfile);
 
+          // Fetch replies for this comment
           const repliesQuery = query(collection(db, "replies"), where("commentId", "==", commentDoc.id));
           const repliesSnap = await getDocs(repliesQuery);
           const replies = [];
+          
           for (const replyDoc of repliesSnap.docs) {
             const replyData = replyDoc.data();
             const replyUserProfile = await fetchUserProfile(replyData.userId);
+            
+            // Check if user has liked this reply
+            let hasLiked = false;
+            if (user) {
+              const likesQuery = query(
+                collection(db, "likes"),
+                where("targetId", "==", replyDoc.id),
+                where("targetType", "==", "reply"),
+                where("userId", "==", user.uid)
+              );
+              const likesSnap = await getDocs(likesQuery);
+              hasLiked = !likesSnap.empty;
+            }
+            
             replies.push({
               id: replyDoc.id,
               content: replyData.content,
@@ -89,15 +175,21 @@ export default function BlogComments({ postId }) {
               name: replyUserProfile.displayName,
               avatar: replyUserProfile.photoURL,
               likesCount: replyData.likesCount || 0,
-              hasLiked: user
-                ? (await getDocs(query(
-                    collection(db, "likes"),
-                    where("targetId", "==", replyDoc.id),
-                    where("targetType", "==", "reply"),
-                    where("userId", "==", user.uid)
-                  ))).empty === false
-                : false,
+              hasLiked: hasLiked,
             });
+          }
+
+          // Check if user has liked this comment
+          let hasLiked = false;
+          if (user) {
+            const likesQuery = query(
+              collection(db, "likes"),
+              where("targetId", "==", commentDoc.id),
+              where("targetType", "==", "comment"),
+              where("userId", "==", user.uid)
+            );
+            const likesSnap = await getDocs(likesQuery);
+            hasLiked = !likesSnap.empty;
           }
 
           commentsData.push({
@@ -113,17 +205,11 @@ export default function BlogComments({ postId }) {
             likesCount: commentData.likesCount || 0,
             replyCount: replies.length,
             replies,
-            hasLiked: user
-              ? (await getDocs(query(
-                  collection(db, "likes"),
-                  where("targetId", "==", commentDoc.id),
-                  where("targetType", "==", "comment"),
-                  where("userId", "==", user.uid)
-                ))).empty === false
-              : false,
+            hasLiked: hasLiked,
           });
         }
 
+        console.log("Processed comments data:", commentsData);
         setComments(commentsData);
       } catch (err) {
         console.error("Error fetching comments:", err);
@@ -134,7 +220,7 @@ export default function BlogComments({ postId }) {
     };
 
     fetchComments();
-  }, [postId, isOnline, user, t]);
+  }, [postId, isOnline, user, t, fetchUserProfile]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -149,9 +235,13 @@ export default function BlogComments({ postId }) {
     if (!newComment.trim()) return;
 
     try {
+      console.log("Adding new comment for user:", user.uid);
       const commentRef = doc(collection(db, "comments"));
       const postRef = doc(db, "posts", postId);
       const userProfile = await fetchUserProfile(user.uid);
+      
+      console.log("User profile for comment:", userProfile);
+      
       await runTransaction(db, async (transaction) => {
         transaction.set(commentRef, {
           authorId: user.uid,
@@ -165,6 +255,8 @@ export default function BlogComments({ postId }) {
         });
         transaction.update(postRef, { commentIds: arrayUnion(commentRef.id) });
       });
+
+      console.log("Comment added successfully with ID:", commentRef.id);
 
       setComments([...comments, {
         id: commentRef.id,
@@ -184,7 +276,8 @@ export default function BlogComments({ postId }) {
     }
   };
 
-  const handleReplySubmit = async (commentId, replyContent) => {
+  const handleReplySubmit = async (e, commentId, replyContent) => {
+    e.preventDefault();
     if (!user) {
       setError(t("blogComments.errors.loginRequired"));
       return;
@@ -217,7 +310,7 @@ export default function BlogComments({ postId }) {
         replies: [...comment.replies, {
           id: replyRef.id,
           content: replyContent,
-          date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+          date: formatDate(new Date()),
           name: userProfile.displayName,
           avatar: userProfile.photoURL,
           likesCount: 0,
@@ -301,6 +394,18 @@ export default function BlogComments({ postId }) {
     }
   };
 
+  const toggleReplyForm = (commentId) => {
+    setReplyInputs(prev => {
+      const newInputs = { ...prev };
+      if (newInputs[commentId] !== undefined) {
+        delete newInputs[commentId];
+      } else {
+        newInputs[commentId] = "";
+      }
+      return newInputs;
+    });
+  };
+
   if (loading) {
     return <Container className="blog-comments py-4"><div className="text-center">{t("blogComments.loading")}</div></Container>;
   }
@@ -334,20 +439,16 @@ export default function BlogComments({ postId }) {
                 </Button>
                 <Button
                   variant="link"
-                  className="text-success p-0"
-                  onClick={() => setReplyInputs({ ...replyInputs, [comment.id]: replyInputs[comment.id] || "" })}
+                  size="sm"
+                  onClick={() => toggleReplyForm(comment.id)}
+                  disabled={!user || !isOnline}
                 >
-                  {t("blogComments.reply")} ({comment.replyCount})
+                  {t("blogComments.reply")}
                 </Button>
               </div>
+
               {replyInputs[comment.id] !== undefined && (
-                <Form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleReplySubmit(comment.id, replyInputs[comment.id]);
-                  }}
-                  className="mb-3"
-                >
+                <Form onSubmit={(e) => handleReplySubmit(e, comment.id, replyInputs[comment.id])} className="mb-3">
                   <Form.Group controlId={`replyContent-${comment.id}`}>
                     <Form.Control
                       as="textarea"
@@ -364,26 +465,31 @@ export default function BlogComments({ postId }) {
                   </Button>
                 </Form>
               )}
-              {comment.replies.map((reply) => (
-                <div key={reply.id} className="comment-item d-flex flex-column flex-md-row mb-2 ms-2 ms-md-4 gap-2">
-                  <div className="comment-avatar">
-                    <img src={reply.avatar} alt={reply.name} className="rounded-circle" />
-                  </div>
-                  <div className="comment-content">
-                    <h6 className="mb-1">{reply.name}</h6>
-                    <div className="text-muted small mb-1">{reply.date}</div>
-                    <p>{comment.content}</p>
-                    <Button
-                      variant={reply.hasLiked ? "outline-danger" : "outline-primary"}
-                      size="sm"
-                      onClick={() => handleLike(reply.id, "reply", false, comment.id)}
-                      disabled={!user || !isOnline}
-                    >
-                      {reply.hasLiked ? t("blogComments.unlike") : t("blogComments.like")} ({reply.likesCount})
-                    </Button>
-                  </div>
+              
+              {comment.replies && comment.replies.length > 0 && (
+                <div className="replies-container mt-3">
+                  {comment.replies.map((reply) => (
+                    <div key={reply.id} className="comment-item d-flex flex-column flex-md-row mb-2 ms-2 ms-md-4 gap-2">
+                      <div className="comment-avatar">
+                        <img src={reply.avatar} alt={reply.name} className="rounded-circle" />
+                      </div>
+                      <div className="comment-content">
+                        <h6 className="mb-1">{reply.name}</h6>
+                        <div className="text-muted small mb-1">{reply.date}</div>
+                        <p>{reply.content}</p>
+                        <Button
+                          variant={reply.hasLiked ? "outline-danger" : "outline-primary"}
+                          size="sm"
+                          onClick={() => handleLike(reply.id, "reply", false, comment.id)}
+                          disabled={!user || !isOnline}
+                        >
+                          {reply.hasLiked ? t("blogComments.unlike") : t("blogComments.like")} ({reply.likesCount})
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         ))}

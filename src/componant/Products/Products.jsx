@@ -5,7 +5,7 @@ import SidebarFilter from '../SidebarFilter/SidebarFilter';
 import { Link, useNavigate } from "react-router-dom"; 
 import './Products.css'
 import { useAuth } from '../../context/AuthContext';
-import { addToLocalWishlist, addToWishlist } from '../../Store/Slices/wishlistSlice';
+import { addToLocalWishlist, addToWishlist } from '../../store/Slices/wishlistSlice';
 import { addToCart, fetchCart } from '../../Store/Slices/cartSlice';
 import { fetchProducts} from '../../Store/Slices/productsSlice'
 
@@ -22,7 +22,7 @@ const ProductPage = () => {
   const { error: cartError, loading: cartLoading } = useSelector(state => state.cart);
 
 
-const navigate = useNavigate();
+ useNavigate();
 
 
   
@@ -32,7 +32,6 @@ const navigate = useNavigate();
 
   useEffect(() => {
     if (user && user.uid) {
-      console.log("Fetching cart on mount for userId:", user.uid);
       dispatch(fetchCart(user.uid));
     }
   }, [dispatch, user]);
@@ -54,19 +53,16 @@ const navigate = useNavigate();
 //     }
 //   };
 
- const handleAddToCart =async (productId, price) => {
-    console.log("Current user:", user);
-    if (!user || !user.uid) {
-      console.log("No user logged in or userId is undefined");
-      alert("Please log in to add items to your cart");
-      navigate("/login");
-      return;
-    }
-    console.log("Dispatching addToCart for productId:", productId, "userId:", user.uid);
-    await dispatch(addToCart({ userId: user.uid, productId, price }));
-    console.log("Fetching cart after addToCart for userId:", user.uid);
-    await dispatch(fetchCart(user.uid));
-  };
+ const handleAddToCart = async (productId, price) => {
+  if (!user || !user.uid) {
+    await dispatch(addToCart({ productId, price }));
+    // eslint-disable-next-line no-undef
+    await dispatch(fetchLocalCart());
+    return;
+  }
+  await dispatch(addToCart({ userId: user.uid, productId, price }));
+  await dispatch(fetchCart(user.uid));
+};
 
 
   const allProducts = products || [];
@@ -95,7 +91,6 @@ const categories = [
   ).values(),
 ];
 
-console.log("Search Query from Redux:", searchQuery);
 
 
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Container, Row, Col } from "react-bootstrap";
 import {
   FaFacebookF,
@@ -23,7 +24,6 @@ const Footer = () => {
   const categories = useMemo(() => {
     const filteredProducts = products.filter((p) => {
       if (!p.categoryId || !p.categoryId.categoryId) {
-        console.log("Product missing categoryId:", p);
         return false;
       }
       return true;
@@ -41,7 +41,6 @@ const Footer = () => {
   }, [products, t, i18n.language]);
 
   const handleCategoryClick = (categoryId) => {
-    console.log("Category clicked in Footer:", { categoryId });
     dispatch(setCategory(categoryId));
     dispatch(setSubcategory(null));
     navigate("/shop");

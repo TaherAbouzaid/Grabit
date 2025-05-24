@@ -1,30 +1,54 @@
 
 .mega-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
   background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 0 0 0.375rem 0.375rem;
   z-index: 1000;
-  padding: 0.5rem 0;
-  width: 100%; /* Respect Container */
-  max-width: 100%; /* Prevent overflow */
+  padding: 2rem;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
-/* RTL support for Arabic */
-html[dir="rtl"] .mega-menu {
-  left: auto;
-  right: 0;
+.mega-menu .container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Add to body when mega menu is open */
+body.mega-menu-open {
+  overflow-x: hidden !important;
+  padding-right: 0 !important;
+  width: 100%;
+}
+
+.mega-menu .row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+  width: 100%;
+  justify-content: center;
+  overflow: visible; /* Allow items to be visible */
+}
+
+.mega-menu .mega-menu-col {
+  padding: 0 15px;
+  margin-bottom: 1.5rem;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 180px;
+  max-width: 220px;
 }
 
 /* Column styles for desktop */
 .mega-menu h5 {
   color: #5cac94;
-  font-weight: 500;
-  margin-bottom: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
   font-size: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+  white-space: nowrap; /* Prevent wrapping */
 }
 
 .mega-menu ul {
@@ -42,70 +66,76 @@ html[dir="rtl"] .mega-menu {
   text-decoration: none;
   font-size: 0.9rem;
   display: block;
+  padding: 0.25rem 0;
+  transition: all 0.2s ease;
+  position: relative;
+  padding-left: 1rem;
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.mega-menu ul li a:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: #5cac94;
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.2s ease;
 }
 
 .mega-menu ul li a:hover {
   color: #5cac94;
+  padding-left: 1.25rem;
 }
 
-.mega-menu .mega-menu-col {
-  padding: 0 8px; /* Fit within Container */
-}
-
-/* Accordion styles for mobile */
-.mega-menu .accordion-header {
-  background-color: transparent;
-}
-
-.mega-menu .accordion-button {
-  color: #5cac94;
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 0.5rem 0;
-  background-color: transparent;
-  box-shadow: none;
-}
-
-.mega-menu .accordion-button:not(.collapsed) {
-  color: #5cac94;
-  background-color: transparent;
-}
-
-.mega-menu .accordion-button:focus {
-  box-shadow: none;
-  border-color: transparent;
-}
-
-.mega-menu .accordion-body {
-  padding: 0.5rem 0;
+.mega-menu ul li a:hover:before {
+  opacity: 1;
 }
 
 /* Responsive adjustments */
-@media (max-width: 767.98px) { /* Below md */
-  .mega-menu {
-    position: static; /* Prevent absolute positioning issues */
-    padding: 0.25rem 0;
-  }
-
+@media (min-width: 992px) {
   .mega-menu .mega-menu-col {
-    margin-bottom: 0.5rem;
-  }
-
-  .mega-menu .accordion-button {
-    font-size: 0.9rem;
-  }
-
-  .mega-menu ul li a {
-    font-size: 0.85rem;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 180px;
+    max-width: 220px;
   }
 }
 
-@media (max-width: 575.98px) { /* Below sm */
+@media (max-width: 991px) {
+  .mega-menu {
+    padding: 1rem;
+  }
+  
   .mega-menu .mega-menu-col {
-    padding: 0 5px;
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
   }
+}
 
-  .mega-menu .accordion-button {
-    padding: 0.4rem 0;
+@media (max-width: 767px) {
+  .mega-menu .mega-menu-col {
+    flex: 0 0 50%;
+    max-width: 50%;
   }
+}
+
+/* Fix for RTL */
+[dir="rtl"] .mega-menu ul li a {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+[dir="rtl"] .mega-menu ul li a:before {
+  left: auto;
+  right: 0;
+}
+
+[dir="rtl"] .mega-menu ul li a:hover {
+  padding-left: 0;
+  padding-right: 1.25rem;
 }

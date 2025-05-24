@@ -41,7 +41,7 @@ const CategorySlider = () => {
  
         const filteredProducts = products.filter((p) => {
           if (!p.categoryId) {
-            console.log("Product missing categoryId:", p);
+          
             return false;
           }
           return true;
@@ -74,16 +74,8 @@ const CategorySlider = () => {
  
         const cats = categoriesData.map((cat) => {
           const iconKey = iconMap[cat.name.en] || "other";
-          const translationKey = `categories.${iconKey}`;
          
-          // طباعة معلومات التصحيح
-          console.log({
-            categoryName: cat.name.en,
-            iconKey,
-            translationKey,
-            translationExists: !!t(translationKey, { returnObjects: true }),
-            translation: t(translationKey, { returnObjects: true })
-          });
+        
          
           return {
             id: cat.id,
@@ -143,7 +135,7 @@ const CategorySlider = () => {
   };
  
   return (
-    <Container>
+    <Container className="py-5">
       <div
         className={showSlider ? "fadeup-feature" : ""}
         style={{ minHeight: "220px", position: "relative" }}

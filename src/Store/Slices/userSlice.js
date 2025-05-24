@@ -24,14 +24,11 @@ export const fetchUserData = createAsyncThunk(
   "user/fetchUserData",
   async (userId, { rejectWithValue }) => {
     try {
-      console.log("Fetching user data for userId:", userId);
       const docRef = doc(db, "users", userId);
       const docSnap = await getDoc(docRef, { cache: "no-cache" });
       if (docSnap.exists()) {
         const rawData = docSnap.data();
-        console.log("Raw Firestore data:", JSON.stringify(rawData, null, 2));
         const userData = { id: docSnap.id, ...convertTimestamps(rawData) };
-        console.log("Processed user data:", JSON.stringify(userData, null, 2));
         if (!userData.address) {
           console.warn("Address field is missing or undefined in userData:", userData);
         }
