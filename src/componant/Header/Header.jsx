@@ -108,14 +108,33 @@ function Header() {
   // Handle quantity change
   const handleQuantityChange = (productId, change) => {
     if (user && cartItems?.cartId) {
-      dispatch(updateCartQuantity({ userId: user.uid, productId, change }));
+      // Pass productId and variantId to updateCartQuantity
+      const itemToUpdate = cartItems.products.find(
+        (item) =>
+          item.productId === productId &&
+          (!item.variantId ||
+            item.variantId ===
+              cartItems.products.find((p) => p.productId === productId)
+                ?.variantId)
+      );
+      if (itemToUpdate) {
+        dispatch(
+          updateCartQuantity({
+            userId: user.uid,
+            productId,
+            variantId: itemToUpdate.variantId,
+            change,
+          })
+        );
+      }
     }
   };
 
   // Handle remove item
-  const handleRemoveItem = (productId) => {
+  const handleRemoveItem = (productId, variantId) => {
     if (user && cartItems?.cartId) {
-      dispatch(removeFromCart({ userId: user.uid, productId }));
+      // Pass productId and variantId to removeFromCart
+      dispatch(removeFromCart({ userId: user.uid, productId, variantId }));
     }
   };
 
@@ -309,7 +328,7 @@ function Header() {
                       >
                         {t("nav.orders")}
                       </a>
-                      <a  className="dropdown-item" onClick={logout}>
+                      <a className="dropdown-item" onClick={logout}>
                         {t("nav.logout")}
                       </a>
                     </>
@@ -334,7 +353,6 @@ function Header() {
 
               <div className="text-center">
                 <a
-                  
                   className="text-decoration-none text-secondary"
                   onClick={(e) => {
                     e.preventDefault();
@@ -371,7 +389,7 @@ function Header() {
               </div>
 
               <div className="text-center" onClick={handleShow}>
-                <a  className="text-decoration-none text-secondary">
+                <a className="text-decoration-none text-secondary">
                   <div className="position-relative">
                     <BiShoppingBag size={24} />
                     {cartLoading ? (
@@ -860,73 +878,70 @@ function Header() {
                   {t("common.error")}: {cartError}
                 </div>
               ) : cartItems?.products?.length > 0 ? (
-                cartItems.products.map((item, idx) => {
-                  const product = products.find((p) => p.id === item.productId);
-                  return (
-                    <Row
-                      key={item.productId || idx}
-                      className="border border-secondary m-2 py-3 align-items-center"
-                    >
-                      <Col xs={3}>
-                        <Image
-                          src={
-                            product?.mainImage ||
-                            "https://via.placeholder.com/60"
-                          }
-                          width="60"
-                          height="60"
-                          className="me-2"
-                          onError={(e) =>
-                            (e.target.src = "https://via.placeholder.com/60")
-                          }
-                        />
-                      </Col>
-                      <Col xs={6}>
-                        <h5>
-                          {product?.title?.[currentLanguage] ||
-                            t("common.unknownProduct")}
-                        </h5>
-                        <h6>${item.ItemsPrice.toFixed(2)}</h6>
-                        <div className="d-flex align-items-center">
-                          <Button
-                            size="sm"
-                            variant="light"
-                            onClick={() =>
-                              handleQuantityChange(item.productId, -1)
-                            }
-                            disabled={item.itemQuantity <= 1 || cartLoading}
-                          >
-                            -
-                          </Button>
-                          <Form.Control
-                            className="mx-1 text-center"
-                            style={{ width: "40px" }}
-                            size="sm"
-                            value={item.itemQuantity}
-                            readOnly
-                          />
-                          <Button
-                            size="sm"
-                            variant="light"
-                            onClick={() =>
-                              handleQuantityChange(item.productId, 1)
-                            }
-                            disabled={cartLoading}
-                          >
-                            +
-                          </Button>
-                        </div>
-                      </Col>
-                      <Col xs={3} className="d-flex justify-content-end">
-                        <IoCloseSharp
-                          size={20}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleRemoveItem(item.productId)}
-                        />
-                      </Col>
-                    </Row>
-                  );
-                })
+                cartItems.products.map((item) => (
+                  <Row
+                    key={item.productId + (item.variantId || "")}
+                    className="py-2 border-bottom"
+                  >
+                    <Col xs={3}>
+                      <Image
+                        src={
+                          item.mainImage ||
+                          products?.find((p) => p.id === item.productId)
+                            ?.mainImage ||
+                          "https://via.placeholder.com/40"
+                        }
+                        fluid
+                        rounded
+                        width="40"
+                        height="40"
+                        className="me-2"
+                        onError={(e) =>
+                          (e.target.src = "https://via.placeholder.com/40")
+                        }
+                      />
+                    </Col>
+                    <Col xs={7}>
+                      <h6 className="mb-0">
+                        {item.title?.[currentLanguage] ||
+                          item.title?.en ||
+                          products?.find((p) => p.id === item.productId)
+                            ?.title?.[currentLanguage] ||
+                          products?.find((p) => p.id === item.productId)?.title
+                            ?.en ||
+                          "Product"}
+                        {item.variantAttributes &&
+                          Object.keys(item.variantAttributes).length > 0 && (
+                            <small className="text-muted ms-2">
+                              (
+                              {Object.entries(item.variantAttributes)
+                                .map(([key, value]) => `${t(key)}: ${value}`)
+                                .join(", ")}
+                              )
+                            </small>
+                          )}
+                      </h6>
+                      <p className="mb-0 small">
+                        {t("cart.quantity")}: {item.itemQuantity}
+                      </p>
+                      <p className="mb-0 small">
+                        ${(item.price * item.itemQuantity).toFixed(2)}
+                      </p>
+                    </Col>
+                    <Col xs={2} className="text-end">
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-danger p-0"
+                        onClick={() =>
+                          handleRemoveItem(item.productId, item.variantId)
+                        }
+                      >
+                        <IoCloseSharp size={18} />
+                      </Button>
+                    </Col>
+                  </Row>
+                ))
               ) : (
                 <div className="text-center text-muted">{t("cart.empty")}</div>
               )}

@@ -108,8 +108,8 @@ function PostSliderHome() {
           <div className="d-flex flex-column py-4 mb-4">
             <div className="d-flex flex-row justify-content-between align-items-center  flex-wrap">
               <div>
-                <h3>{t("postHome.latestPosts")}</h3>
-                <p>{t("postHome.checkOutOurLatestBlogPosts")}</p>
+                <h3 style={{ color: "#5cac94" ,fontWeight:"bold"}}>{t("postHome.latestPosts")}</h3>
+                <p className="text-dark">{t("postHome.checkOutOurLatestBlogPosts")}</p>
               </div>
 
               <button

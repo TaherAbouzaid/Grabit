@@ -8,10 +8,10 @@ import { fetchProductById } from "../services/productService";
 import { incrementProductViews } from "../services/productStatsService"; // تصحيح مسار الاستيراد
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
-import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../Store/Slices/cartSlice';
-import { addReview, getProductReviews } from '../Store/Slices/reviewSlice';
-import { showToast } from '../components/SimpleToastUtils';
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../Store/Slices/cartSlice";
+import { addReview, getProductReviews } from "../Store/Slices/reviewSlice";
+import { showToast } from "../components/SimpleToastUtils";
 
 const NextArrow = (props) => (
   <div
@@ -23,7 +23,7 @@ const NextArrow = (props) => (
       right: -20,
       zIndex: 2,
       top: "50%",
-      transform: "translateY(-50%)"
+      transform: "translateY(-50%)",
     }}
   >
     <FaChevronRight size={22} color="#5caf90" />
@@ -40,7 +40,7 @@ const PrevArrow = (props) => (
       left: -20,
       zIndex: 2,
       top: "50%",
-      transform: "translateY(-50%)"
+      transform: "translateY(-50%)",
     }}
   >
     <FaChevronLeft size={22} color="#5caf90" />
@@ -62,33 +62,36 @@ const ProductPage = () => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [hoveredRating, setHoveredRating] = useState(0);
-  const reviews = useSelector(state => state.reviews.items);
-  const reviewsLoading = useSelector(state => state.reviews.loading);
-  const cartLoading = useSelector(state => state.cart.loading);
+  const reviews = useSelector((state) => state.reviews.items);
+  const reviewsLoading = useSelector((state) => state.reviews.loading);
+  const cartLoading = useSelector((state) => state.cart.loading);
 
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        console.log('Fetching product with ID:', productId);
+        console.log("Fetching product with ID:", productId);
         const productData = await fetchProductById(productId);
-        console.log('Fetched product data:', productData);
-        
+        console.log("Fetched product data:", productData);
+
         if (productData) {
           setProduct(productData);
-          
+
           // زيادة عدد المشاهدات
           await incrementProductViews(productId);
-          
+
           // If it's a variant product, set the first variant's data
-          if (productData.productType === "variant" && productData.variants?.length > 0) {
+          if (
+            productData.productType === "variant" &&
+            productData.variants?.length > 0
+          ) {
             const firstVariant = productData.variants[0];
             setSelectedVariant(firstVariant);
             setMainImg(firstVariant.mainImage);
-            
+
             // Set initial attributes from first variant
             const initialAttributes = {};
-            firstVariant.attributes?.forEach(attr => {
+            firstVariant.attributes?.forEach((attr) => {
               initialAttributes[attr.key] = attr.value.split(",")[0].trim();
             });
             setSelectedAttributes(initialAttributes);
@@ -96,7 +99,7 @@ const ProductPage = () => {
             setMainImg(productData.mainImage);
           }
         } else {
-          console.log('No product data found for ID:', productId);
+          console.log("No product data found for ID:", productId);
           setProduct(null);
         }
       } catch (error) {
@@ -107,7 +110,7 @@ const ProductPage = () => {
     };
 
     fetchProduct();
-    console.log('Dispatching getProductReviews for ID:', productId);
+    console.log("Dispatching getProductReviews for ID:", productId);
     dispatch(getProductReviews(productId));
   }, [productId, dispatch]);
 
@@ -115,23 +118,30 @@ const ProductPage = () => {
   const getAvailableAttributeValues = (attributeKey) => {
     if (!product?.variants) return [];
     const values = new Set();
-    
+
     // Filter variants based on currently selected attributes
-    const filteredVariants = product.variants.filter(variant => {
-      return variant.attributes?.every(attr => {
+    const filteredVariants = product.variants.filter((variant) => {
+      return variant.attributes?.every((attr) => {
         // Skip the current attribute we're checking
         if (attr.key === attributeKey) return true;
         // Check if the variant has the currently selected value for other attributes
-        return selectedAttributes[attr.key] && 
-               attr.value.split(",").map(v => v.trim()).includes(selectedAttributes[attr.key]);
+        return (
+          selectedAttributes[attr.key] &&
+          attr.value
+            .split(",")
+            .map((v) => v.trim())
+            .includes(selectedAttributes[attr.key])
+        );
       });
     });
 
     // Get unique values from filtered variants
-    filteredVariants.forEach(variant => {
-      const attr = variant.attributes?.find(attr => attr.key === attributeKey);
+    filteredVariants.forEach((variant) => {
+      const attr = variant.attributes?.find(
+        (attr) => attr.key === attributeKey
+      );
       if (attr) {
-        attr.value.split(",").forEach(value => values.add(value.trim()));
+        attr.value.split(",").forEach((value) => values.add(value.trim()));
       }
     });
 
@@ -141,38 +151,57 @@ const ProductPage = () => {
   // Get variants that match all currently selected attributes
   const getMatchingVariants = (attributeKey, attributeValue) => {
     if (!product?.variants) return [];
-    return product.variants.filter(variant => {
-      return variant.attributes?.every(attr => {
+    return product.variants.filter((variant) => {
+      return variant.attributes?.every((attr) => {
         if (attr.key === attributeKey) {
-          return attr.value.split(",").map(v => v.trim()).includes(attributeValue);
+          return attr.value
+            .split(",")
+            .map((v) => v.trim())
+            .includes(attributeValue);
         }
-        return selectedAttributes[attr.key] && 
-               attr.value.split(",").map(v => v.trim()).includes(selectedAttributes[attr.key]);
+        return (
+          selectedAttributes[attr.key] &&
+          attr.value
+            .split(",")
+            .map((v) => v.trim())
+            .includes(selectedAttributes[attr.key])
+        );
       });
     });
   };
 
   const handleAttributeChange = (attributeKey, attributeValue) => {
     // Create a new attributes object with the updated value
-    const newAttributes = { ...selectedAttributes, [attributeKey]: attributeValue };
+    const newAttributes = {
+      ...selectedAttributes,
+      [attributeKey]: attributeValue,
+    };
 
     // Find all variants that match the new selection
-    const matchingVariants = product.variants.filter(variant => {
-      return variant.attributes?.every(attr => {
+    const matchingVariants = product.variants.filter((variant) => {
+      return variant.attributes?.every((attr) => {
         const selectedValue = newAttributes[attr.key];
-        return selectedValue && attr.value.split(",").map(v => v.trim()).includes(selectedValue);
+        return (
+          selectedValue &&
+          attr.value
+            .split(",")
+            .map((v) => v.trim())
+            .includes(selectedValue)
+        );
       });
     });
 
     // Update attributes to only include values that are available in matching variants
     const updatedAttributes = { ...newAttributes };
-    getAttributeKeys().forEach(key => {
+    getAttributeKeys().forEach((key) => {
       if (key !== attributeKey) {
         const availableValues = new Set();
-        matchingVariants.forEach(variant => {
-          const attr = variant.attributes?.find(attr => attr.key === key);
+        matchingVariants.forEach((variant) => {
+          const attr = variant.attributes?.find((attr) => attr.key === key);
           if (attr) {
-            attr.value.split(",").forEach(value => availableValues.add(value.trim()));
+            attr.value
+              .split(",")
+              .forEach((value) => availableValues.add(value.trim()));
           }
         });
 
@@ -197,8 +226,8 @@ const ProductPage = () => {
   const getAttributeKeys = () => {
     if (!product?.variants) return [];
     const keys = new Set();
-    product.variants.forEach(variant => {
-      variant.attributes?.forEach(attr => keys.add(attr.key));
+    product.variants.forEach((variant) => {
+      variant.attributes?.forEach((attr) => keys.add(attr.key));
     });
     return Array.from(keys);
   };
@@ -212,7 +241,9 @@ const ProductPage = () => {
     if (!user) {
       // استخدام SimpleToast بدلاً من toast
       showToast(
-        currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لكتابة مراجعة!" : "Please login to write a review!",
+        currentLanguage === "ar"
+          ? "الرجاء تسجيل الدخول لكتابة مراجعة!"
+          : "Please login to write a review!",
         "error"
       );
       navigate("/login");
@@ -221,7 +252,9 @@ const ProductPage = () => {
 
     if (rating === 0) {
       showToast(
-        currentLanguage === 'ar' ? "الرجاء اختيار تقييم!" : "Please select a rating!",
+        currentLanguage === "ar"
+          ? "الرجاء اختيار تقييم!"
+          : "Please select a rating!",
         "error"
       );
       return;
@@ -229,32 +262,40 @@ const ProductPage = () => {
 
     if (!review.trim()) {
       showToast(
-        currentLanguage === 'ar' ? "الرجاء كتابة مراجعة!" : "Please write a review!",
+        currentLanguage === "ar"
+          ? "الرجاء كتابة مراجعة!"
+          : "Please write a review!",
         "error"
       );
       return;
     }
 
     try {
-      await dispatch(addReview({
-        productId,
-        userId: user.uid,
-        userName: user.displayName || user.email?.split('@')[0] || 'User',
-        rating,
-        comment: review.trim()
-      })).unwrap();
+      await dispatch(
+        addReview({
+          productId,
+          userId: user.uid,
+          userName: user.displayName || user.email?.split("@")[0] || "User",
+          rating,
+          comment: review.trim(),
+        })
+      ).unwrap();
 
       showToast(
-        currentLanguage === 'ar' ? "تم إرسال المراجعة بنجاح!" : "Review submitted successfully!",
+        currentLanguage === "ar"
+          ? "تم إرسال المراجعة بنجاح!"
+          : "Review submitted successfully!",
         "success"
       );
       setShowReviewForm(false);
       setRating(0);
       setReview("");
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       showToast(
-        currentLanguage === 'ar' ? "فشل في إرسال المراجعة. يرجى المحاولة مرة أخرى." : "Failed to submit review. Please try again.",
+        currentLanguage === "ar"
+          ? "فشل في إرسال المراجعة. يرجى المحاولة مرة أخرى."
+          : "Failed to submit review. Please try again.",
         "error"
       );
     }
@@ -268,11 +309,14 @@ const ProductPage = () => {
             key={star}
             className={isInteractive ? "cursor-pointer" : ""}
             style={{
-              color: star <= (isInteractive ? (hoveredRating || rating) : rating) ? "#f8bf87" : "#ccc",
+              color:
+                star <= (isInteractive ? hoveredRating || rating : rating)
+                  ? "#f8bf87"
+                  : "#ccc",
               fontSize: isInteractive ? "1.5rem" : "1rem",
               marginRight: "2px",
               cursor: isInteractive ? "pointer" : "default",
-              transition: "color 0.2s ease"
+              transition: "color 0.2s ease",
             }}
             onClick={() => isInteractive && setRating(star)}
             onMouseEnter={() => isInteractive && setHoveredRating(star)}
@@ -287,7 +331,9 @@ const ProductPage = () => {
     if (!user) {
       // استخدام SimpleToast بدلاً من toast
       showToast(
-        currentLanguage === 'ar' ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" : "Please login to add items to cart!",
+        currentLanguage === "ar"
+          ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!"
+          : "Please login to add items to cart!",
         "error"
       );
       navigate("/login");
@@ -297,7 +343,9 @@ const ProductPage = () => {
     if (getCurrentQuantity() === 0) {
       // استخدام SimpleToast بدلاً من toast
       showToast(
-        currentLanguage === 'ar' ? "هذا المنتج غير متوفر في المخزون!" : "This product is out of stock!",
+        currentLanguage === "ar"
+          ? "هذا المنتج غير متوفر في المخزون!"
+          : "This product is out of stock!",
         "error"
       );
       return;
@@ -310,14 +358,24 @@ const ProductPage = () => {
         quantity: 1,
         subCategoryId: product.subCategoryId,
         brandId: product.brandId,
-        productType: product.productType
+        productType: product.productType,
       };
 
       // Add variant information if it's a variant product
       if (product.productType === "variant" && selectedVariant) {
         cartItem.variantId = selectedVariant.id;
         cartItem.variantAttributes = selectedAttributes;
-        cartItem.title = selectedVariant.title?.[currentLanguage] || selectedVariant.title?.en;
+        // Ensure variant title is stored as a translation object { ar: '...', en: '...' }
+        if (selectedVariant.title) {
+          cartItem.title =
+            typeof selectedVariant.title === "object" &&
+            selectedVariant.title !== null
+              ? selectedVariant.title
+              : { [currentLanguage]: selectedVariant.title }; // Create object if it's a string
+        } else {
+          cartItem.title = { [currentLanguage]: "Product Variant" }; // Default if title is missing
+        }
+
         cartItem.mainImage = selectedVariant.mainImage;
         cartItem.quantity = selectedVariant.quantity;
         cartItem.price = selectedVariant.discountPrice || selectedVariant.price;
@@ -325,7 +383,21 @@ const ProductPage = () => {
         cartItem.images = selectedVariant.images || [];
       } else {
         // For simple products
-        cartItem.title = product.title?.[currentLanguage] || product.title?.en;
+        // Ensure simple product title is stored as a translation object { ar: '...', en: '...' }
+        if (product.title) {
+          cartItem.title =
+            typeof product.title === "object" && product.title !== null
+              ? product.title
+              : { [currentLanguage]: product.title }; // Create object if it's a string
+        } else if (product.name) {
+          cartItem.title =
+            typeof product.name === "object" && product.name !== null
+              ? product.name
+              : { [currentLanguage]: product.name }; // Handle product.name as fallback
+        } else {
+          cartItem.title = { [currentLanguage]: "Product" }; // Default if both are missing
+        }
+
         cartItem.mainImage = product.mainImage;
         cartItem.quantity = product.quantity;
         cartItem.price = product.discountPrice || product.price;
@@ -333,18 +405,30 @@ const ProductPage = () => {
         cartItem.images = product.images || [];
       }
 
-      console.log('Adding to cart:', cartItem); // للتأكد من البيانات
+      console.log("Adding to cart:", cartItem); // للتأكد من البيانات
       await dispatch(addToCart(cartItem));
       // استخدام SimpleToast بدلاً من toast
       showToast(
-        currentLanguage === 'ar' ? `تمت إضافة ${cartItem.title} إلى السلة!` : `${cartItem.title} added to cart!`,
+        currentLanguage === "ar"
+          ? `تمت إضافة ${
+              cartItem.title?.[currentLanguage] ||
+              cartItem.title?.en ||
+              "المنتج"
+            } إلى السلة!`
+          : `${
+              cartItem.title?.[currentLanguage] ||
+              cartItem.title?.en ||
+              "Product"
+            } added to cart!`,
         "success"
       );
     } catch (error) {
-      console.error('Error adding to cart:', error); // للتأكد من الأخطاء
+      console.error("Error adding to cart:", error); // للتأكد من الأخطاء
       // استخدام SimpleToast بدلاً من toast
       showToast(
-        currentLanguage === 'ar' ? "فشل في إضافة المنتج إلى السلة!" : "Failed to add to cart!",
+        currentLanguage === "ar"
+          ? "فشل في إضافة المنتج إلى السلة!"
+          : "Failed to add to cart!",
         "error"
       );
     }
@@ -364,7 +448,10 @@ const ProductPage = () => {
     return <div className="text-center my-5">Product not found</div>;
   }
 
-  const allImages = selectedVariant?.images || [product.mainImage, ...(product.images || [])];
+  const allImages = selectedVariant?.images || [
+    product.mainImage,
+    ...(product.images || []),
+  ];
 
   const sliderSettings = {
     slidesToShow: Math.min(4, allImages.length),
@@ -393,9 +480,16 @@ const ProductPage = () => {
 
   const getCurrentTitle = () => {
     if (product.productType === "variant" && selectedVariant) {
-      return selectedVariant.title?.[currentLanguage] || selectedVariant.title?.en;
+      return (
+        selectedVariant.title?.[currentLanguage] || selectedVariant.title?.en
+      );
     }
-    return product.title?.[currentLanguage] || product.title?.en || product.name?.[currentLanguage] || product.name?.en;
+    return (
+      product.title?.[currentLanguage] ||
+      product.title?.en ||
+      product.name?.[currentLanguage] ||
+      product.name?.en
+    );
   };
 
   const getCurrentQuantity = () => {
@@ -423,7 +517,7 @@ const ProductPage = () => {
               margin: "0 auto",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
             }}
           >
             <div
@@ -449,7 +543,7 @@ const ProductPage = () => {
                   width: "100%",
                   background: "#fff",
                   transition: "transform 0.3s ease",
-                  cursor: "zoom-in"
+                  cursor: "zoom-in",
                 }}
                 onMouseEnter={(e) => {
                   e.target.style.transform = "scale(1.2)";
@@ -508,7 +602,7 @@ const ProductPage = () => {
                         msUserSelect: "none",
                         WebkitTouchCallout: "none",
                         WebkitUserDrag: "none",
-                        KhtmlUserSelect: "none"
+                        KhtmlUserSelect: "none",
                       }}
                       onMouseDown={(e) => e.preventDefault()}
                     />
@@ -518,29 +612,41 @@ const ProductPage = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="col-12 col-md-6 col-lg-6">
-          <div className="h-100 d-flex flex-column justify-content-start" style={{ minWidth: 0 }}>
-            <h2 style={{
-              margin: "0 0 15px",
-              color: "#4b5966",
-              fontSize: 28,
-              fontWeight: 600,
-              lineHeight: 1.3,
-              wordBreak: "break-word"
-            }}>{getCurrentTitle()}</h2>
-            
+          <div
+            className="h-100 d-flex flex-column justify-content-start"
+            style={{ minWidth: 0 }}
+          >
+            <h2
+              style={{
+                margin: "0 0 15px",
+                color: "#4b5966",
+                fontSize: 28,
+                fontWeight: 600,
+                lineHeight: 1.3,
+                wordBreak: "break-word",
+              }}
+            >
+              {getCurrentTitle()}
+            </h2>
+
             <div className="mb-2">
-              {[1,2,3,4,5].map(i => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <FaStar
                   key={i}
-                  color={i <= Math.round(product?.ratingSummary?.average || 0) ? "#f8bf87" : "#ccc"}
+                  color={
+                    i <= Math.round(product?.ratingSummary?.average || 0)
+                      ? "#f8bf87"
+                      : "#ccc"
+                  }
                   style={{ marginRight: 2 }}
                 />
               ))}
               {product?.ratingSummary?.count > 0 && (
                 <small className="text-muted ms-2">
-                  ({product.ratingSummary.count} {currentLanguage === 'ar' ? 'تقييمات' : 'reviews'})
+                  ({product.ratingSummary.count}{" "}
+                  {currentLanguage === "ar" ? "تقييمات" : "reviews"})
                 </small>
               )}
             </div>
@@ -550,103 +656,172 @@ const ProductPage = () => {
                 <>
                   <span style={{ color: "#5caf90" }}>${getCurrentPrice()}</span>
                   {getOriginalPrice() > getCurrentPrice() && (
-                    <span style={{
-                      color: "#999",
-                      textDecoration: "line-through",
-                      fontSize: 18,
-                      marginLeft: 10
-                    }}>${getOriginalPrice()}</span>
+                    <span
+                      style={{
+                        color: "#999",
+                        textDecoration: "line-through",
+                        fontSize: 18,
+                        marginLeft: 10,
+                      }}
+                    >
+                      ${getOriginalPrice()}
+                    </span>
                   )}
                 </>
               ) : (
-                <span>{currentLanguage === 'ar' ? 'السعر غير متوفر' : 'Price not available'}</span>
+                <span>
+                  {currentLanguage === "ar"
+                    ? "السعر غير متوفر"
+                    : "Price not available"}
+                </span>
               )}
             </div>
 
-            <div style={{ margin: "10px 0", color: getCurrentQuantity() > 0 ? "#5caf90" : "#d9534f", fontWeight: 500 }}>
-              {getCurrentQuantity() > 0 ? 
-                (currentLanguage === 'ar' ? `متوفر (${getCurrentQuantity()})` : `In Stock (${getCurrentQuantity()})`) : 
-                (currentLanguage === 'ar' ? 'غير متوفر' : 'Out of Stock')}
+            <div
+              style={{
+                margin: "10px 0",
+                color: getCurrentQuantity() > 0 ? "#5caf90" : "#d9534f",
+                fontWeight: 500,
+              }}
+            >
+              {getCurrentQuantity() > 0
+                ? currentLanguage === "ar"
+                  ? `متوفر (${getCurrentQuantity()})`
+                  : `In Stock (${getCurrentQuantity()})`
+                : currentLanguage === "ar"
+                ? "غير متوفر"
+                : "Out of Stock"}
             </div>
 
             {/* Product Description */}
             <div className="mb-4">
-              <h5 className="mb-3">{currentLanguage === 'ar' ? 'الوصف' : 'Description'}</h5>
-              <div style={{ color: "#666", lineHeight: 1.6, maxWidth: "100%", overflow: "hidden", overflowWrap: "break-word", wordBreak: "break-word" }}>
-                <div dangerouslySetInnerHTML={{__html: product.description?.[currentLanguage] || product.description?.en || (currentLanguage === 'ar' ? 'لا يوجد وصف متوفر' : 'No description available')}} />
+              <h5 className="mb-3">
+                {currentLanguage === "ar" ? "الوصف" : "Description"}
+              </h5>
+              <div
+                style={{
+                  color: "#666",
+                  lineHeight: 1.6,
+                  maxWidth: "100%",
+                  overflow: "hidden",
+                  overflowWrap: "break-word",
+                  wordBreak: "break-word",
+                }}
+              >
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      product.description?.[currentLanguage] ||
+                      product.description?.en ||
+                      (currentLanguage === "ar"
+                        ? "لا يوجد وصف متوفر"
+                        : "No description available"),
+                  }}
+                />
               </div>
             </div>
 
-            {product.productType === "variant" ? (
-              // Variant Product Selection
-              getAttributeKeys().map(attributeKey => (
-                <div key={attributeKey} className="mb-4">
-                  <h5 className="mb-3">
-                    {currentLanguage === 'ar' ? 'اختر' : 'Select'} {attributeKey.charAt(0).toUpperCase() + attributeKey.slice(1)}
-                  </h5>
-                  <div className="d-flex flex-wrap gap-2">
-                    {getAvailableAttributeValues(attributeKey).map(value => {
-                      const matchingVariants = getMatchingVariants(attributeKey, value);
-                      const firstMatchingVariant = matchingVariants[0];
-                      
-                      return (
-                        <div
-                          key={value}
-                          className="attribute-option"
-                          style={{
-                            position: "relative",
-                            cursor: "pointer"
-                          }}
-                          onClick={() => handleAttributeChange(attributeKey, value)}
-                        >
-                          {attributeKey.toLowerCase() === "color" && firstMatchingVariant?.mainImage ? (
-                            // Show image only for color attribute
+            {product.productType === "variant"
+              ? // Variant Product Selection
+                getAttributeKeys().map((attributeKey) => (
+                  <div key={attributeKey} className="mb-4">
+                    <h5 className="mb-3">
+                      {currentLanguage === "ar" ? "اختر" : "Select"}{" "}
+                      {attributeKey.charAt(0).toUpperCase() +
+                        attributeKey.slice(1)}
+                    </h5>
+                    <div className="d-flex flex-wrap gap-2">
+                      {getAvailableAttributeValues(attributeKey).map(
+                        (value) => {
+                          const matchingVariants = getMatchingVariants(
+                            attributeKey,
+                            value
+                          );
+                          const firstMatchingVariant = matchingVariants[0];
+
+                          return (
                             <div
+                              key={value}
+                              className="attribute-option"
                               style={{
-                                width: 40,
-                                height: 40,
-                                borderRadius: "50%",
-                                border: selectedAttributes[attributeKey] === value ? "2px solid #5caf90" : "1px solid #ddd",
-                                overflow: "hidden",
-                                position: "relative"
+                                position: "relative",
+                                cursor: "pointer",
                               }}
+                              onClick={() =>
+                                handleAttributeChange(attributeKey, value)
+                              }
                             >
-                              <img
-                                src={firstMatchingVariant.mainImage}
-                                alt={value}
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover"
-                                }}
-                              />
+                              {attributeKey.toLowerCase() === "color" &&
+                              firstMatchingVariant?.mainImage ? (
+                                // Show image only for color attribute
+                                <div
+                                  style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: "50%",
+                                    border:
+                                      selectedAttributes[attributeKey] === value
+                                        ? "2px solid #5caf90"
+                                        : "1px solid #ddd",
+                                    overflow: "hidden",
+                                    position: "relative",
+                                  }}
+                                >
+                                  <img
+                                    src={firstMatchingVariant.mainImage}
+                                    alt={value}
+                                    style={{
+                                      width: "100%",
+                                      height: "100%",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                </div>
+                              ) : (
+                                // Show button for all other attributes
+                                <button
+                                  className={`btn ${
+                                    selectedAttributes[attributeKey] === value
+                                      ? "btn-success"
+                                      : "btn-outline-success"
+                                  }`}
+                                  disabled={
+                                    !isAttributeValueAvailable(
+                                      attributeKey,
+                                      value
+                                    )
+                                  }
+                                >
+                                  {value}
+                                </button>
+                              )}
                             </div>
-                          ) : (
-                            // Show button for all other attributes
-                            <button
-                              className={`btn ${selectedAttributes[attributeKey] === value ? 'btn-success' : 'btn-outline-success'}`}
-                              disabled={!isAttributeValueAvailable(attributeKey, value)}
-                            >
-                              {value}
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
+                          );
+                        }
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : null}
+                ))
+              : null}
 
             {/* Add to Cart Button */}
-            <button 
+            <button
               className="btn btn-success btn-lg w-100"
-              disabled={product.productType === "variant" && Object.keys(selectedAttributes).length === 0 || getCurrentQuantity() === 0 || cartLoading}
+              disabled={
+                (product.productType === "variant" &&
+                  Object.keys(selectedAttributes).length === 0) ||
+                getCurrentQuantity() === 0 ||
+                cartLoading
+              }
               onClick={handleAddToCart}
             >
-              {cartLoading ? 
-                (currentLanguage === 'ar' ? 'جاري الإضافة...' : 'Adding...') : 
-                (currentLanguage === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart')}
+              {cartLoading
+                ? currentLanguage === "ar"
+                  ? "جاري الإضافة..."
+                  : "Adding..."
+                : currentLanguage === "ar"
+                ? "إضافة إلى السلة"
+                : "Add to Cart"}
             </button>
           </div>
         </div>
@@ -657,55 +832,77 @@ const ProductPage = () => {
         <div className="col-12">
           <div className="card">
             <div className="card-body">
-              <h3 className="card-title mb-4">{currentLanguage === 'ar' ? 'تقييمات العملاء' : 'Customer Reviews'}</h3>
-              
+              <h3 className="card-title mb-4">
+                {currentLanguage === "ar"
+                  ? "تقييمات العملاء"
+                  : "Customer Reviews"}
+              </h3>
+
               {/* Review Form */}
               <div className="mb-4">
                 {user ? (
-                  <button 
+                  <button
                     className="btn btn-outline-success"
                     onClick={() => setShowReviewForm(!showReviewForm)}
                   >
-                    {showReviewForm ? 
-                      (currentLanguage === 'ar' ? 'إلغاء التقييم' : 'Cancel Review') : 
-                      (currentLanguage === 'ar' ? 'كتابة تقييم' : 'Write a Review')}
+                    {showReviewForm
+                      ? currentLanguage === "ar"
+                        ? "إلغاء التقييم"
+                        : "Cancel Review"
+                      : currentLanguage === "ar"
+                      ? "كتابة تقييم"
+                      : "Write a Review"}
                   </button>
                 ) : (
-                  <button 
+                  <button
                     className="btn btn-outline-success"
                     onClick={() => navigate("/login")}
                   >
-                    {currentLanguage === 'ar' ? 'تسجيل الدخول لكتابة تقييم' : 'Login to Write a Review'}
+                    {currentLanguage === "ar"
+                      ? "تسجيل الدخول لكتابة تقييم"
+                      : "Login to Write a Review"}
                   </button>
                 )}
 
                 {showReviewForm && (
                   <div className="mt-3 p-3 border rounded">
                     <div className="mb-3">
-                      <label className="form-label">{currentLanguage === 'ar' ? 'التقييم' : 'Rating'}</label>
+                      <label className="form-label">
+                        {currentLanguage === "ar" ? "التقييم" : "Rating"}
+                      </label>
                       {renderReviewStars(rating, true)}
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">{currentLanguage === 'ar' ? 'تقييمك' : 'Your Review'}</label>
+                      <label className="form-label">
+                        {currentLanguage === "ar" ? "تقييمك" : "Your Review"}
+                      </label>
                       <textarea
                         className="form-control"
                         rows="3"
                         value={review}
                         onChange={(e) => setReview(e.target.value)}
-                        placeholder={currentLanguage === 'ar' ? 'اكتب تقييمك هنا...' : 'Write your review here...'}
+                        placeholder={
+                          currentLanguage === "ar"
+                            ? "اكتب تقييمك هنا..."
+                            : "Write your review here..."
+                        }
                       />
                     </div>
                     <div className="d-flex gap-2">
-                      <button 
+                      <button
                         className="btn btn-success"
                         onClick={handleReviewSubmit}
                         disabled={reviewsLoading}
                       >
-                        {reviewsLoading ? 
-                          (currentLanguage === 'ar' ? 'جاري الإرسال...' : 'Submitting...') : 
-                          (currentLanguage === 'ar' ? 'إرسال التقييم' : 'Submit Review')}
+                        {reviewsLoading
+                          ? currentLanguage === "ar"
+                            ? "جاري الإرسال..."
+                            : "Submitting..."
+                          : currentLanguage === "ar"
+                          ? "إرسال التقييم"
+                          : "Submit Review"}
                       </button>
-                      <button 
+                      <button
                         className="btn btn-outline-secondary"
                         onClick={() => {
                           setShowReviewForm(false);
@@ -713,7 +910,7 @@ const ProductPage = () => {
                           setReview("");
                         }}
                       >
-                        {currentLanguage === 'ar' ? 'إلغاء' : 'Cancel'}
+                        {currentLanguage === "ar" ? "إلغاء" : "Cancel"}
                       </button>
                     </div>
                   </div>
@@ -730,7 +927,10 @@ const ProductPage = () => {
                   </div>
                 ) : reviews.length > 0 ? (
                   reviews.map((review) => (
-                    <div key={review.id} className="review-item border-bottom pb-3 mb-3">
+                    <div
+                      key={review.id}
+                      className="review-item border-bottom pb-3 mb-3"
+                    >
                       <div className="d-flex justify-content-between align-items-center mb-2">
                         <div>
                           <strong>{review.userName}</strong>
@@ -745,9 +945,9 @@ const ProductPage = () => {
                   ))
                 ) : (
                   <p className="text-muted">
-                    {currentLanguage === 'ar' ? 
-                      'لا توجد تقييمات بعد. كن أول من يقيم هذا المنتج!' : 
-                      'No reviews yet. Be the first to review this product!'}
+                    {currentLanguage === "ar"
+                      ? "لا توجد تقييمات بعد. كن أول من يقيم هذا المنتج!"
+                      : "No reviews yet. Be the first to review this product!"}
                   </p>
                 )}
               </div>

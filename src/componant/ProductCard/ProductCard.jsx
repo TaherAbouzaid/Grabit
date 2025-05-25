@@ -24,7 +24,29 @@ const ProductCard = ({ product }) => {
       navigate("/login");
       return;
     }
-    dispatch(addToCart({ productId: product.id, quantity: 1 }));
+    // Build a complete cartItem object for simple products
+    const cartItem = {
+      userId: user.uid, // Assuming userId is needed in the slice
+      productId: product.id,
+      itemQuantity: 1,
+      // Include relevant product details for display in cart
+      title: product.title || { [i18n.language]: product.name || "Product" }, // Use localized title object or fallback
+      mainImage: product.mainImage,
+      price: product.discountPrice || product.price, // Use discounted price if available
+      originalPrice: product.price, // Original price
+      quantity: product.quantity, // Stock quantity
+      productType: "simple", // Explicitly mark as simple product
+      // No variantId or variantAttributes for simple products
+    };
+
+    // Remove any properties with undefined values
+    Object.keys(cartItem).forEach((key) => {
+      if (cartItem[key] === undefined) {
+        delete cartItem[key];
+      }
+    });
+
+    dispatch(addToCart(cartItem));
   };
 
   const handleWishlistToggle = () => {

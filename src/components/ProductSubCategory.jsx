@@ -30,7 +30,9 @@ const ProductSubCategory = () => {
           const productData = { id: doc.id, ...doc.data() };
 
           if (productData.productType === "variant") {
-            const variantsSnapshot = await getDocs(collection(db, `allproducts/${doc.id}/variants`));
+            const variantsSnapshot = await getDocs(
+              collection(db, `allproducts/${doc.id}/variants`)
+            );
             const variants = [];
             variantsSnapshot.forEach((variantDoc) => {
               variants.push({ id: variantDoc.id, ...variantDoc.data() });
@@ -53,30 +55,38 @@ const ProductSubCategory = () => {
   }, []);
 
   // Log filter values for debugging
-  useEffect(() => {
-   
-  }, [filter]);
+  useEffect(() => {}, [filter]);
 
   // Apply filters
   const filteredProducts = products.filter((product) => {
     // Category filter
     if (filter.category) {
-      if (!product.categoryId || product.categoryId.categoryId !== filter.category) {
+      if (
+        !product.categoryId ||
+        product.categoryId.categoryId !== filter.category
+      ) {
         return false;
       }
     }
 
     // Subcategory filter
     if (filter.subcategory) {
-      if (!product.subCategoryId || product.subCategoryId.subcategoryId !== filter.subcategory) {
+      if (
+        !product.subCategoryId ||
+        product.subCategoryId.subcategoryId !== filter.subcategory
+      ) {
         return false;
       }
     }
 
     // Price filter
     const productPrice =
-      product.productType === "variant" && product.variants?.[0]?.price || product.price;
-    if (productPrice < filter.priceRange[0] || productPrice > filter.priceRange[1]) {
+      (product.productType === "variant" && product.variants?.[0]?.price) ||
+      product.price;
+    if (
+      productPrice < filter.priceRange[0] ||
+      productPrice > filter.priceRange[1]
+    ) {
       return false;
     }
 
@@ -92,8 +102,7 @@ const ProductSubCategory = () => {
   });
 
   // Log filtered products for debugging
-  useEffect(() => {
-  }, [filteredProducts]);
+  useEffect(() => {}, [filteredProducts]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -101,21 +110,35 @@ const ProductSubCategory = () => {
   }, [filter.category, filter.subcategory, filter.priceRange, filter.tags]);
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
-    const aPrice = a.productType === "variant" && a.variants?.[0]?.price || a.price;
-    const bPrice = b.productType === "variant" && b.variants?.[0]?.price || b.price;
-    const aTitle = a.productType === "variant" && a.variants?.[0]?.title?.en || a.title?.en || "";
-    const bTitle = b.productType === "variant" && b.variants?.[0]?.title?.en || b.title?.en || "";
+    const aPrice =
+      (a.productType === "variant" && a.variants?.[0]?.price) || a.price;
+    const bPrice =
+      (b.productType === "variant" && b.variants?.[0]?.price) || b.price;
+    const aTitle =
+      (a.productType === "variant" && a.variants?.[0]?.title?.en) ||
+      a.title?.en ||
+      "";
+    const bTitle =
+      (b.productType === "variant" && b.variants?.[0]?.title?.en) ||
+      b.title?.en ||
+      "";
 
     if (sort === "price-asc") return aPrice - bPrice;
     if (sort === "price-desc") return bPrice - aPrice;
     if (sort === "name-asc") return aTitle.localeCompare(bTitle);
     if (sort === "name-desc") return bTitle.localeCompare(aTitle);
-    return new Date(b.createdAt.seconds * 1000) - new Date(a.createdAt.seconds * 1000);
+    return (
+      new Date(b.createdAt.seconds * 1000) -
+      new Date(a.createdAt.seconds * 1000)
+    );
   });
 
   const indexOfLastProduct = currentPage * PRODUCTS_PER_PAGE;
   const indexOfFirstProduct = indexOfLastProduct - PRODUCTS_PER_PAGE;
-  const currentProducts = sortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = sortedProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   const totalPages = Math.ceil(sortedProducts.length / PRODUCTS_PER_PAGE);
 
@@ -135,12 +158,25 @@ const ProductSubCategory = () => {
   return (
     <Container className="py-4">
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 300 }}>
-          <Spinner animation="border" variant="success" style={{ width: "3rem", height: "3rem" }} />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: 300,
+          }}
+        >
+          <Spinner
+            animation="border"
+            variant="success"
+            style={{ width: "3rem", height: "3rem" }}
+          />
         </div>
       ) : filteredProducts.length === 0 ? (
         <Container className="py-4">
-          <p className="text-muted text-center">No products found for this subcategory.</p>
+          <p className="text-muted text-center">
+            No products found for this subcategory.
+          </p>
         </Container>
       ) : (
         <>
@@ -170,18 +206,25 @@ const ProductSubCategory = () => {
               {totalPages > 1 && (
                 <div className="d-flex justify-content-between align-items-center mt-4">
                   <span className="text-muted" style={{ fontSize: 15 }}>
-                    {`Showing ${indexOfFirstProduct + 1}-${Math.min(indexOfLastProduct, sortedProducts.length)} of ${sortedProducts.length} item(s)`}
+                    {`Showing ${indexOfFirstProduct + 1}-${Math.min(
+                      indexOfLastProduct,
+                      sortedProducts.length
+                    )} of ${sortedProducts.length} item(s)`}
                   </span>
                   <Pagination className="custom-pagination">
                     <Pagination.Prev
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       Prev
                     </Pagination.Prev>
                     {paginationItems}
                     <Pagination.Next
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next

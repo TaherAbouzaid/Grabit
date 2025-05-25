@@ -19,17 +19,47 @@ const Home = () => {
       <HeroSlider />
       <CategorySlider />
       <DealendTimer />
-      <DiscountedProductsSlider />
+      <div
+        data-aos="fade-up"
+        data-aos-once="true"
+        data-aos-anchor-placement="top-"
+        data-aos-delay="0"
+        data-aos-duration="1000"
+        data-aos-offset="300"
+      >
+        <DiscountedProductsSlider />
+      </div>
       <Banner />
       <NewArrivals />
       <TwoBanners />
-      <div data-aos="fade-up" data-aos-once="true" data-aos-anchor-placement="bottom-bottom" data-aos-delay="300" data-aos-duration="2000" data-aos-offset="300">
-        <FeaturesRow/>
+      <div
+        data-aos="fade-up"
+        data-aos-once="true"
+        data-aos-anchor-placement="bottom-bottom"
+        data-aos-delay="50"
+        data-aos-duration="2000"
+        data-aos-offset="300"
+      >
+        <FeaturesRow />
       </div>
-      <div data-aos="fade-up" data-aos-once="true" data-aos-anchor-placement="bottom-bottom" data-aos-delay="400" data-aos-duration="2000" data-aos-offset="300">
+      <div
+        data-aos="fade-up"
+        data-aos-once="true"
+        data-aos-anchor-placement="bottom-bottom"
+        data-aos-delay="100"
+        data-aos-duration="2000"
+        data-aos-offset="300"
+      >
         <ProductsShowcaseSection />
       </div>
-      <div data-aos="fade-up" data-aos-once="true" data-aos-anchor-placement="bottom-bottom" data-aos-delay="500" data-aos-duration="2000" data-aos-offset="300">
+      <div
+        data-aos="fade-up"
+        data-aos-once="true"
+        data-aos-anchor-placement="bottom-bottom"
+        data-aos-delay="100"
+        data-aos-duration="2000"
+        data-aos-offset="300"
+      >
         <PostSliderHome />
       </div>
       {/* <ProductContainer /> */}
