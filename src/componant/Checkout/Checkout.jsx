@@ -37,78 +37,90 @@ import { useTranslation } from "react-i18next";
 import { useLanguage } from "../../context/LanguageContext.jsx";
 
 const decrementStock = async (orderProducts) => {
-
-  
   if (!orderProducts || orderProducts.length === 0) {
     console.error("No products provided to decrementStock function");
     return;
   }
-  
+
   try {
     // معالجة كل منتج على حدة في معاملات منفصلة
     // هذا يضمن أن فشل منتج واحد لا يؤثر على البقية
     for (const item of orderProducts) {
-      
       if (!item.productId) {
         console.error("Item missing productId:", item);
         continue;
       }
-      
+
       try {
         await runTransaction(db, async (transaction) => {
           const productRef = doc(db, "allproducts", item.productId);
-          
+
           // للمنتجات ذات المتغيرات
           if (item.variantId) {
-            const variantRef = doc(db, "allproducts", item.productId, "variants", item.variantId);
+            const variantRef = doc(
+              db,
+              "allproducts",
+              item.productId,
+              "variants",
+              item.variantId
+            );
             const variantDoc = await transaction.get(variantRef);
-            
+
             if (!variantDoc.exists()) {
-              console.error(`Variant document not found for product ID ${item.productId} and variant ID ${item.variantId}`);
+              console.error(
+                `Variant document not found for product ID ${item.productId} and variant ID ${item.variantId}`
+              );
               return;
             }
-            
+
             const variantData = variantDoc.data();
             const currentQuantity = variantData.quantity || 0;
             const quantityToDecrement = item.itemQuantity || item.quantity || 1;
-            
-            
+
             if (currentQuantity < quantityToDecrement) {
-              console.error(`Not enough stock for variant. Current: ${currentQuantity}, Requested: ${quantityToDecrement}`);
+              console.error(
+                `Not enough stock for variant. Current: ${currentQuantity}, Requested: ${quantityToDecrement}`
+              );
               return;
             }
-            
+
             const newQuantity = currentQuantity - quantityToDecrement;
             transaction.update(variantRef, { quantity: newQuantity });
           } else {
             // للمنتجات البسيطة
             const productDoc = await transaction.get(productRef);
-            
+
             if (!productDoc.exists()) {
-              console.error(`Product document not found for ID ${item.productId}`);
+              console.error(
+                `Product document not found for ID ${item.productId}`
+              );
               return;
             }
-            
+
             const productData = productDoc.data();
             const currentQuantity = productData.quantity || 0;
             const quantityToDecrement = item.itemQuantity || item.quantity || 1;
-            
-            
+
             if (currentQuantity < quantityToDecrement) {
-              console.error(`Not enough stock for product. Current: ${currentQuantity}, Requested: ${quantityToDecrement}`);
+              console.error(
+                `Not enough stock for product. Current: ${currentQuantity}, Requested: ${quantityToDecrement}`
+              );
               return;
             }
-            
+
             const newQuantity = currentQuantity - quantityToDecrement;
             transaction.update(productRef, { quantity: newQuantity });
           }
         });
       } catch (itemError) {
-        console.error(`Error decrementing stock for product ${item.productId}:`, itemError);
+        console.error(
+          `Error decrementing stock for product ${item.productId}:`,
+          itemError
+        );
         // استمر في المعالجة حتى لو فشل منتج واحد
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error("Stock decrement failed:", error);
@@ -188,9 +200,7 @@ export default function CheckoutPage() {
     }
   }, [dispatch, user]);
 
-  useEffect(() => {
-    
-  }, [productsState]);
+  useEffect(() => {}, [productsState]);
 
   useEffect(() => {
     if (addressOption === "existing") {
@@ -213,7 +223,7 @@ export default function CheckoutPage() {
 
   const calculateCartTotals = () => {
     if (!cart || !cart.products)
-      return { total: 0, finalTotal: 0, discount: 0 };
+      return { total: 0, finalTotal: 0, discount: 0, vat: 0 };
 
     let total = 0;
     let finalTotal = 0;
@@ -230,12 +240,14 @@ export default function CheckoutPage() {
     });
 
     discount = total - finalTotal;
-    return { total, finalTotal, discount };
+    const vat = finalTotal * 0.14; // إضافة ضريبة القيمة المضافة بنسبة 14%
+
+    return { total, finalTotal, discount, vat };
   };
 
-  const { total, finalTotal, discount } = calculateCartTotals();
+  const { total, finalTotal, discount, vat } = calculateCartTotals();
   const deliveryCharges = 24.0;
-  const totalAmount = finalTotal + deliveryCharges;
+  const totalAmount = finalTotal + vat + deliveryCharges; // إضافة ضريبة القيمة المضافة إلى المبلغ الإجمالي
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -276,23 +288,24 @@ export default function CheckoutPage() {
       createdAt: new Date(),
       discount,
       finalTotal,
+      vat, // إضافة ضريبة القيمة المضافة
+      deliveryCharges, // إضافة رسوم التوصيل
+      totalAmount, // إضافة المبلغ الإجمالي الذي يشمل الضريبة ورسوم التوصيل
       orderId: orderRef.id,
       paymentMethod,
       paypalOrderId,
       products: cart.products.map((item) => {
         const product = products.find((p) => p.id === item.productId);
         // Get variant info if needed
-        
-      
-        
+
         // حساب سعر الوحدة
         const quantity = item.itemQuantity || 1;
         const itemPrice = item.ItemsPrice || 0;
         const calculatedUnitPrice = itemPrice / quantity;
-        
+
         // استخدام سعر المنتج من قاعدة البيانات أو السعر المحسوب
         const finalUnitPrice = product?.discountPrice || calculatedUnitPrice;
-        
+
         return {
           productId: item.productId,
           variantId: item.variantId || null,
@@ -311,7 +324,7 @@ export default function CheckoutPage() {
       }),
       shippingAddress,
       status: paymentMethod === "cod" ? "pending" : "delivered",
-      total,
+      total: totalAmount, // تغيير هذا من total إلى totalAmount ليشمل الضريبة ورسوم التوصيل
       updatedAt: new Date(),
       userId: user.uid,
     };
@@ -331,7 +344,7 @@ export default function CheckoutPage() {
       });
 
       const updatedCartDoc = await getDoc(cartRef, { source: "server" });
-     
+
       if (
         updatedCartDoc.exists() &&
         updatedCartDoc.data().products?.length !== 0
@@ -339,7 +352,6 @@ export default function CheckoutPage() {
         throw new Error("Failed to clear cart products");
       }
     } else {
-     
       const docRef = await addDoc(collection(db, "Cart"), {
         userId: user.uid,
         products: [],
@@ -389,7 +401,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -465,11 +477,17 @@ export default function CheckoutPage() {
         if (orderId && createdOrderData) {
           try {
             console.log("CALLING decrementStock FUNCTION");
-            console.log("Products to decrement:", JSON.stringify(createdOrderData.products, null, 2));
+            console.log(
+              "Products to decrement:",
+              JSON.stringify(createdOrderData.products, null, 2)
+            );
             const result = await decrementStock(createdOrderData.products);
             console.log(`Stock decremented for order ${orderId}:`, result);
           } catch (stockError) {
-            console.error(`Failed to decrement stock for order ${orderId}:`, stockError);
+            console.error(
+              `Failed to decrement stock for order ${orderId}:`,
+              stockError
+            );
           }
         }
 
@@ -601,6 +619,18 @@ export default function CheckoutPage() {
                       ))}
                     </ListGroup>
                     <hr />
+                    <div className="d-flex justify-content-between mt-3">
+                      <span>{t("common.subtotal")}</span>
+                      <span>${finalTotal.toFixed(2)}</span>
+                    </div>
+                    <div className="d-flex justify-content-between mt-2">
+                      <span>{t("common.vat")}</span>
+                      <span>${vat.toFixed(2)}</span>
+                    </div>
+                    <div className="d-flex justify-content-between mt-2">
+                      <span>{t("cart.deliveryCharges")}</span>
+                      <span>${deliveryCharges.toFixed(2)}</span>
+                    </div>
                     <div className="d-flex justify-content-between mt-3 mb-4 pt-3">
                       <h5 className="fw-normal">{t("common.totalAmount")}</h5>
                       <h5 className="fw-bold">${totalAmount.toFixed(2)}</h5>

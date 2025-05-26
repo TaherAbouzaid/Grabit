@@ -16,31 +16,38 @@ import { incrementCartAdds } from "../../services/productStatsService";
 // دالة شاملة لتحويل جميع كائنات Timestamp في أي مستوى من التداخل
 const serializeTimestamps = (data) => {
   if (!data) return data;
-  
+
   // تحويل كائن Timestamp
-  if (data && typeof data.toDate === 'function') {
+  if (data && typeof data.toDate === "function") {
     return data.toDate().toISOString();
   }
-  
+
   // تحويل كائن Timestamp بتنسيق Firestore (seconds, nanoseconds)
-  if (data && typeof data === 'object' && 'seconds' in data && 'nanoseconds' in data) {
-    return new Date(data.seconds * 1000 + data.nanoseconds / 1000000).toISOString();
+  if (
+    data &&
+    typeof data === "object" &&
+    "seconds" in data &&
+    "nanoseconds" in data
+  ) {
+    return new Date(
+      data.seconds * 1000 + data.nanoseconds / 1000000
+    ).toISOString();
   }
-  
+
   // تحويل المصفوفات
   if (Array.isArray(data)) {
-    return data.map(item => serializeTimestamps(item));
+    return data.map((item) => serializeTimestamps(item));
   }
-  
+
   // تحويل الكائنات
-  if (typeof data === 'object' && data !== null) {
+  if (typeof data === "object" && data !== null) {
     const result = {};
     for (const key in data) {
       result[key] = serializeTimestamps(data[key]);
     }
     return result;
   }
-  
+
   return data;
 };
 
@@ -94,10 +101,10 @@ export const addToCart = createAsyncThunk(
     try {
       // تحويل البيانات بالكامل قبل استخدامها
       const serializedCartItem = serializeTimestamps(cartItem);
-      
+
       // استخدام البيانات المحولة
       const { userId, productId, variantId } = serializedCartItem;
-      
+
       // إذا كان المستخدم غير مسجل، استخدم التخزين المحلي
       if (!userId) {
         const localCart = getLocalCart();
@@ -322,7 +329,10 @@ export const addToCart = createAsyncThunk(
 // Update product quantity in cart
 export const updateCartQuantity = createAsyncThunk(
   "cart/updateQuantity",
-  async ({ userId, productId, variantId }, { getState, rejectWithValue }) => {
+  async (
+    { userId, productId, variantId, change },
+    { getState, rejectWithValue }
+  ) => {
     try {
       // إذا كان المستخدم غير مسجل، استخدم التخزين المحلي
       if (!userId) {
@@ -340,7 +350,7 @@ export const updateCartQuantity = createAsyncThunk(
         }
 
         const product = localCart.products[productIndex];
-        const newQuantity = Math.max(1, product.itemQuantity + 1);
+        const newQuantity = Math.max(1, product.itemQuantity + change);
 
         const updatedProducts = [...localCart.products];
         updatedProducts[productIndex] = {
@@ -384,7 +394,7 @@ export const updateCartQuantity = createAsyncThunk(
       }
 
       const product = cart.products[productIndex];
-      const newQuantity = Math.max(1, product.itemQuantity + 1);
+      const newQuantity = Math.max(1, product.itemQuantity + change);
 
       const updatedProducts = [...cart.products];
       updatedProducts[productIndex] = {
@@ -639,7 +649,10 @@ const cartSlice = createSlice({
       })
       .addCase(clearCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = { ...state.items, ...serializeTimestamps(action.payload) };
+        state.items = {
+          ...state.items,
+          ...serializeTimestamps(action.payload),
+        };
         state.error = null;
       })
       .addCase(clearCart.rejected, (state, action) => {
@@ -654,26 +667,26 @@ export default cartSlice.reducer;
 // دالة مساعدة لتحويل جميع كائنات Timestamp
 function convertAllTimestamps(obj) {
   if (!obj) return obj;
-  
+
   // إذا كان الكائن نفسه هو Timestamp
-  if (obj && typeof obj.toDate === 'function') {
+  if (obj && typeof obj.toDate === "function") {
     return obj.toDate().toISOString();
   }
-  
+
   // إذا كان مصفوفة
   if (Array.isArray(obj)) {
-    return obj.map(item => convertAllTimestamps(item));
+    return obj.map((item) => convertAllTimestamps(item));
   }
-  
+
   // إذا كان كائن عادي
-  if (typeof obj === 'object' && obj !== null) {
+  if (typeof obj === "object" && obj !== null) {
     const newObj = {};
     for (const key in obj) {
       newObj[key] = convertAllTimestamps(obj[key]);
     }
     return newObj;
   }
-  
+
   // إرجاع القيمة كما هي إذا لم تكن كائن
   return obj;
 }

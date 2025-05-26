@@ -44,7 +44,7 @@ i18n
             worldsFastest: "World's Fastest Online Shopping Destination",
             unknownProduct: "Unknown Product",
             items: "ITEMS",
-            vat: "VAT (20%)",
+            vat: "VAT (14%)",
             noDescription: "No description available",
             errorLoadingProducts: "Error loading products",
             "Payment Secure": "Payment Secure",

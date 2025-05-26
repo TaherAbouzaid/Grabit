@@ -73,5 +73,18 @@
     "default": "لست متأكدًا من أنني أفهم. هل يمكنك إعادة صياغة سؤالك؟",
     "inputPlaceholder": "اكتب رسالتك هنا...",
     "error": "عذرًا، أواجه مشكلة في الاتصال. يرجى المحاولة مرة أخرى لاحقًا."
+  },
+  "checkout": {
+    "deliveryCharges": "رسوم التوصيل",
+    "loginRequired": "يرجى تسجيل الدخول للمتابعة",
+    "billingDetails": "تفاصيل الفواتير",
+    "checkoutOptions": "خيارات الدفع",
+    "existingAddress": "أريد استخدام عنوان موجود",
+    "newAddress": "أريد استخدام عنوان جديد",
+    "selectAddress": "اختر عنوان",
+    "noSavedAddresses": "لم يتم العثور على عناوين محفوظة",
+    "paymentMethod": "طريقة الدفع",
+    "paymentMethodDescription": "يرجى اختيار طريقة الدفع المفضلة لهذا الطلب",
+    "orderSummary": "ملخص الطلب"
   }
 } 

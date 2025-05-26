@@ -96,7 +96,7 @@ const CartItem = ({
             onClick={() => handleQuantityChange(cartProduct.productId, -1)}
             disabled={cartLoading || cartProduct.itemQuantity <= 1}
           >
-            -
+            {cartLoading ? <span className="spinner-border spinner-border-sm" /> : "-"}
           </Button>
           <Form.Control
             className="mx-1 text-center"
@@ -111,7 +111,7 @@ const CartItem = ({
             onClick={() => handleQuantityChange(cartProduct.productId, 1)}
             disabled={cartLoading}
           >
-            +
+            {cartLoading ? <span className="spinner-border spinner-border-sm" /> : "+"}
           </Button>
         </div>
       </td>
@@ -127,7 +127,7 @@ const CartItem = ({
           onClick={() => handleRemoveProduct(cartProduct.productId)}
           disabled={cartLoading}
         >
-          <FaRegTrashAlt />
+          {cartLoading ? <span className="spinner-border spinner-border-sm" /> : <FaRegTrashAlt />}
         </Button>
       </td>
     </tr>
@@ -166,25 +166,19 @@ const Cart = () => {
   }, [dispatch, user]);
 
   // Handle quantity change
-  const handleQuantityChange = (productId, change) => {
+  const handleQuantityChange = (productId, variantId, change) => {
     if (!user || !user.uid) {
       return;
     }
-    // Pass productId and variantId to updateCartQuantity
     const itemToUpdate = cart.products.find(
-      (p) =>
-        p.productId === productId &&
-        (!p.variantId ||
-          p.variantId ===
-            cart.products.find((item) => item.productId === productId)
-              ?.variantId)
+      (p) => p.productId === productId && p.variantId === variantId
     );
     if (itemToUpdate) {
       dispatch(
         updateCartQuantity({
           userId: user.uid,
           productId,
-          variantId: itemToUpdate.variantId,
+          variantId,
           change,
         })
       );
@@ -192,25 +186,19 @@ const Cart = () => {
   };
 
   // Handle remove product
-  const handleRemoveProduct = (productId) => {
+  const handleRemoveProduct = (productId, variantId) => {
     if (!user || !user.uid) {
       return;
     }
-    // Pass productId and variantId to removeFromCart
     const itemToRemove = cart.products.find(
-      (p) =>
-        p.productId === productId &&
-        (!p.variantId ||
-          p.variantId ===
-            cart.products.find((item) => item.productId === productId)
-              ?.variantId)
+      (p) => p.productId === productId && p.variantId === variantId
     );
     if (itemToRemove) {
       dispatch(
         removeFromCart({
           userId: user.uid,
           productId,
-          variantId: itemToRemove.variantId,
+          variantId,
         })
       );
     }
@@ -249,7 +237,7 @@ const Cart = () => {
     );
   }
 
-  if (cartLoading || userLoading) {
+  if ((cartLoading && !cart) || userLoading) {
     return (
       <Container className="py-5 text-center">
         <h2>{t("common.loading")}</h2>
@@ -317,8 +305,16 @@ const Cart = () => {
                   cartProduct={cartProduct}
                   user={user}
                   cartLoading={cartLoading}
-                  handleQuantityChange={handleQuantityChange}
-                  handleRemoveProduct={handleRemoveProduct}
+                  handleQuantityChange={(productId, change) =>
+                    handleQuantityChange(
+                      productId,
+                      cartProduct.variantId,
+                      change
+                    )
+                  }
+                  handleRemoveProduct={(productId) =>
+                    handleRemoveProduct(productId, cartProduct.variantId)
+                  }
                   productLoading={productLoading}
                   products={products}
                 />
@@ -347,12 +343,12 @@ const Cart = () => {
             </div>
             <div className="d-flex justify-content-between mb-2">
               <span>{t("common.vat")}</span>
-              <span>${(calculateSubTotal() * 0.2).toFixed(2)}</span>
+              <span>${(calculateSubTotal() * 0.14).toFixed(2)}</span>
             </div>
             <div className="d-flex justify-content-between fw-bold mb-3">
               <span>{t("common.totalAmount")}</span>
               <span>
-                ${(calculateSubTotal() + calculateSubTotal() * 0.2).toFixed(2)}
+                ${(calculateSubTotal() + calculateSubTotal() * 0.14).toFixed(2)}
               </span>
             </div>
             <Button variant="primary" className="w-100" onClick={goToCheckout}>
