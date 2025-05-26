@@ -41,6 +41,10 @@ const ProductCardSmall = ({ product }) => {
       navigate("/login");
       return;
     }
+    if (product.productType === "variant") {
+      navigate(`/shop/${product.id}`);
+      return;
+    }
 
     try {
       await dispatch(addToCart({ 

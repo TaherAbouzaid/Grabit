@@ -1,4 +1,5 @@
 import { incrementSoldCount } from "../../services/productStatsService";
+import { decrementStock } from "../../componant/Checkout/Checkout"; // استيراد وظيفة تخفيض المخزون
 
 // إنشاء طلب جديد
 // eslint-disable-next-line no-undef
@@ -14,6 +15,9 @@ export const createOrder = createAsyncThunk(
         createdAt: Timestamp.now(),
         status: 'pending'
       });
+      
+      // تخفيض المخزون لكل منتج في الطلب
+      await decrementStock(orderData.items);
       
       // زيادة عدد المبيعات لكل منتج في الطلب
       for (const item of orderData.items) {

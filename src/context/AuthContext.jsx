@@ -3,7 +3,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../firebase/config";
 import { doc, getDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
-import { syncLocalWishlistToFirestore, fetchUserWishlist } from "../store/Slices/wishlistSlice";
+import { fetchUserWishlist } from "../store/Slices/wishlistSlice";
 import { fetchCart } from "../Store/Slices/cartSlice";
 import { fetchUserData } from "../store/Slices/userSlice";
 
@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
             const userData = { uid: user.uid, ...userDoc.data() };
             setCurrentUser(userData);
             // Sync local wishlist and fetch updated wishlist
-            await dispatch(syncLocalWishlistToFirestore(user.uid)).unwrap();
             await dispatch(fetchUserWishlist(user.uid)).unwrap();
             await dispatch(fetchCart(user.uid)).unwrap();
             await dispatch(fetchUserData(user.uid)).unwrap();

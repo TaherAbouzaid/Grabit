@@ -3,7 +3,7 @@ import Home from "./pages/Home";
 import React, { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Shop from "./pages/Shop";
+import Shop from "./pages/shop";
 import ProductPage from "./pages/ProductPage";
 import { AuthProvider } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
@@ -36,8 +36,6 @@ import BlogPage from "./componant/BlogPage/BlogPage";
 import AboutUs from "./componant/AboutUs/AboutUs";
 import SearchResults from "./componant/SearchResults/SearchResults";
 import "./i18n"; // تأكد من أن هذا هو الملف الصحيح
-import { loadLocalWishlist } from './store/Slices/wishlistSlice';
-
 
 function App() {
   useEffect(() => {
@@ -55,11 +53,6 @@ function App() {
 
   useEffect(() => {
     dispatch(fetchCategoriesWithSub());
-  }, [dispatch]);
-
-  useEffect(() => {
-    // تحميل المفضلة المحلية عند بدء التطبيق
-    dispatch(loadLocalWishlist());
   }, [dispatch]);
 
   return (

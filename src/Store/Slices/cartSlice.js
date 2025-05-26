@@ -13,6 +13,37 @@ import {
 import { db } from "../../firebase/config";
 import { incrementCartAdds } from "../../services/productStatsService";
 
+// دالة شاملة لتحويل جميع كائنات Timestamp في أي مستوى من التداخل
+const serializeTimestamps = (data) => {
+  if (!data) return data;
+  
+  // تحويل كائن Timestamp
+  if (data && typeof data.toDate === 'function') {
+    return data.toDate().toISOString();
+  }
+  
+  // تحويل كائن Timestamp بتنسيق Firestore (seconds, nanoseconds)
+  if (data && typeof data === 'object' && 'seconds' in data && 'nanoseconds' in data) {
+    return new Date(data.seconds * 1000 + data.nanoseconds / 1000000).toISOString();
+  }
+  
+  // تحويل المصفوفات
+  if (Array.isArray(data)) {
+    return data.map(item => serializeTimestamps(item));
+  }
+  
+  // تحويل الكائنات
+  if (typeof data === 'object' && data !== null) {
+    const result = {};
+    for (const key in data) {
+      result[key] = serializeTimestamps(data[key]);
+    }
+    return result;
+  }
+  
+  return data;
+};
+
 // Fetch cart for a user
 export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
@@ -26,7 +57,20 @@ export const fetchCart = createAsyncThunk(
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
-        return { cartId: doc.id, ...doc.data() };
+        const cartData = doc.data();
+        // Ensure products array and each product has necessary numeric fields
+        const products = cartData.products
+          ? cartData.products.map((item) => ({
+              ...item,
+              ItemsPrice:
+                typeof item.ItemsPrice === "number" ? item.ItemsPrice : 0, // Default to 0 if missing or not a number
+              itemQuantity:
+                typeof item.itemQuantity === "number" && item.itemQuantity > 0
+                  ? item.itemQuantity
+                  : 1, // Default to 1 if missing, not a number, or zero
+            }))
+          : [];
+        return serializeTimestamps({ cartId: doc.id, ...cartData, products });
       } else {
         return {
           cartId: null,
@@ -48,8 +92,12 @@ export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async (cartItem, { getState, rejectWithValue }) => {
     try {
-      const { userId, productId, variantId } = cartItem;
-
+      // تحويل البيانات بالكامل قبل استخدامها
+      const serializedCartItem = serializeTimestamps(cartItem);
+      
+      // استخدام البيانات المحولة
+      const { userId, productId, variantId } = serializedCartItem;
+      
       // إذا كان المستخدم غير مسجل، استخدم التخزين المحلي
       if (!userId) {
         const localCart = getLocalCart();
@@ -77,7 +125,7 @@ export const addToCart = createAsyncThunk(
           // Clean up undefined values before saving to local storage and replace the old product
           const cleanedUpdatedProductLocal = Object.fromEntries(
             Object.entries(updatedProducts[existingProductIndex]).filter(
-              ([_, v]) => v !== undefined
+              ([, v]) => v !== undefined
             )
           );
           const finalProductsLocal = updatedProducts.map((product, index) =>
@@ -104,11 +152,13 @@ export const addToCart = createAsyncThunk(
             // Ensure variantId and variantAttributes are null if undefined
             variantId: cartItem.variantId || null,
             variantAttributes: cartItem.variantAttributes || null,
+            quantity: cartItem.quantity || 0, // Ensure quantity is included
+            originalPrice: cartItem.originalPrice || cartItem.price, // Ensure originalPrice is included
           };
 
           // Clean up undefined values before saving to local storage
           const cleanedNewProductLocal = Object.fromEntries(
-            Object.entries(newProduct).filter(([_, v]) => v !== undefined)
+            Object.entries(newProduct).filter(([, v]) => v !== undefined)
           );
 
           const updatedCart = {
@@ -171,7 +221,7 @@ export const addToCart = createAsyncThunk(
         // Clean up undefined values before saving to Firestore and replace the old product
         const cleanedUpdatedProductFirestore = Object.fromEntries(
           Object.entries(updatedProducts[existingProductIndex]).filter(
-            ([_, v]) => v !== undefined
+            ([, v]) => v !== undefined
           )
         );
         const finalProductsFirestore = updatedProducts.map((product, index) =>
@@ -211,12 +261,14 @@ export const addToCart = createAsyncThunk(
         // Ensure variantId and variantAttributes are null if undefined
         variantId: cartItem.variantId || null,
         variantAttributes: cartItem.variantAttributes || null,
+        quantity: cartItem.quantity || 0, // Ensure quantity is included
+        originalPrice: cartItem.originalPrice || cartItem.price, // Ensure originalPrice is included
       };
       const updatedProducts = [...cart.products, newProduct];
 
       // Clean up undefined values before saving to Firestore
       const cleanedNewProductFirestore = Object.fromEntries(
-        Object.entries(newProduct).filter(([_, v]) => v !== undefined)
+        Object.entries(newProduct).filter(([, v]) => v !== undefined)
       );
 
       if (!cartId) {
@@ -238,7 +290,7 @@ export const addToCart = createAsyncThunk(
             products: [
               ...cart.products.map((product) =>
                 Object.fromEntries(
-                  Object.entries(product).filter(([_, v]) => v !== undefined)
+                  Object.entries(product).filter(([, v]) => v !== undefined)
                 )
               ),
               cleanedNewProductFirestore,
@@ -535,7 +587,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        state.items = serializeTimestamps(action.payload);
         state.error = null;
       })
       .addCase(fetchCart.rejected, (state, action) => {
@@ -548,7 +600,7 @@ const cartSlice = createSlice({
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        state.items = serializeTimestamps(action.payload);
         state.error = null;
       })
       .addCase(addToCart.rejected, (state, action) => {
@@ -561,7 +613,7 @@ const cartSlice = createSlice({
       })
       .addCase(updateCartQuantity.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        state.items = serializeTimestamps(action.payload);
         state.error = null;
       })
       .addCase(updateCartQuantity.rejected, (state, action) => {
@@ -574,7 +626,7 @@ const cartSlice = createSlice({
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        state.items = serializeTimestamps(action.payload);
         state.error = null;
       })
       .addCase(removeFromCart.rejected, (state, action) => {
@@ -587,7 +639,7 @@ const cartSlice = createSlice({
       })
       .addCase(clearCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = { ...state.items, ...action.payload };
+        state.items = { ...state.items, ...serializeTimestamps(action.payload) };
         state.error = null;
       })
       .addCase(clearCart.rejected, (state, action) => {
@@ -598,3 +650,30 @@ const cartSlice = createSlice({
 });
 
 export default cartSlice.reducer;
+
+// دالة مساعدة لتحويل جميع كائنات Timestamp
+function convertAllTimestamps(obj) {
+  if (!obj) return obj;
+  
+  // إذا كان الكائن نفسه هو Timestamp
+  if (obj && typeof obj.toDate === 'function') {
+    return obj.toDate().toISOString();
+  }
+  
+  // إذا كان مصفوفة
+  if (Array.isArray(obj)) {
+    return obj.map(item => convertAllTimestamps(item));
+  }
+  
+  // إذا كان كائن عادي
+  if (typeof obj === 'object' && obj !== null) {
+    const newObj = {};
+    for (const key in obj) {
+      newObj[key] = convertAllTimestamps(obj[key]);
+    }
+    return newObj;
+  }
+  
+  // إرجاع القيمة كما هي إذا لم تكن كائن
+  return obj;
+}

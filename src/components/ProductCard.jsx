@@ -6,26 +6,30 @@ import { FaHeart } from "react-icons/fa";
 import { FaShoppingBasket } from "react-icons/fa";
 import ProductQuickViewModal from "./ProductQuickViewModal";
 import "./styles.css";
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../Store/Slices/cartSlice';
-import { addToWishlist, addToLocalWishlist, removeFromWishlist, removeFromLocalWishlist } from '../store/Slices/wishlistSlice';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
-import { showToast } from './SimpleToastUtils';
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../Store/Slices/cartSlice";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../store/Slices/wishlistSlice";
+import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
+import { showToast } from "./SimpleToastUtils";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
   const { currentLanguage } = useLanguage();
-  const { loading: cartLoading } = useSelector(state => state.cart);
-  const wishlistItems = useSelector(state => state.wishlist.items);
+  const { loading: cartLoading } = useSelector((state) => state.cart);
+  const wishlistItems = useSelector((state) => state.wishlist.items);
   const [isInWishlist, setIsInWishlist] = useState(false);
-  
+
   // Get the first variant if it's a variant product
-  const firstVariant = product.productType === "variant" && product.variants?.[0];
-  
+  const firstVariant =
+    product.productType === "variant" && product.variants?.[0];
+
   // Use variant data if available, otherwise use main product data
   const {
     title = firstVariant?.title || product.name,
@@ -37,7 +41,7 @@ const ProductCard = ({ product }) => {
     brandId = product.brandId,
     createdAt = product.createdAt,
     quantity = firstVariant?.quantity || product.quantity,
-    images = firstVariant?.images || product.images || []
+    images = firstVariant?.images || product.images || [],
   } = product;
 
   const [imgSrc, setImgSrc] = useState(mainImage);
@@ -47,7 +51,7 @@ const ProductCard = ({ product }) => {
   useEffect(() => {
     // Check if product is in wishlist
     const checkWishlist = () => {
-      const isWishlisted = wishlistItems.some(item => item.id === product.id);
+      const isWishlisted = wishlistItems.some((item) => item.id === product.id);
       setIsInWishlist(isWishlisted);
     };
     checkWishlist();
@@ -68,9 +72,9 @@ const ProductCard = ({ product }) => {
   const handleAddToCart = async () => {
     if (!user) {
       showToast(
-        currentLanguage === 'ar' 
-          ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!" 
-          : "Please login to add items to cart!", 
+        currentLanguage === "ar"
+          ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!"
+          : "Please login to add items to cart!",
         "error"
       );
       navigate("/login");
@@ -79,119 +83,94 @@ const ProductCard = ({ product }) => {
 
     if (quantity === 0) {
       showToast(
-        currentLanguage === 'ar' 
-          ? "هذا المنتج غير متوفر في المخزون!" 
-          : "This product is out of stock!", 
+        currentLanguage === "ar"
+          ? "هذا المنتج غير متوفر في المخزون!"
+          : "This product is out of stock!",
         "error"
       );
       return;
     }
+    if (product.productType === "variant") {
+      navigate(`/shop/${product.id}`);
+      return;
+    }
 
     try {
-      await dispatch(addToCart({ 
-        userId: user.uid, 
-        productId: product.id, 
-        price: discountPrice || price 
-      }));
+      await dispatch(
+        addToCart({
+          userId: user.uid,
+          productId: product.id,
+          price: discountPrice || price,
+        })
+      );
       showToast(
-        currentLanguage === 'ar' 
-          ? `تمت إضافة ${title?.[currentLanguage]} إلى السلة!` 
-          : `${title?.en} added to cart!`, 
+        currentLanguage === "ar"
+          ? `تمت إضافة ${title?.[currentLanguage]} إلى السلة!`
+          : `${title?.en} added to cart!`,
         "success"
       );
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       showToast(
-        currentLanguage === 'ar' 
-          ? "فشل في إضافة المنتج إلى السلة!" 
-          : "Failed to add to cart!", 
+        currentLanguage === "ar"
+          ? "فشل في إضافة المنتج إلى السلة!"
+          : "Failed to add to cart!",
         "error"
       );
     }
   };
 
   const handleAddToWishlist = () => {
+    // Check if user is logged in
+    if (!user) {
+      showToast(
+        currentLanguage === "ar"
+          ? "الرجاء تسجيل الدخول لإضافة منتجات إلى المفضلة!"
+          : "Please login to add items to wishlist!",
+        "error"
+      );
+      navigate("/login");
+      return;
+    }
+
     if (isInWishlist) {
-      if (user) {
-        dispatch(removeFromWishlist({ productId: product.id, userId: user.uid }))
-          .then(() => {
-            showToast(
-              currentLanguage === 'ar' 
-                ? "تمت إزالة المنتج من المفضلة!" 
-                : "Product removed from wishlist!", 
-              "success"
-            );
-          })
-          .catch(error => {
-            console.error("Error removing from wishlist:", error);
-            showToast(
-              currentLanguage === 'ar' 
-                ? "فشل في إزالة المنتج من المفضلة!" 
-                : "Failed to remove from wishlist!", 
-              "error"
-            );
-          });
-      } else {
-        dispatch(removeFromLocalWishlist(product.id))
-          .then(() => {
-            showToast(
-              currentLanguage === 'ar' 
-                ? "تمت إزالة المنتج من المفضلة!" 
-                : "Product removed from wishlist!", 
-              "success"
-            );
-          })
-          .catch(error => {
-            console.error("Error removing from local wishlist:", error);
-            showToast(
-              currentLanguage === 'ar' 
-                ? "فشل في إزالة المنتج من المفضلة!" 
-                : "Failed to remove from wishlist!", 
-              "error"
-            );
-          });
-      }
+      dispatch(removeFromWishlist({ productId: product.id, userId: user.uid }))
+        .then(() => {
+          showToast(
+            currentLanguage === "ar"
+              ? "تمت إزالة المنتج من المفضلة!"
+              : "Product removed from wishlist!",
+            "success"
+          );
+        })
+        .catch((error) => {
+          console.error("Error removing from wishlist:", error);
+          showToast(
+            currentLanguage === "ar"
+              ? "فشل في إزالة المنتج من المفضلة!"
+              : "Failed to remove from wishlist!",
+            "error"
+          );
+        });
     } else {
-      if (user) {
-        dispatch(addToWishlist({ product, userId: user.uid }))
-          .then(() => {
-            showToast(
-              currentLanguage === 'ar' 
-                ? "تمت إضافة المنتج إلى المفضلة!" 
-                : "Product added to wishlist!", 
-              "success"
-            );
-          })
-          .catch(error => {
-            console.error("Error adding to wishlist:", error);
-            showToast(
-              currentLanguage === 'ar' 
-                ? "فشل في إضافة المنتج إلى المفضلة!" 
-                : "Failed to add to wishlist!", 
-              "error"
-            );
-          });
-      } else {
-       
-        dispatch(addToLocalWishlist(product))
-          .then(() => {
-            showToast(
-              currentLanguage === 'ar' 
-                ? "تمت إضافة المنتج إلى المفضلة!" 
-                : "Product added to wishlist!", 
-              "success"
-            );
-          })
-          .catch(error => {
-            console.error("Error adding to local wishlist:", error);
-            showToast(
-              currentLanguage === 'ar' 
-                ? "فشل في إضافة المنتج إلى المفضلة!" 
-                : "Failed to add to wishlist!", 
-              "error"
-            );
-          });
-      }
+      dispatch(addToWishlist({ product, userId: user.uid }))
+        .then(() => {
+          showToast(
+            currentLanguage === "ar"
+              ? "تمت إضافة المنتج إلى المفضلة!"
+              : "Product added to wishlist!",
+            "success"
+          );
+        })
+        .catch((error) => {
+          console.error("Error adding to wishlist:", error);
+          showToast(
+            currentLanguage === "ar"
+              ? "فشل في إضافة المنتج إلى المفضلة!"
+              : "Failed to add to wishlist!",
+            "error"
+          );
+        });
     }
   };
 
@@ -225,7 +204,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <>
-      <Card 
+      <Card
         className="h-100 shadow-sm product-card"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -236,51 +215,76 @@ const ProductCard = ({ product }) => {
             src={imgSrc}
             alt={title?.[currentLanguage]}
             className={isHovered ? "zoom-img" : ""}
-            style={{ 
-              height: "250px", 
-              objectFit: "contain", 
-              transition: "all 0.5s ease-in-out"
+            style={{
+              height: "250px",
+              objectFit: "contain",
+              transition: "all 0.5s ease-in-out",
             }}
           />
           <div style={{ position: "absolute", top: "10px", right: "10px" }}>
             {quantity === 0 ? (
-              <Badge bg="danger">{currentLanguage === 'ar' ? "غير متوفر" : "OUT OF STOCK"}</Badge>
+              <Badge bg="danger">
+                {currentLanguage === "ar" ? "غير متوفر" : "OUT OF STOCK"}
+              </Badge>
             ) : (
               <>
                 {discountPrice ? (
-                  <Badge bg="warning" text="dark">{currentLanguage === 'ar' ? "خصم" : "SALE"}</Badge>
-                ) : isNew() && (
-                  <Badge bg="success">{currentLanguage === 'ar' ? "جديد" : "NEW"}</Badge>
+                  <Badge bg="warning" text="dark">
+                    {currentLanguage === "ar" ? "خصم" : "SALE"}
+                  </Badge>
+                ) : (
+                  isNew() && (
+                    <Badge bg="success">
+                      {currentLanguage === "ar" ? "جديد" : "NEW"}
+                    </Badge>
+                  )
                 )}
               </>
             )}
           </div>
-          <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 999, color: 'red' }}>
-          </div>
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 999,
+              color: "red",
+            }}
+          ></div>
           <div className="hover-icons">
-            <button 
-              className="icon-btn" 
-              title={isInWishlist ? (currentLanguage === 'ar' ? "إزالة من المفضلة" : "Remove from Wishlist") : (currentLanguage === 'ar' ? "إضافة إلى المفضلة" : "Add to Wishlist")}
+            <button
+              className="icon-btn"
+              title={
+                isInWishlist
+                  ? currentLanguage === "ar"
+                    ? "إزالة من المفضلة"
+                    : "Remove from Wishlist"
+                  : currentLanguage === "ar"
+                  ? "إضافة إلى المفضلة"
+                  : "Add to Wishlist"
+              }
               onClick={handleAddToWishlist}
               style={{ color: isInWishlist ? "#ff4d4d" : "inherit" }}
             >
               {isInWishlist ? <FaHeart /> : <FiHeart />}
             </button>
-            <button 
-              className="icon-btn" 
-              title={currentLanguage === 'ar' ? "عرض سريع" : "Quick View"} 
+            <button
+              className="icon-btn"
+              title={currentLanguage === "ar" ? "عرض سريع" : "Quick View"}
               onClick={() => setShowModal(true)}
             >
               <FiEye />
             </button>
-            <button 
-              className="icon-btn" 
-              title={currentLanguage === 'ar' ? "إضافة إلى السلة" : "Add to Cart"}
+            <button
+              className="icon-btn"
+              title={
+                currentLanguage === "ar" ? "إضافة إلى السلة" : "Add to Cart"
+              }
               onClick={handleAddToCart}
               disabled={quantity === 0 || cartLoading}
-              style={{ 
-                opacity: quantity === 0 ? 0.5 : 1, 
-                cursor: quantity === 0 ? 'not-allowed' : 'pointer' 
+              style={{
+                opacity: quantity === 0 ? 0.5 : 1,
+                cursor: quantity === 0 ? "not-allowed" : "pointer",
               }}
             >
               <FaShoppingBasket />
@@ -288,25 +292,29 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
         <Card.Body>
-          <small className="text-muted d-block">{subCategoryId?.name?.[currentLanguage]}</small>
-          <small className="text-muted d-block">{brandId?.name?.[currentLanguage] || 'Grabit'}</small>
+          <small className="text-muted d-block">
+            {subCategoryId?.name?.[currentLanguage]}
+          </small>
+          <small className="text-muted d-block">
+            {brandId?.name?.[currentLanguage] || "Grabit"}
+          </small>
 
           <Card.Title
             className="mt-1"
             style={{
               fontSize: "0.95rem",
-              color: '#6c757d',
+              color: "#6c757d",
               fontWeight: 600,
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
               cursor: "pointer",
-              transition: "color 0.2s ease"
+              transition: "color 0.2s ease",
             }}
-            title={title?.[currentLanguage]} 
+            title={title?.[currentLanguage]}
             onClick={handleTitleClick}
-            onMouseEnter={(e) => e.target.style.color = "#5caf90"}
-            onMouseLeave={(e) => e.target.style.color = "#4b5966"}
+            onMouseEnter={(e) => (e.target.style.color = "#5caf90")}
+            onMouseLeave={(e) => (e.target.style.color = "#4b5966")}
           >
             {title?.[currentLanguage]}
           </Card.Title>
@@ -330,7 +338,7 @@ const ProductCard = ({ product }) => {
           show={showModal}
           onHide={() => setShowModal(false)}
           product={product}
-          imgSrc={mainImage} 
+          imgSrc={mainImage}
           renderStars={renderStars}
         />
       </Card>

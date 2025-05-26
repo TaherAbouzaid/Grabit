@@ -29,15 +29,10 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCart,
-  updateCartQuantity,
-  removeFromCart,
 } from "../../Store/Slices/cartSlice";
 import { fetchUserData } from "../../store/Slices/userSlice";
 import { fetchProducts } from "../../Store/Slices/productsSlice";
-import {
-  fetchUserWishlist,
-  loadLocalWishlist,
-} from "../../store/Slices/wishlistSlice";
+import { fetchUserWishlist } from "../../store/Slices/wishlistSlice";
 import MegaMenu from "../MegaMenu/MegaMenu";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTranslation } from "react-i18next";
@@ -45,7 +40,8 @@ import SearchBar from "../SearchBar/SearchBar";
 
 function Header() {
   const { user, logout } = useAuth();
-  const [showCart, setShowCart] = useState(false);
+
+  
   const [expanded, setExpanded] = useState(false); // إضافة حالة للتحكم في القائمة المنسدلة
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -59,7 +55,7 @@ function Header() {
     loading: wishlistLoading,
     error: wishlistError,
   } = useSelector((state) => state.wishlist);
-  const { items: products, loading: productLoading } = useSelector(
+  const { items: products } = useSelector(
     (state) => state.products
   );
   const { toggleLanguage, currentLanguage } = useLanguage();
@@ -77,7 +73,6 @@ function Header() {
 
   // Fetch data on mount
   useEffect(() => {
-    dispatch(loadLocalWishlist()); // Load local wishlist for guests
     dispatch(fetchProducts());
     if (user?.uid) {
       dispatch(fetchUserData(user.uid));
@@ -87,56 +82,13 @@ function Header() {
   }, [user, dispatch]);
 
   // Handle Offcanvas show/hide
-  const handleShow = () => {
-    if (!user) {
-      navigate("/login", { state: { from: { pathname: "/cart" } } });
-      return;
-    }
-    setShowCart(true);
-  };
-  const handleClose = () => setShowCart(false);
 
   // Navigate to checkout
-  const goToCheckout = () => {
-    if (user) {
-      navigate("/checkout");
-    } else {
-      navigate("/login", { state: { from: { pathname: "/checkout" } } });
-    }
-  };
+  
 
   // Handle quantity change
-  const handleQuantityChange = (productId, change) => {
-    if (user && cartItems?.cartId) {
-      // Pass productId and variantId to updateCartQuantity
-      const itemToUpdate = cartItems.products.find(
-        (item) =>
-          item.productId === productId &&
-          (!item.variantId ||
-            item.variantId ===
-              cartItems.products.find((p) => p.productId === productId)
-                ?.variantId)
-      );
-      if (itemToUpdate) {
-        dispatch(
-          updateCartQuantity({
-            userId: user.uid,
-            productId,
-            variantId: itemToUpdate.variantId,
-            change,
-          })
-        );
-      }
-    }
-  };
 
   // Handle remove item
-  const handleRemoveItem = (productId, variantId) => {
-    if (user && cartItems?.cartId) {
-      // Pass productId and variantId to removeFromCart
-      dispatch(removeFromCart({ userId: user.uid, productId, variantId }));
-    }
-  };
 
   // Calculate cart totals
   const calculateCartTotals = () => {
@@ -150,7 +102,7 @@ function Header() {
     const total = subTotal + vat;
     return { subTotal, vat, total };
   };
-  const { subTotal, vat, total } = calculateCartTotals();
+  calculateCartTotals();
 
   // Get user display name
   const getDisplayName = () => {
@@ -388,7 +340,7 @@ function Header() {
                 </a>
               </div>
 
-              <div className="text-center" onClick={handleShow}>
+              <div className="text-center" onClick={() => handleNavigation("/cart")}>
                 <a className="text-decoration-none text-secondary">
                   <div className="position-relative">
                     <BiShoppingBag size={24} />
@@ -541,7 +493,7 @@ function Header() {
                 </a>
               </div>
 
-              <div className="text-center" onClick={handleShow}>
+              <div className="text-center" onClick={() => handleNavigation("/cart")}>
                 <a className="text-decoration-none text-secondary">
                   <div className="position-relative">
                     <BiShoppingBag size={24} />
@@ -858,132 +810,7 @@ function Header() {
         </Container>
       </Navbar>
 
-      {/* Cart Offcanvas */}
-      <Offcanvas
-        show={showCart}
-        onHide={handleClose}
-        placement="end"
-        className="cart-offcanvas"
-      >
-        <Offcanvas.Header closeButton>
-          <Offcanvas.Title>{t("nav.cart")}</Offcanvas.Title>
-        </Offcanvas.Header>
-        <Offcanvas.Body>
-          <div className="d-flex flex-column h-100">
-            <div className="mb-5 flex-grow-1 overflow-auto">
-              {cartLoading || productLoading ? (
-                <div className="text-center">{t("common.loading")}</div>
-              ) : cartError ? (
-                <div className="text-center text-danger">
-                  {t("common.error")}: {cartError}
-                </div>
-              ) : cartItems?.products?.length > 0 ? (
-                cartItems.products.map((item) => (
-                  <Row
-                    key={item.productId + (item.variantId || "")}
-                    className="py-2 border-bottom"
-                  >
-                    <Col xs={3}>
-                      <Image
-                        src={
-                          item.mainImage ||
-                          products?.find((p) => p.id === item.productId)
-                            ?.mainImage ||
-                          "https://via.placeholder.com/40"
-                        }
-                        fluid
-                        rounded
-                        width="40"
-                        height="40"
-                        className="me-2"
-                        onError={(e) =>
-                          (e.target.src = "https://via.placeholder.com/40")
-                        }
-                      />
-                    </Col>
-                    <Col xs={7}>
-                      <h6 className="mb-0">
-                        {item.title?.[currentLanguage] ||
-                          item.title?.en ||
-                          products?.find((p) => p.id === item.productId)
-                            ?.title?.[currentLanguage] ||
-                          products?.find((p) => p.id === item.productId)?.title
-                            ?.en ||
-                          "Product"}
-                        {item.variantAttributes &&
-                          Object.keys(item.variantAttributes).length > 0 && (
-                            <small className="text-muted ms-2">
-                              (
-                              {Object.entries(item.variantAttributes)
-                                .map(([key, value]) => `${t(key)}: ${value}`)
-                                .join(", ")}
-                              )
-                            </small>
-                          )}
-                      </h6>
-                      <p className="mb-0 small">
-                        {t("cart.quantity")}: {item.itemQuantity}
-                      </p>
-                      <p className="mb-0 small">
-                        ${(item.price * item.itemQuantity).toFixed(2)}
-                      </p>
-                    </Col>
-                    <Col xs={2} className="text-end">
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="text-danger p-0"
-                        onClick={() =>
-                          handleRemoveItem(item.productId, item.variantId)
-                        }
-                      >
-                        <IoCloseSharp size={18} />
-                      </Button>
-                    </Col>
-                  </Row>
-                ))
-              ) : (
-                <div className="text-center text-muted">{t("cart.empty")}</div>
-              )}
-            </div>
-
-            <div className="p-3">
-              <hr />
-              <div className="d-flex justify-content-between mb-2">
-                <span>{t("common.subtotal")}</span>
-                <span>${subTotal.toFixed(2)}</span>
-              </div>
-              <div className="d-flex justify-content-between mb-2">
-                <span>{t("common.vat")}</span>
-                <span>${vat.toFixed(2)}</span>
-              </div>
-              <div className="d-flex justify-content-between fw-bold">
-                <span>{t("common.totalAmount")}</span>
-                <span>${total.toFixed(2)}</span>
-              </div>
-              <div className="mt-3 d-flex justify-content-between">
-                <Button
-                  size="lg"
-                  className="px-5"
-                  variant="secondary"
-                  onClick={() => handleNavigation("/cart")}
-                >
-                  {t("nav.viewCart")}
-                </Button>
-                <Button
-                  size="lg"
-                  className="px-5"
-                  variant="success"
-                  onClick={goToCheckout}
-                  disabled={!cartItems?.products?.length || cartLoading}
-                >
-                  {t("nav.checkout")}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Offcanvas.Body>
-      </Offcanvas>
+      {/* حذف كامل كود Offcanvas */}
     </header>
   );
 }

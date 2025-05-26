@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaStar, FaChevronLeft, FaChevronRight, FaHeart } from "react-icons/fa";
+import { FiHeart } from "react-icons/fi";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -12,6 +13,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../Store/Slices/cartSlice";
 import { addReview, getProductReviews } from "../Store/Slices/reviewSlice";
 import { showToast } from "../components/SimpleToastUtils";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../store/Slices/wishlistSlice";
+import { serializeTimestamps } from '../utils/helpers';
 
 const NextArrow = (props) => (
   <div
@@ -65,6 +71,7 @@ const ProductPage = () => {
   const reviews = useSelector((state) => state.reviews.items);
   const reviewsLoading = useSelector((state) => state.reviews.loading);
   const cartLoading = useSelector((state) => state.cart.loading);
+  const wishlistItems = useSelector((state) => state.wishlist.items);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -113,6 +120,108 @@ const ProductPage = () => {
     console.log("Dispatching getProductReviews for ID:", productId);
     dispatch(getProductReviews(productId));
   }, [productId, dispatch]);
+
+  // Check if current product is in wishlist
+  const isProductInWishlist = wishlistItems.some(
+    (item) => item.id === product?.id
+  );
+
+  // Handle adding/removing from wishlist
+  const handleToggleWishlist = () => {
+    if (!user) {
+      showToast(
+        currentLanguage === "ar"
+          ? "الرجاء تسجيل الدخول لإضافة منتجات إلى المفضلة!"
+          : "Please login to add items to wishlist!",
+        "error"
+      );
+      navigate("/login");
+      return;
+    }
+
+    if (isProductInWishlist) {
+      dispatch(removeFromWishlist({ productId: product.id, userId: user.uid }))
+        .then(() => {
+          showToast(
+            currentLanguage === "ar"
+              ? "تمت إزالة المنتج من المفضلة!"
+              : "Product removed from wishlist!",
+            "success"
+          );
+        })
+        .catch((error) => {
+          console.error("Error removing from wishlist:", error);
+          showToast(
+            currentLanguage === "ar"
+              ? "فشل في إزالة المنتج من المفضلة!"
+              : "Failed to remove from wishlist!",
+            "error"
+          );
+        });
+    } else {
+      // Ensure product object has necessary fields for wishlist
+      // Construct productToAdd based on whether a variant is selected
+      let productToAdd = {
+        id: product.id,
+        productType: product.productType,
+        // Add other relevant fields you want to store in wishlist from the main product
+        brandId: product.brandId,
+        subCategoryId: product.subCategoryId,
+        // We will add title, mainImage, price, etc. below based on product type/variant
+      };
+
+      if (product.productType === "variant" && selectedVariant) {
+        // If a variant is selected, add variant-specific details
+        productToAdd.variantId = selectedVariant.id;
+        productToAdd.variantAttributes = selectedAttributes;
+        productToAdd.title = selectedVariant.title; // Use variant title
+        productToAdd.mainImage = selectedVariant.mainImage; // Use variant image
+        productToAdd.price =
+          selectedVariant.discountPrice || selectedVariant.price; // Use variant price
+        productToAdd.originalPrice = selectedVariant.price; // Use variant original price
+        productToAdd.images = selectedVariant.images || []; // Use variant images
+      } else {
+        // For simple products or variant products without a selected variant (though ideally one is selected)
+        productToAdd.title = product.title; // Use main product title
+        productToAdd.mainImage = product.mainImage; // Use main product image
+        productToAdd.price = product.discountPrice || product.price; // Use main product price
+        productToAdd.originalPrice = product.price; // Use main product original price
+        productToAdd.images = product.images || []; // Use main product images
+      }
+
+      // Ensure title is always a translation object { ar, en }
+      if (productToAdd.title && typeof productToAdd.title !== "object") {
+        productToAdd.title = { [currentLanguage]: productToAdd.title };
+      }
+
+      // Wishlist doesn't track quantity in the same way as cart, so we can omit or set a default if necessary
+      // For consistency with serializedProduct, let's include a quantity field, maybe 1 or the variant/product stock quantity
+      // Let's use the stock quantity for now, consistent with how it was being done before (though slightly less intuitive for wishlist)
+      productToAdd.quantity =
+        selectedVariant?.quantity || product.quantity || 1;
+
+      console.log("Adding to wishlist:", productToAdd); // Log the object being added
+
+      dispatch(addToWishlist({ product: productToAdd, userId: user.uid }))
+        .then(() => {
+          showToast(
+            currentLanguage === "ar"
+              ? "تمت إضافة المنتج إلى المفضلة!"
+              : "Product added to wishlist!",
+            "success"
+          );
+        })
+        .catch((error) => {
+          console.error("Error adding to wishlist:", error);
+          showToast(
+            currentLanguage === "ar"
+              ? "فشل في إضافة المنتج إلى المفضلة!"
+              : "Failed to add to wishlist!",
+            "error"
+          );
+        });
+    }
+  };
 
   // Get available values for an attribute based on current selections
   const getAvailableAttributeValues = (attributeKey) => {
@@ -356,8 +465,8 @@ const ProductPage = () => {
         userId: user.uid,
         productId: product.id,
         quantity: 1,
-        subCategoryId: product.subCategoryId,
-        brandId: product.brandId,
+        subCategoryId: convertTimestampToJSON(product.subCategoryId),
+        brandId: convertTimestampToJSON(product.brandId),
         productType: product.productType,
       };
 
@@ -823,6 +932,30 @@ const ProductPage = () => {
                 ? "إضافة إلى السلة"
                 : "Add to Cart"}
             </button>
+
+            {/* Wishlist Icon */}
+            {product && (
+              <div
+                style={{
+                  cursor: "pointer",
+                  color: isProductInWishlist ? "#ff4d4d" : "#ccc",
+                  fontSize: "24px",
+                  marginLeft: "10px", // Adjust spacing as needed
+                }}
+                onClick={handleToggleWishlist}
+                title={
+                  isProductInWishlist
+                    ? currentLanguage === "ar"
+                      ? "إزالة من المفضلة"
+                      : "Remove from Wishlist"
+                    : currentLanguage === "ar"
+                    ? "إضافة إلى المفضلة"
+                    : "Add to Wishlist"
+                }
+              >
+                {isProductInWishlist ? <FaHeart /> : <FiHeart />}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -960,3 +1093,29 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+
+function convertTimestampToJSON(obj) {
+  if (!obj) return obj;
+  
+  // إذا كان الكائن نفسه هو Timestamp
+  if (obj && typeof obj.toJSON === 'function') {
+    return obj.toJSON();
+  }
+  
+  // إذا كان مصفوفة
+  if (Array.isArray(obj)) {
+    return obj.map(item => convertTimestampToJSON(item));
+  }
+  
+  // إذا كان كائن عادي
+  if (typeof obj === 'object' && obj !== null) {
+    const newObj = {};
+    for (const key in obj) {
+      newObj[key] = convertTimestampToJSON(obj[key]);
+    }
+    return newObj;
+  }
+  
+  // إرجاع القيمة كما هي إذا لم تكن كائن
+  return obj;
+}

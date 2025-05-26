@@ -24,6 +24,7 @@ import {
   query,
   where,
   addDoc,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { fetchCart } from "../../Store/Slices/cartSlice";
@@ -34,6 +35,86 @@ import { Country, State, City } from "country-state-city";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "../../context/LanguageContext.jsx";
+
+const decrementStock = async (orderProducts) => {
+
+  
+  if (!orderProducts || orderProducts.length === 0) {
+    console.error("No products provided to decrementStock function");
+    return;
+  }
+  
+  try {
+    // معالجة كل منتج على حدة في معاملات منفصلة
+    // هذا يضمن أن فشل منتج واحد لا يؤثر على البقية
+    for (const item of orderProducts) {
+      
+      if (!item.productId) {
+        console.error("Item missing productId:", item);
+        continue;
+      }
+      
+      try {
+        await runTransaction(db, async (transaction) => {
+          const productRef = doc(db, "allproducts", item.productId);
+          
+          // للمنتجات ذات المتغيرات
+          if (item.variantId) {
+            const variantRef = doc(db, "allproducts", item.productId, "variants", item.variantId);
+            const variantDoc = await transaction.get(variantRef);
+            
+            if (!variantDoc.exists()) {
+              console.error(`Variant document not found for product ID ${item.productId} and variant ID ${item.variantId}`);
+              return;
+            }
+            
+            const variantData = variantDoc.data();
+            const currentQuantity = variantData.quantity || 0;
+            const quantityToDecrement = item.itemQuantity || item.quantity || 1;
+            
+            
+            if (currentQuantity < quantityToDecrement) {
+              console.error(`Not enough stock for variant. Current: ${currentQuantity}, Requested: ${quantityToDecrement}`);
+              return;
+            }
+            
+            const newQuantity = currentQuantity - quantityToDecrement;
+            transaction.update(variantRef, { quantity: newQuantity });
+          } else {
+            // للمنتجات البسيطة
+            const productDoc = await transaction.get(productRef);
+            
+            if (!productDoc.exists()) {
+              console.error(`Product document not found for ID ${item.productId}`);
+              return;
+            }
+            
+            const productData = productDoc.data();
+            const currentQuantity = productData.quantity || 0;
+            const quantityToDecrement = item.itemQuantity || item.quantity || 1;
+            
+            
+            if (currentQuantity < quantityToDecrement) {
+              console.error(`Not enough stock for product. Current: ${currentQuantity}, Requested: ${quantityToDecrement}`);
+              return;
+            }
+            
+            const newQuantity = currentQuantity - quantityToDecrement;
+            transaction.update(productRef, { quantity: newQuantity });
+          }
+        });
+      } catch (itemError) {
+        console.error(`Error decrementing stock for product ${item.productId}:`, itemError);
+        // استمر في المعالجة حتى لو فشل منتج واحد
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Stock decrement failed:", error);
+    throw error;
+  }
+};
 
 export default function CheckoutPage() {
   const { user } = useAuth();
@@ -101,17 +182,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (user && user.uid) {
-      console.log("Fetching cart for userId:", user.uid);
       dispatch(fetchCart(user.uid));
-      console.log("Fetching all products");
       dispatch(fetchProducts());
-      console.log("Fetching user data for userId:", user.uid);
       dispatch(fetchUserData(user.uid));
     }
   }, [dispatch, user]);
 
   useEffect(() => {
-    console.log("productsState:", JSON.stringify(productsState, null, 2));
+    
   }, [productsState]);
 
   useEffect(() => {
@@ -184,7 +262,6 @@ export default function CheckoutPage() {
     }
     if (!selectedPaymentMethod)
       errors.paymentMethod = "Please select a payment method";
-    console.log("Validation errors:", errors);
     return errors;
   };
 
@@ -194,28 +271,42 @@ export default function CheckoutPage() {
     paypalOrderId = null
   ) => {
     const orderRef = doc(collection(db, "orders"));
-    const orderId = orderRef.id;
     const orderData = {
       couponCode: null,
       createdAt: new Date(),
       discount,
       finalTotal,
-      orderId,
+      orderId: orderRef.id,
       paymentMethod,
       paypalOrderId,
       products: cart.products.map((item) => {
         const product = products.find((p) => p.id === item.productId);
-        const unitPrice =
-          product?.discountPrice || item.ItemsPrice / item.itemQuantity;
-        const sku = `${product?.title?.en?.slice(0, 3) || "UNK"}-${
-          product?.categoryId?.name?.en?.slice(0, 3) || "UNK"
-        }`;
+        // Get variant info if needed
+        
+      
+        
+        // حساب سعر الوحدة
+        const quantity = item.itemQuantity || 1;
+        const itemPrice = item.ItemsPrice || 0;
+        const calculatedUnitPrice = itemPrice / quantity;
+        
+        // استخدام سعر المنتج من قاعدة البيانات أو السعر المحسوب
+        const finalUnitPrice = product?.discountPrice || calculatedUnitPrice;
+        
         return {
-          price: unitPrice,
           productId: item.productId,
-          quantity: item.itemQuantity,
-          sku,
-          variantId: "",
+          variantId: item.variantId || null,
+          itemQuantity: item.itemQuantity, // تأكد من وجود هذا الحقل
+          quantity: item.itemQuantity, // استخدم itemQuantity كقيمة لـ quantity
+          price: finalUnitPrice, // استخدم السعر المحسوب بدلاً من unitPrice
+          sku: product?.sku || "",
+          variantAttributes:
+            item.variantAttributes && typeof item.variantAttributes === "object"
+              ? Object.entries(item.variantAttributes).map(([key, value]) => ({
+                  key,
+                  value,
+                }))
+              : null,
         };
       }),
       shippingAddress,
@@ -224,9 +315,8 @@ export default function CheckoutPage() {
       updatedAt: new Date(),
       userId: user.uid,
     };
-    console.log("Creating order:", JSON.stringify(orderData, null, 2));
     await setDoc(orderRef, orderData);
-    return orderId;
+    return orderData;
   };
 
   const clearCart = async () => {
@@ -235,22 +325,13 @@ export default function CheckoutPage() {
     if (!querySnapshot.empty) {
       const cartDoc = querySnapshot.docs[0];
       const cartRef = doc(db, "Cart", cartDoc.id);
-      console.log("Clearing cart products for userId:", user.uid);
       await updateDoc(cartRef, {
         products: [],
         updatedAt: new Date().toISOString(),
       });
-      console.log("Cart products cleared successfully for userId:", user.uid);
 
       const updatedCartDoc = await getDoc(cartRef, { source: "server" });
-      console.log(
-        "Cart after clearing (from server):",
-        JSON.stringify(
-          updatedCartDoc.exists() ? updatedCartDoc.data() : null,
-          null,
-          2
-        )
-      );
+     
       if (
         updatedCartDoc.exists() &&
         updatedCartDoc.data().products?.length !== 0
@@ -258,10 +339,7 @@ export default function CheckoutPage() {
         throw new Error("Failed to clear cart products");
       }
     } else {
-      console.log(
-        "No cart document found, creating empty cart for userId:",
-        user.uid
-      );
+     
       const docRef = await addDoc(collection(db, "Cart"), {
         userId: user.uid,
         products: [],
@@ -294,7 +372,6 @@ export default function CheckoutPage() {
         city: formData.city,
         postalCode: formData.postalCode,
       };
-      console.log("Adding new address:", JSON.stringify(newAddress, null, 2));
       await updateDoc(userRef, {
         address: arrayUnion(newAddress),
       });
@@ -312,14 +389,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("handleSubmit triggered");
-    console.log("State:", {
-      addressOption,
-      selectedAddress,
-      selectedPaymentMethod,
-      cart: cart?.products,
-      userData,
-    });
+    
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -388,7 +458,21 @@ export default function CheckoutPage() {
       }
 
       if (selectedPaymentMethod === "cod") {
-        orderId = await createOrder(shippingAddress, "cod");
+        const createdOrderData = await createOrder(shippingAddress, "cod");
+        orderId = createdOrderData.orderId;
+
+        // Decrement stock after successful order creation for COD
+        if (orderId && createdOrderData) {
+          try {
+            console.log("CALLING decrementStock FUNCTION");
+            console.log("Products to decrement:", JSON.stringify(createdOrderData.products, null, 2));
+            const result = await decrementStock(createdOrderData.products);
+            console.log(`Stock decremented for order ${orderId}:`, result);
+          } catch (stockError) {
+            console.error(`Failed to decrement stock for order ${orderId}:`, stockError);
+          }
+        }
+
         await clearCart();
         dispatch(fetchUserData(user.uid));
         dispatch(fetchCart(user.uid));
@@ -619,7 +703,7 @@ export default function CheckoutPage() {
                                   };
                                 }
 
-                                const orderId = await createOrder(
+                                const createdOrderData = await createOrder(
                                   shippingAddress,
                                   "paypal",
                                   details.id
@@ -628,7 +712,7 @@ export default function CheckoutPage() {
                                 dispatch(fetchUserData(user.uid));
                                 dispatch(fetchCart(user.uid));
                                 navigate("/order-confirmation", {
-                                  state: { orderId },
+                                  state: { orderId: createdOrderData.orderId },
                                 });
                               } catch (error) {
                                 console.error(

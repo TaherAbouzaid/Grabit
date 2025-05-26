@@ -1,8 +1,7 @@
 // features/products/productsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getDocs, collection, getDoc, doc } from "firebase/firestore";
-import { db } from "../../firebase/config"; 
-
+import { db } from "../../firebase/config";
 
 // Utility function to convert Firestore Timestamps to strings
 const convertTimestamps = (obj) => {
@@ -11,7 +10,7 @@ const convertTimestamps = (obj) => {
     return obj.toDate().toISOString(); // Convert Timestamp to ISO string
   }
   if (Array.isArray(obj)) {
-    return obj.map(item => convertTimestamps(item));
+    return obj.map((item) => convertTimestamps(item));
   }
   const result = {};
   for (const key in obj) {
@@ -20,19 +19,30 @@ const convertTimestamps = (obj) => {
   return result;
 };
 
-
-
-
 // Fetch all products
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (_, { rejectWithValue }) => {
     try {
       const querySnapshot = await getDocs(collection(db, "allproducts"));
-      const products = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...convertTimestamps(doc.data()),
-      }));
+      const products = querySnapshot.docs.map((doc) => {
+        const productData = convertTimestamps(doc.data());
+
+        // Process variants to ensure they have necessary fields
+        if (productData.productType === "variant" && productData.variants) {
+          productData.variants = productData.variants.map((variant) => ({
+            ...variant,
+            // Ensure title and mainImage are present on variant object if not directly from Firestore
+            title: variant.title.en || productData.title.en, // Fallback to product title
+            mainImage: variant.mainImage || productData.mainImage, // Fallback to product image
+          }));
+        }
+
+        return {
+          id: doc.id,
+          ...productData,
+        };
+      });
       return products;
     } catch (error) {
       console.error("Error fetching products:", error.message);
@@ -49,7 +59,10 @@ export const fetchProductById = createAsyncThunk(
       const docRef = doc(db, "allproducts", productId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        const product = { id: docSnap.id, ...convertTimestamps(docSnap.data()) };
+        const product = {
+          id: docSnap.id,
+          ...convertTimestamps(docSnap.data()),
+        };
         return product;
       } else {
         console.error("Product not found for ID:", productId);
@@ -62,22 +75,19 @@ export const fetchProductById = createAsyncThunk(
   }
 );
 
-
-
 export const fetchProductsByCategory = createAsyncThunk(
-  'products/fetchByCategory',
+  "products/fetchByCategory",
   async (categoryId) => {
-    const productsRef = collection(db, "allproducts"); 
+    const productsRef = collection(db, "allproducts");
     const querySnapshot = await getDocs(productsRef);
-    
+
     const filteredProducts = querySnapshot.docs
-      .map(doc => ({ id: doc.id, ...doc.data() }))
-      .filter(product => product.categoryId?.categoryId === categoryId); // ✅ تعديل هنا
-    
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .filter((product) => product.categoryId?.categoryId === categoryId); // ✅ تعديل هنا
+
     return filteredProducts;
   }
 );
-
 
 const productsSlice = createSlice({
   name: "products",
@@ -86,9 +96,9 @@ const productsSlice = createSlice({
     loading: false,
     error: null,
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, state => {
+      .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
@@ -99,7 +109,7 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-      .addCase(fetchProductsByCategory.pending, state => {
+      .addCase(fetchProductsByCategory.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchProductsByCategory.fulfilled, (state, action) => {
@@ -110,8 +120,8 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-        // Fetch product by ID
-      .addCase(fetchProductById.pending, state => {
+      // Fetch product by ID
+      .addCase(fetchProductById.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -119,7 +129,7 @@ const productsSlice = createSlice({
         state.loading = false;
         state.selectedProduct = action.payload;
         // Add to items if not already present
-        if (!state.items.find(item => item.id === action.payload.id)) {
+        if (!state.items.find((item) => item.id === action.payload.id)) {
           state.items.push(action.payload);
         }
       })
@@ -127,9 +137,6 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.payload || action.error.message;
       });
-
-
-
   },
 });
 

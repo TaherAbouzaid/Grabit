@@ -24,6 +24,10 @@ const ProductCard = ({ product }) => {
       navigate("/login");
       return;
     }
+    if (product.productTyp === "variant") {
+      navigate(`/shop/${product.id}`);
+      return;
+    }
     // Build a complete cartItem object for simple products
     const cartItem = {
       userId: user.uid, // Assuming userId is needed in the slice

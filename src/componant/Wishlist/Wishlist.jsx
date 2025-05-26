@@ -15,8 +15,6 @@ import { showToast } from "../../components/SimpleToastUtils";
 import "./Wishlist.css";
 import {
   fetchUserWishlist,
-  loadLocalWishlist,
-  removeFromLocalWishlist,
   removeFromWishlist,
 } from "../../store/Slices/wishlistSlice";
 import { addToCart } from "../../Store/Slices/cartSlice";
@@ -32,7 +30,7 @@ const Wishlist = () => {
     (state) => state.wishlist
   );
   const { loading: cartLoading } = useSelector((state) => state.cart);
-  useNavigate();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
 
@@ -40,8 +38,6 @@ const Wishlist = () => {
   useEffect(() => {
     if (user) {
       dispatch(fetchUserWishlist(user.uid));
-    } else {
-      dispatch(loadLocalWishlist());
     }
   }, [user, dispatch]);
 
@@ -54,24 +50,54 @@ const Wishlist = () => {
 
   // ✅ إزالة منتج من الـ wishlist
   const handleRemoveItem = (productId) => {
-    if (user) {
-      dispatch(removeFromWishlist({ productId, userId: user.uid }));
-    } else {
-      dispatch(removeFromLocalWishlist(productId));
-    }
+    dispatch(removeFromWishlist({ productId, userId: user.uid }));
   };
 
   // ✅ إضافة منتج إلى الـ cart
   const handleAddToCart = (item) => {
     if (cartLoading) return;
+    if (item.productType === "variant") {
+      navigate(`/shop/${item.id}`);
+      return;
+    }
+    // Construct a complete cartItem object
+    const cartItem = {
+      userId: user?.uid || null,
+      productId: item.id,
+      // Use variant data if available, otherwise use main product data
+      title:
+        item.productType === "variant" &&
+        item.variants?.[0]?.title?.[currentLanguage]
+          ? item.variants[0].title
+          : item.title,
+      mainImage:
+        item.productType === "variant" && item.variants?.[0]?.mainImage
+          ? item.variants[0].mainImage
+          : item.mainImage,
+      price:
+        item.productType === "variant" && item.variants?.[0]?.price
+          ? item.variants[0].price
+          : item.price,
+      originalPrice:
+        item.productType === "variant" && item.variants?.[0]?.originalPrice
+          ? item.variants[0].originalPrice
+          : item.originalPrice, // Include original price if applicable
+      quantity:
+        item.productType === "variant" && item.variants?.[0]?.quantity
+          ? item.variants[0].quantity
+          : item.quantity, // Include stock quantity
+      variantId:
+        item.productType === "variant" && item.variants?.[0]?.id
+          ? item.variants[0].id
+          : null, // Include variant ID if applicable
+      variantAttributes:
+        item.productType === "variant" && item.variants?.[0]?.attributes
+          ? item.variants[0].attributes
+          : null, // Include variant attributes if applicable
+      productType: item.productType, // Include product type
+    };
 
-    dispatch(
-      addToCart({
-        userId: user?.uid || null,
-        productId: item.id,
-        price: item.price,
-      })
-    );
+    dispatch(addToCart(cartItem));
 
     showToast(
       currentLanguage === "ar"
@@ -83,13 +109,13 @@ const Wishlist = () => {
 
   return (
     <Container fluid className="p-4">
-      <div className="nav d-flex justify-content-between p-3">
-        <p>{t("wishlist.wishlist")}</p>
-        {/* <Breadcrumb>
+      {/* <div className="nav d-flex justify-content-between p-3">
+        <p>{t("wishlist.wishlist")}</p> */}
+      {/* <Breadcrumb>
           <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
           <Breadcrumb.Item active style={{ color: "#5caf90" }}>{t('wishlist.wishlist')}</Breadcrumb.Item>
         </Breadcrumb> */}
-      </div>
+      {/* </div> */}
 
       <Row className="wishlist-header">
         <Col>
@@ -103,7 +129,9 @@ const Wishlist = () => {
           <div className="wishlist-card border rounded p-3 bg-white shadow-sm">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="fw-bold mb-0">{t("wishlist.wishlist")}</h5>
-              <Button variant="success">{t("wishlist.shopNow")}</Button>
+              <Button onClick={() => navigate("/shop")} variant="success">
+                {t("wishlist.shopNow")}
+              </Button>
             </div>
 
             <Table responsive hover className="wishlist-table">
@@ -121,10 +149,28 @@ const Wishlist = () => {
                   wishlistItems.map((item) => (
                     <tr key={item.id}>
                       <td>
-                        <Image src={item.mainImage} width="50" />
+                        <Image
+                          src={
+                            item.productType === "variant" &&
+                            item.variants?.[0]?.mainImage
+                              ? item.variants[0].mainImage
+                              : item.mainImage
+                          }
+                          width="50"
+                        />
                       </td>
-                      <td>{item.title?.[currentLanguage]}</td>
-                      <td>${item.price}</td>
+                      <td>
+                        {item.productType === "variant" &&
+                        item.variants?.[0]?.title?.[currentLanguage]
+                          ? item.variants[0].title[currentLanguage]
+                          : item.title?.[currentLanguage]}
+                      </td>
+                      <td>
+                        {item.productType === "variant" &&
+                        item.variants?.[0]?.price
+                          ? `$${item.variants[0].price}`
+                          : `$${item.price}`}
+                      </td>
                       {/* <td className="text-success">Available</td> */}
                       <td>
                         <Button

@@ -6,6 +6,8 @@ import { addToCart } from "../Store/Slices/cartSlice";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { showToast } from "../components/SimpleToastUtils.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProductCardHorizontal = ({ product }) => {
   const navigate = useNavigate();
@@ -63,7 +65,7 @@ const ProductCardHorizontal = ({ product }) => {
 
   const handleAddToCart = async () => {
     if (!user) {
-      toast.error(
+      showToast(
         currentLanguage === "ar"
           ? "الرجاء تسجيل الدخول لإضافة منتجات إلى السلة!"
           : "Please login to add items to cart!",
@@ -77,7 +79,7 @@ const ProductCardHorizontal = ({ product }) => {
     }
 
     if (getQuantity() === 0) {
-      toast.error(
+      showToast(
         currentLanguage === "ar"
           ? "هذا المنتج غير متوفر في المخزون!"
           : "This product is out of stock!",
@@ -97,7 +99,7 @@ const ProductCardHorizontal = ({ product }) => {
           price: getPrice(),
         })
       );
-      toast.success(
+      showToast(
         currentLanguage === "ar"
           ? `تمت إضافة ${getTitle()} إلى السلة!`
           : `${getTitle()} added to cart!`,
@@ -108,7 +110,7 @@ const ProductCardHorizontal = ({ product }) => {
       );
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      toast.error(
+      showToast(
         currentLanguage === "ar"
           ? "فشل في إضافة المنتج إلى السلة!"
           : "Failed to add to cart!",

@@ -56,7 +56,7 @@ const Home = () => {
         data-aos="fade-up"
         data-aos-once="true"
         data-aos-anchor-placement="bottom-bottom"
-        data-aos-delay="100"
+        data-aos-delay="50"
         data-aos-duration="2000"
         data-aos-offset="300"
       >
