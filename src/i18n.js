@@ -150,6 +150,7 @@ i18n
           sidebarFilter: {
             filterTitle: "Filter",
             category: "Category",
+            subcategory: "Subcategory",
             price: "Price (Max: ${{maxPrice}})",
             tags: "Tags",
             all: "All",
@@ -464,6 +465,7 @@ i18n
             "Don't have an account?": "Don't have an account?",
             "Sign Up": "Sign Up",
           },
+
           // Order Tracker
           order: {
             orderTracker: "Order Tracker",
@@ -514,7 +516,8 @@ i18n
               "Your product Order is our first priority.",
             Cancel: "Cancel",
             "Cancel Order": "Cancel Order",
-            "Are you sure you want to cancel this order?": "Are you sure you want to cancel this order?",
+            "Are you sure you want to cancel this order?":
+              "Are you sure you want to cancel this order?",
             Actions: "Actions",
             Your: "Your",
             Orders: "Orders",
@@ -1135,7 +1138,8 @@ i18n
               "طلب المنتج الخاص بك هو أولويتنا الأولى.",
             Cancel: "إلغاء",
             "Cancel Order": "إلغاء الطلب",
-            "Are you sure you want to cancel this order?": "هل أنت متأكد أنك تريد إلغاء هذا الطلب؟",
+            "Are you sure you want to cancel this order?":
+              "هل أنت متأكد أنك تريد إلغاء هذا الطلب؟",
             Actions: "الإجراءات",
             Your: "طلباتك",
             Orders: "الخاصة",
@@ -1186,12 +1190,14 @@ i18n
           },
           // sidebar
           sidebarFilter: {
-            filterTitle: "تصفية",
-            category: "الفئة",
-            price: "السعر (الحد الأقصى: ${{maxPrice}})",
-            tags: "الوسوم",
-            all: "الكل",
-            uncategorized: "غير مصنف",
+            
+              filterTitle: "تصفية المنتجات",
+              category: "الفئة الرئيسية",
+              subcategory: "الفئة الفرعية",
+              price: "السعر (من 0 إلى {{maxPrice}})",
+              tags: "الكلمات الدلالية",
+              all: "الكل",
+              uncategorized: "غير مصنف",
           },
 
           // about us

@@ -93,60 +93,45 @@ const ProductSubCategory = () => {
   // Log filter values for debugging
   useEffect(() => {}, [filter]);
 
-  // احصل على كل subcategories التي parentCategoryId === filter.category
-  const subcategoriesForCategory = products
-    .map((p) => p.subCategoryId)
-    .filter((sub) => sub && sub.parentCategoryId === filter.category)
-    .map((sub) => sub.subcategoryId);
+  const filteredProducts = products
+    .filter((product) => {
+      // إذا لم يتم اختيار فئة، أظهر كل المنتجات
+      if (!filter.category) return true;
 
-  const hasSubcategories = subcategoriesForCategory.length > 0;
+      // إذا تم اختيار فئة فرعية، أظهر فقط المنتجات المرتبطة بها
+      if (filter.subcategory) {
+        return product.subCategoryId?.subcategoryId === filter.subcategory;
+      }
 
-  const filteredProducts = products.filter((product) => {
-    // إذا لم يتم اختيار فئة، اعرض كل المنتجات
-    if (!filter.category) return true;
-
-    // منطق الفلترة للفئة المختارة
-    let inCategory = false;
-    if (product.categoryId?.categoryId === filter.category) {
-      inCategory = true;
-    } else if (
-      hasSubcategories &&
-      product.subCategoryId?.parentCategoryId === filter.category
-    ) {
-      inCategory = true;
-    }
-    if (!inCategory) return false;
-
-    // تحقق من الفئة الفرعية
-    if (
-      filter.subcategory &&
-      product.subCategoryId?.subcategoryId !== filter.subcategory
-    ) {
-      return false;
-    }
-
-    // تحقق من نطاق السعر
-    const productPrice =
-      (product.productType === "variant" && product.variants?.[0]?.price) ||
-      product.price ||
-      0;
-    if (
-      productPrice < filter.priceRange[0] ||
-      productPrice > filter.priceRange[1]
-    ) {
-      return false;
-    }
-
-    // تحقق من العلامات
-    const productTags = product.tags || [];
-    if (filter.tags.length > 0) {
-      if (!filter.tags.some((tag) => productTags.includes(tag))) {
+      // إذا لم يتم اختيار فئة فرعية، أظهر المنتجات المرتبطة بالفئة أو بفئاتها الفرعية
+      return (
+        product.categoryId?.categoryId === filter.category ||
+        product.subCategoryId?.parentCategoryId === filter.category
+      );
+    })
+    .filter((product) => {
+      // تحقق من نطاق السعر
+      const productPrice =
+        (product.productType === "variant" && product.variants?.[0]?.price) ||
+        product.price ||
+        0;
+      if (
+        productPrice < filter.priceRange[0] ||
+        productPrice > filter.priceRange[1]
+      ) {
         return false;
       }
-    }
 
-    return true;
-  });
+      // تحقق من العلامات
+      const productTags = product.tags || [];
+      if (filter.tags.length > 0) {
+        if (!filter.tags.some((tag) => productTags.includes(tag))) {
+          return false;
+        }
+      }
+
+      return true;
+    });
 
   // إضافة تسجيل لعدد المنتجات قبل وبعد الفلترة
   useEffect(() => {
@@ -268,33 +253,39 @@ const ProductSubCategory = () => {
     }
   }, [filter.category]);
 
+  // احسب أقل وأعلى سعر من المنتجات بعد الفلترة حسب الفئة/الفئة الفرعية فقط
   useEffect(() => {
-    if (products.length > 0) {
-      const maxPrice = Math.max(
-        ...products.map(
-          (p) =>
-            (p.productType === "variant" && p.variants?.[0]?.price) ||
-            p.price ||
-            0
-        )
-      );
-      // إذا كان الفلتر الحالي أقل من maxPrice، حدثه
-      if (filter.priceRange[1] < maxPrice) {
-        dispatch(setPriceRange([0, maxPrice]));
+    const filteredForPrice = products.filter((product) => {
+      if (!filter.category) return true;
+      if (filter.subcategory) {
+        return product.subCategoryId?.subcategoryId === filter.subcategory;
       }
-    }
-  }, [products, dispatch]);
+      return (
+        product.categoryId?.categoryId === filter.category ||
+        product.subCategoryId?.parentCategoryId === filter.category
+      );
+    });
+
+    const prices = filteredForPrice.map(
+      (p) =>
+        (p.productType === "variant" && p.variants?.[0]?.discountPrice) ||
+        p.discountPrice ||
+        (p.productType === "variant" && p.variants?.[0]?.price) ||
+        p.price ||
+        0
+    );
+    const min = prices.length > 0 ? Math.min(...prices) : 0;
+    const max = prices.length > 0 ? Math.max(...prices) : 1000;
+
+    dispatch(setPriceRange([min, max]));
+  }, [filter.category, filter.subcategory, products, dispatch]);
 
   return (
     <Container className="py-4">
       {loading ? (
         <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: 300,
-          }}
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "300px" }}
         >
           <Spinner
             animation="border"
@@ -302,82 +293,75 @@ const ProductSubCategory = () => {
             style={{ width: "3rem", height: "3rem" }}
           />
         </div>
-      ) : filteredProducts.length === 0 ? (
-        <Container className="py-4">
-          <p className="text-muted text-center">
-            {currentLanguage === "ar"
-              ? "لا توجد منتجات لهذه الفئة الفرعية."
-              : "No products found for this subcategory."}
-          </p>
-        </Container>
       ) : (
-        <>
+        <Container fluid className="py-4">
           <Row>
-            <Col lg={3} md={4} className="d-none d-md-block">
-              <SidebarFilter />
+            <Col lg={3} md={4} className="d-md-block">
+              <SidebarFilter
+                allProducts={products}
+                minPrice={filter.priceRange[0]}
+                maxPrice={filter.priceRange[1]}
+              />
             </Col>
             <Col lg={9} md={8}>
-              <ProductToolbar
-                onSortChange={setSort}
-                onViewChange={setView}
-                viewType={view}
-              />
-              <div className={view === "grid" ? "row" : "row"}>
-                {currentProducts.map((product) =>
-                  view === "grid" ? (
-                    <div
-                      className="col-md-6 mb-4 col-lg-4 col-xl-3 sm-6 xs-12"
-                      key={product.id}
-                    >
-                      <ProductCard product={product} />
-                    </div>
-                  ) : (
-                    <div className="col-md-12 col-lg-6 mb-4" key={product.id}>
-                      <ProductCardHorizontal product={product} />
-                    </div>
-                  )
-                )}
-              </div>
-              {totalPages > 1 && (
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <span className="text-muted" style={{ fontSize: 15 }}>
+              {filteredProducts.length === 0 ? (
+                <div className="text-center mt-4">
+                  <p className="text-muted">
                     {currentLanguage === "ar"
-                      ? `عرض ${indexOfFirstProduct + 1}-${Math.min(
-                          indexOfLastProduct,
-                          sortedProducts.length
-                        )} من ${sortedProducts.length} منتج`
-                      : `Showing ${indexOfFirstProduct + 1}-${Math.min(
-                          indexOfLastProduct,
-                          sortedProducts.length
-                        )} of ${sortedProducts.length} item(s)`}
-                  </span>
-                  <Pagination className="custom-pagination">
-                    <Pagination.Prev
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPage === 1}
-                    >
-                      {currentLanguage === "ar" ? "السابق" : "Prev"}
-                    </Pagination.Prev>
-                    {paginationItems}
-                    <Pagination.Next
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                      }
-                      disabled={currentPage === totalPages}
-                    >
-                      {currentLanguage === "ar" ? "التالي" : "Next"}
-                    </Pagination.Next>
-                  </Pagination>
+                      ? "لا توجد منتجات لهذه الفئة الفرعية."
+                      : "No products found for this subcategory."}
+                  </p>
                 </div>
+              ) : (
+                <>
+                  <ProductToolbar
+                    onSortChange={setSort}
+                    onViewChange={setView}
+                    viewType={view}
+                  />
+                  <div className={view === "grid" ? "row" : "row"}>
+                    {currentProducts.map((product) =>
+                      view === "grid" ? (
+                        <div
+                          key={product.id}
+                          className="col-lg-3 col-md-6 col-sm-6 mb-4"
+                        >
+                          <ProductCard product={product} />
+                        </div>
+                      ) : (
+                        <div key={product.id} className="col-12 mb-3">
+                          <ProductCardHorizontal product={product} />
+                        </div>
+                      )
+                    )}
+                  </div>
+                  {totalPages > 1 && (
+                    <div className="d-flex justify-content-between align-items-center mt-4">
+                      <span className="text-muted" style={{ fontSize: 15 }}>
+                        {currentLanguage === "ar"
+                          ? `عرض ${indexOfFirstProduct + 1}-${Math.min(
+                              indexOfLastProduct,
+                              sortedProducts.length
+                            )} من ${sortedProducts.length} منتج`
+                          : `Showing ${indexOfFirstProduct + 1}-${Math.min(
+                              indexOfLastProduct,
+                              sortedProducts.length
+                            )} of ${sortedProducts.length} item(s)`}
+                      </span>
+                      <Pagination className="custom-pagination">
+                        {/* Pagination controls */}
+                      </Pagination>
+                    </div>
+                  )}
+                </>
               )}
             </Col>
           </Row>
-        </>
+        </Container>
       )}
     </Container>
   );
 };
 
 export default ProductSubCategory;
+

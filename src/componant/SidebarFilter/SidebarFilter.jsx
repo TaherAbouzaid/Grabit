@@ -1,149 +1,190 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Accordion, Badge, Form } from "react-bootstrap";
+import { Accordion, Badge, Form, Button } from "react-bootstrap";
 import {
   setCategory,
+  setSubcategory,
   setPriceRange,
   toggleTag,
 } from "../../Store/Slices/filtersSlice";
 import { useTranslation } from "react-i18next";
 import "./SidebarFilter.css";
 import { useLanguage } from "../../context/LanguageContext";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase/config";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
-const SidebarFilter = () => {
+const SidebarFilter = ({ allProducts, minPrice = 0, maxPrice = 1000 }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { category, priceRange, tags } = useSelector((state) => state.filter);
-  const products = useSelector((state) => state.products.items);
+  const filter = useSelector((state) => state.filter);
   const { currentLanguage } = useLanguage();
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [localRange, setLocalRange] = useState([minPrice, maxPrice]);
 
-  // استرجاع الفئات من قاعدة البيانات
+  // Fetch categories from database
   useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        // استرجاع الفئات من قاعدة البيانات
-        const categoriesSnapshot = await getDocs(collection(db, "categories"));
-        const categoriesData = categoriesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        // تحويل البيانات إلى التنسيق المطلوب
-        const formattedCategories = categoriesData.map((cat) => ({
-          id: cat.id,
-          name:
-            cat.name?.[currentLanguage] ||
-            cat.name?.en ||
-            t("sidebarFilter.uncategorized"),
-        }));
-
-        setCategories(formattedCategories);
-        console.log("Categories from database:", formattedCategories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
+      const snapshot = await getDocs(collection(db, "categories"));
+      setCategories(
+        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
     };
-
     fetchCategories();
-  }, [currentLanguage, t]);
+  }, []);
+  
+  useEffect(() => {
+    setLocalRange(filter.priceRange || [minPrice, maxPrice]);
+  }, [filter.priceRange, minPrice, maxPrice]);
 
-  // استخدام الفئات من قاعدة البيانات بدلاً من استخراجها من المنتجات
-  const displayCategories = categories.length > 0 ? categories : [];
+  // Fetch subcategories when main category changes
+  useEffect(() => {
+    if (filter.category) {
+      const fetchSubcategories = async () => {
+        const q = query(
+          collection(db, "subcategories"),
+          where("parentCategoryId", "==", filter.category)
+        );
+        const snapshot = await getDocs(q);
+        setSubcategories(
+          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+      };
+      fetchSubcategories();
+    } else {
+      setSubcategories([]);
+    }
+  }, [filter.category]);
 
+  useEffect(() => {
+    if (filter.priceRange) {
+      setLocalRange(filter.priceRange);
+    }
+  }, [filter.priceRange]);
+
+  // Extract all tags from products
   const allTags = [
-    ...new Set(products.flatMap((product) => product.tags || [])),
+    ...new Set(
+      (Array.isArray(allProducts) ? allProducts : []).flatMap(
+        (product) => product.tags || []
+      )
+    ),
   ];
 
-  // Calculate max price based on selected category
-  const filteredProducts = category
-    ? products.filter((p) => p.categoryId?.categoryId === category)
-    : products;
-  const maxPrice =
-    filteredProducts.length > 0
-      ? Math.max(...filteredProducts.map((p) => p.price || 0))
-      : 1000;
-
-  // Update priceRange if it exceeds maxPrice when category changes
-  useEffect(() => {
-    if (priceRange[1] > maxPrice) {
-      dispatch(setPriceRange([0, maxPrice]));
-    }
-  }, [category, maxPrice, priceRange, dispatch]);
-
-  const handleCategoryChange = (categoryId) => {
-    dispatch(setCategory(categoryId));
+  // Reset all filters
+  const handleReset = () => {
+    dispatch(setCategory(null));
+    dispatch(setSubcategory(null));
+    dispatch(setPriceRange([minPrice, maxPrice]));
   };
 
-  const handlePriceChange = (e) => {
-    dispatch(setPriceRange([0, parseInt(e.target.value)]));
-  };
-
-  const handleTagChange = (tag) => {
-    dispatch(toggleTag(tag));
+  const handleSliderChange = (value) => {
+    setLocalRange(value);
+    dispatch(setPriceRange(value));
   };
 
   return (
-    <div className="Catsidebar-filter p-2 mt-4">
-      <h4>{t("sidebarFilter.filterTitle")}</h4>
+    <div className="sidebar-filter p-3">
+      <h5>{t('sidebarFilter.filterTitle')}</h5>
       <Accordion alwaysOpen>
-        {/* Category Filter */}
+        {/* Main Category */}
         <Accordion.Item eventKey="0">
-          <Accordion.Header>{t("sidebarFilter.category")}</Accordion.Header>
+          <Accordion.Header>{t('sidebarFilter.category')}</Accordion.Header>
           <Accordion.Body>
-            {displayCategories.map((cat) => (
+            {categories.map((cat) => (
               <Form.Check
                 key={cat.id}
                 type="radio"
-                label={cat.name}
-                checked={category === cat.id}
-                onChange={() => handleCategoryChange(cat.id)}
+                label={cat.name?.[currentLanguage] || cat.name?.en || cat.id}
+                checked={filter.category === cat.id}
+                onChange={() => {
+                  dispatch(setCategory(cat.id));
+                  dispatch(setSubcategory(null));
+                }}
               />
             ))}
             <Form.Check
               type="radio"
-              label={t("sidebarFilter.all")}
-              checked={category === null}
-              onChange={() => handleCategoryChange(null)}
+              label={t('sidebarFilter.all')}
+              checked={filter.category === null}
+              onChange={() => handleReset()}
             />
           </Accordion.Body>
         </Accordion.Item>
 
-        {/* Price Filter */}
+        {/* Subcategory */}
+        {subcategories.length > 0 && (
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>{t('sidebarFilter.subcategory')}</Accordion.Header>
+            <Accordion.Body>
+              {subcategories.map((sub) => (
+                <Form.Check
+                  key={sub.id}
+                  type="radio"
+                  label={sub.name?.[currentLanguage] || sub.name?.en || sub.id}
+                  checked={filter.subcategory === sub.id}
+                  onChange={() => dispatch(setSubcategory(sub.id))}
+                />
+              ))}
+              <Form.Check
+                type="radio"
+                label={t('sidebarFilter.all')}
+                checked={filter.subcategory === null}
+                onChange={() => dispatch(setSubcategory(null))}
+              />
+            </Accordion.Body>
+          </Accordion.Item>
+        )}
+
+        {/* Price */}
         <Accordion.Item eventKey="2">
           <Accordion.Header>
-            {t("sidebarFilter.price", { maxPrice })}
+            {t('sidebarFilter.price', { maxPrice })}
           </Accordion.Header>
           <Accordion.Body>
-            <Form.Range
-              min={0}
+            <Slider
+              key={`${minPrice}-${maxPrice}-${localRange[0]}-${localRange[1]}`}
+              range
+              min={minPrice}
               max={maxPrice}
-              value={priceRange[1]}
-              onChange={handlePriceChange}
+              value={localRange}
+              onChange={handleSliderChange}
+              disabled={minPrice === maxPrice}
             />
+            {minPrice === maxPrice && (
+              <div className="text-muted" style={{ fontSize: 13 }}>
+                {currentLanguage === 'ar' 
+                  ? `كل المنتجات بنفس السعر: ${minPrice}` 
+                  : `All products have the same price: ${minPrice}`}
+              </div>
+            )}
+            <div>
+              <span>{currentLanguage === 'ar' ? 'من:' : 'From:'} {localRange[0]}</span> -{" "}
+              <span>{currentLanguage === 'ar' ? 'إلى:' : 'To:'} {localRange[1]}</span>
+            </div>
           </Accordion.Body>
         </Accordion.Item>
 
-        {/* Tags Filter */}
+        {/* Tags */}
         <Accordion.Item eventKey="3">
-          <Accordion.Header>{t("sidebarFilter.tags")}</Accordion.Header>
+          <Accordion.Header>{t('sidebarFilter.tags')}</Accordion.Header>
           <Accordion.Body>
             <div className="d-flex flex-wrap gap-2">
               {allTags.map((tag) => (
                 <Badge
                   key={tag}
                   pill
-                  bg={tags.includes(tag) ? "success" : "light"}
-                  text={tags.includes(tag) ? "light" : "dark"}
+                  bg={filter.tags.includes(tag) ? "success" : "light"}
+                  text={filter.tags.includes(tag) ? "light" : "dark"}
                   style={{
                     cursor: "pointer",
                     padding: "0.6em 1em",
                     border: "1px solid #ced4da",
                     userSelect: "none",
                   }}
-                  onClick={() => handleTagChange(tag)}
+                  onClick={() => dispatch(toggleTag(tag))}
                 >
                   {tag}
                 </Badge>
@@ -152,6 +193,13 @@ const SidebarFilter = () => {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
+      <Button
+        variant="outline-danger"
+        className="mt-3 w-100"
+        onClick={handleReset}
+      >
+        {currentLanguage === 'ar' ? 'إعادة تعيين الفلاتر' : 'Reset Filters'}
+      </Button>
     </div>
   );
 };
