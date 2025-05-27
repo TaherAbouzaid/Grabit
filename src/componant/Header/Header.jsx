@@ -91,18 +91,18 @@ function Header() {
   // Handle remove item
 
   // Calculate cart totals
-  const calculateCartTotals = () => {
-    if (!cartItems || !cartItems.products)
-      return { subTotal: 0, vat: 0, total: 0 };
-    const subTotal = cartItems.products.reduce(
-      (sum, item) => sum + item.ItemsPrice,
-      0
-    );
-    const vat = subTotal * 0.2;
-    const total = subTotal + vat;
-    return { subTotal, vat, total };
-  };
-  calculateCartTotals();
+  // const calculateCartTotals = () => {
+  //   if (!cartItems || !cartItems.products)
+  //     return { subTotal: 0, vat: 0, total: 0 };
+  //   const subTotal = cartItems.products.reduce(
+  //     (sum, item) => sum + item.ItemsPrice,
+  //     0
+  //   );
+  //   const vat = subTotal * 0.2;
+  //   const total = subTotal + vat;
+  //   return { subTotal, vat, total };
+  // };
+  // calculateCartTotals();
 
   // Get user display name
   const getDisplayName = () => {

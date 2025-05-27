@@ -223,7 +223,7 @@ export default function CheckoutPage() {
 
   const calculateCartTotals = () => {
     if (!cart || !cart.products)
-      return { total: 0, finalTotal: 0, discount: 0, vat: 0 };
+      return { total: 0, finalTotal: 0, discount: 0 };
 
     let total = 0;
     let finalTotal = 0;
@@ -240,14 +240,14 @@ export default function CheckoutPage() {
     });
 
     discount = total - finalTotal;
-    const vat = finalTotal * 0.14; // إضافة ضريبة القيمة المضافة بنسبة 14%
-
-    return { total, finalTotal, discount, vat };
+    
+    return { total, finalTotal, discount };
   };
 
-  const { total, finalTotal, discount, vat } = calculateCartTotals();
+  const { finalTotal: subtotal, discount } = calculateCartTotals();
   const deliveryCharges = 24.0;
-  const totalAmount = finalTotal + vat + deliveryCharges; // إضافة ضريبة القيمة المضافة إلى المبلغ الإجمالي
+  const vat = subtotal * 0.14; // Calculate VAT for display only
+  const finalTotal = subtotal + vat + deliveryCharges; // finalTotal includes VAT and delivery
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -287,31 +287,26 @@ export default function CheckoutPage() {
       couponCode: null,
       createdAt: new Date(),
       discount,
-      finalTotal,
-      vat, // إضافة ضريبة القيمة المضافة
-      deliveryCharges, // إضافة رسوم التوصيل
-      totalAmount, // إضافة المبلغ الإجمالي الذي يشمل الضريبة ورسوم التوصيل
+      finalTotal: parseFloat((subtotal + vat + deliveryCharges).toFixed(2)), // Round to 2 decimal places
+      deliveryCharges,
+      total: subtotal, // Just the subtotal without VAT or delivery
       orderId: orderRef.id,
       paymentMethod,
       paypalOrderId,
       products: cart.products.map((item) => {
         const product = products.find((p) => p.id === item.productId);
-        // Get variant info if needed
-
-        // حساب سعر الوحدة
+        
         const quantity = item.itemQuantity || 1;
         const itemPrice = item.ItemsPrice || 0;
         const calculatedUnitPrice = itemPrice / quantity;
-
-        // استخدام سعر المنتج من قاعدة البيانات أو السعر المحسوب
         const finalUnitPrice = product?.discountPrice || calculatedUnitPrice;
 
         return {
           productId: item.productId,
           variantId: item.variantId || null,
-          itemQuantity: item.itemQuantity, // تأكد من وجود هذا الحقل
-          quantity: item.itemQuantity, // استخدم itemQuantity كقيمة لـ quantity
-          price: finalUnitPrice, // استخدم السعر المحسوب بدلاً من unitPrice
+          itemQuantity: item.itemQuantity,
+          quantity: item.itemQuantity,
+          price: finalUnitPrice,
           sku: product?.sku || "",
           variantAttributes:
             item.variantAttributes && typeof item.variantAttributes === "object"
@@ -324,7 +319,6 @@ export default function CheckoutPage() {
       }),
       shippingAddress,
       status: paymentMethod === "cod" ? "pending" : "delivered",
-      total: totalAmount, // تغيير هذا من total إلى totalAmount ليشمل الضريبة ورسوم التوصيل
       updatedAt: new Date(),
       userId: user.uid,
     };
@@ -633,7 +627,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="d-flex justify-content-between mt-3 mb-4 pt-3">
                       <h5 className="fw-normal">{t("common.totalAmount")}</h5>
-                      <h5 className="fw-bold">${totalAmount.toFixed(2)}</h5>
+                      <h5 className="fw-bold">${finalTotal.toFixed(2)}</h5>
                     </div>
                   </Card.Body>
                 </Card>
@@ -674,7 +668,7 @@ export default function CheckoutPage() {
                                   {
                                     amount: {
                                       currency_code: "USD",
-                                      value: totalAmount.toFixed(2),
+                                      value: finalTotal.toFixed(2),
                                     },
                                   },
                                 ],

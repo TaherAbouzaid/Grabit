@@ -17,7 +17,6 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from "../store/Slices/wishlistSlice";
-import { serializeTimestamps } from '../utils/helpers';
 
 const NextArrow = (props) => (
   <div
