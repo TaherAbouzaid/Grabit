@@ -17,40 +17,51 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from "../store/Slices/wishlistSlice";
+import RelatedProducts from '../components/RelatedProducts';
 
-const NextArrow = (props) => (
-  <div
-    {...props}
-    style={{
-      ...props.style,
-      display: "block",
-      position: "absolute",
-      right: -20,
-      zIndex: 2,
-      top: "50%",
-      transform: "translateY(-50%)",
-    }}
-  >
-    <FaChevronRight size={22} color="#5caf90" />
-  </div>
-);
+const NextArrow = (props) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{
+        ...style,
+        display: "block",
+        position: "absolute",
+        right: -20,
+        zIndex: 2,
+        top: "50%",
+        transform: "translateY(-50%)",
+      }}
+      onClick={onClick}
+      aria-label="Next"
+    >
+      <FaChevronRight size={22} color="#5caf90" />
+    </div>
+  );
+};
 
-const PrevArrow = (props) => (
-  <div
-    {...props}
-    style={{
-      ...props.style,
-      display: "block",
-      position: "absolute",
-      left: -20,
-      zIndex: 2,
-      top: "50%",
-      transform: "translateY(-50%)",
-    }}
-  >
-    <FaChevronLeft size={22} color="#5caf90" />
-  </div>
-);
+const PrevArrow = (props) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{
+        ...style,
+        display: "block",
+        position: "absolute",
+        left: -20,
+        zIndex: 2,
+        top: "50%",
+        transform: "translateY(-50%)",
+      }}
+      onClick={onClick}
+      aria-label="Previous"
+    >
+      <FaChevronLeft size={22} color="#5caf90" />
+    </div>
+  );
+};
 
 const ProductPage = () => {
   const { productId } = useParams();
@@ -758,49 +769,78 @@ const ProductPage = () => {
                 </small>
               )}
             </div>
-
-            <div style={{ margin: "15px 0", fontSize: 22, fontWeight: 700 }}>
-              {getCurrentPrice() && getCurrentPrice() > 0 ? (
-                <>
-                  <span style={{ color: "#5caf90" }}>${getCurrentPrice()}</span>
-                  {getOriginalPrice() > getCurrentPrice() && (
-                    <span
-                      style={{
-                        color: "#999",
-                        textDecoration: "line-through",
-                        fontSize: 18,
-                        marginLeft: 10,
-                      }}
-                    >
-                      ${getOriginalPrice()}
+            <div className="d-flex justify-content-between align-items-center">
+              <div>
+                <div
+                  style={{ margin: "15px 0", fontSize: 22, fontWeight: 700 }}
+                >
+                  {getCurrentPrice() && getCurrentPrice() > 0 ? (
+                    <>
+                      <span style={{ color: "#5caf90" }}>
+                        ${getCurrentPrice()}
+                      </span>
+                      {getOriginalPrice() > getCurrentPrice() && (
+                        <span
+                          style={{
+                            color: "#999",
+                            textDecoration: "line-through",
+                            fontSize: 18,
+                            marginLeft: 10,
+                          }}
+                        >
+                          ${getOriginalPrice()}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span>
+                      {currentLanguage === "ar"
+                        ? "السعر غير متوفر"
+                        : "Price not available"}
                     </span>
                   )}
-                </>
-              ) : (
-                <span>
-                  {currentLanguage === "ar"
-                    ? "السعر غير متوفر"
-                    : "Price not available"}
-                </span>
+                </div>
+
+                <div
+                  style={{
+                    margin: "10px 0",
+                    color: getCurrentQuantity() > 0 ? "#5caf90" : "#d9534f",
+                    fontWeight: 500,
+                  }}
+                >
+                  {getCurrentQuantity() > 0
+                    ? currentLanguage === "ar"
+                      ? `متوفر (${getCurrentQuantity()})`
+                      : `In Stock (${getCurrentQuantity()})`
+                    : currentLanguage === "ar"
+                    ? "غير متوفر"
+                    : "Out of Stock"}
+                </div>
+              </div>
+              {/* Wishlist Icon */}
+              {product && (
+                <div
+                  style={{
+                    cursor: "pointer",
+                    color: isProductInWishlist ? "#ff4d4d" : "#ccc",
+                    // fontSize: "44px",
+                    // marginLeft: "10px",
+                  }}
+                  onClick={handleToggleWishlist}
+                  title={
+                    isProductInWishlist
+                      ? currentLanguage === "ar"
+                        ? "إزالة من المفضلة"
+                        : "Remove from Wishlist"
+                      : currentLanguage === "ar"
+                      ? "إضافة إلى المفضلة"
+                      : "Add to Wishlist"
+                  }
+                >
+                  {isProductInWishlist ? <FaHeart size={33} /> : <FiHeart size={33}/>}
+                </div>
               )}
             </div>
-
-            <div
-              style={{
-                margin: "10px 0",
-                color: getCurrentQuantity() > 0 ? "#5caf90" : "#d9534f",
-                fontWeight: 500,
-              }}
-            >
-              {getCurrentQuantity() > 0
-                ? currentLanguage === "ar"
-                  ? `متوفر (${getCurrentQuantity()})`
-                  : `In Stock (${getCurrentQuantity()})`
-                : currentLanguage === "ar"
-                ? "غير متوفر"
-                : "Out of Stock"}
-            </div>
-
             {/* Product Description */}
             <div className="mb-4">
               <h5 className="mb-3">
@@ -931,30 +971,6 @@ const ProductPage = () => {
                 ? "إضافة إلى السلة"
                 : "Add to Cart"}
             </button>
-
-            {/* Wishlist Icon */}
-            {product && (
-              <div
-                style={{
-                  cursor: "pointer",
-                  color: isProductInWishlist ? "#ff4d4d" : "#ccc",
-                  fontSize: "24px",
-                  marginLeft: "10px", // Adjust spacing as needed
-                }}
-                onClick={handleToggleWishlist}
-                title={
-                  isProductInWishlist
-                    ? currentLanguage === "ar"
-                      ? "إزالة من المفضلة"
-                      : "Remove from Wishlist"
-                    : currentLanguage === "ar"
-                    ? "إضافة إلى المفضلة"
-                    : "Add to Wishlist"
-                }
-              >
-                {isProductInWishlist ? <FaHeart /> : <FiHeart />}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -1085,6 +1101,16 @@ const ProductPage = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Related Products Section */}
+      <div className="row mt-5">
+        <div className="col-12">
+          <h3 className="mb-4 text-center" style={{fontWeight: "bold" , color: '#5caf90'}}> 
+            {currentLanguage === "ar" ? "منتجات ذات صلة" : "Related Products"}
+          </h3>
+          <RelatedProducts product={product} currentProductId={productId} />
         </div>
       </div>
     </div>

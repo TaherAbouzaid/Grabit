@@ -1,123 +1,198 @@
-import { useState, useEffect } from "react";
-import { Container, Row, Col, Alert } from "react-bootstrap";
-import ProductCard from "../../components/ProductCard"; // Adjust path
-import { useSelector } from "react-redux";
-import { db } from "../../firebase/config"; // Adjust path
-import { collection, getDocs } from "firebase/firestore";
-import { useTranslation } from "react-i18next"; // Add this import
-import { useLanguage } from "../../context/LanguageContext";
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Spinner } from "react-bootstrap";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchProducts } from "../../Store/Slices/productsSlice";
+import ProductCard from "../../components/ProductCard";
+import { useTranslation } from "react-i18next";
 import "./SearchResults.css";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase/config";
 
 const SearchResults = () => {
   const { t } = useTranslation();
-  const { currentLanguage } = useLanguage();
-  const searchQuery = useSelector((state) => state.filter.searchQuery);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  
+  const filters = useSelector((state) => state.filter);
+  const searchQuery = filters?.searchQuery || "";
+  
+  const { items: productsData, loading } = useSelector((state) => state.products);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [productsWithVariants, setProductsWithVariants] = useState([]);
+  const [loadingVariants, setLoadingVariants] = useState(false);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    if (productsData.length === 0) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, productsData.length]);
+
+  // تحميل الفاريانت للمنتجات
+  useEffect(() => {
+    const loadVariantsForProducts = async () => {
+      if (productsData.length === 0) return;
+      
+      setLoadingVariants(true);
+      
       try {
-        setLoading(true);
-        const productsRef = collection(db, "allproducts"); // Changed to allproducts
-        const productsSnap = await getDocs(productsRef);
-        const productsData = productsSnap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        if (!productsData.length) {
-          console.warn("No products found in Firestore allproducts collection");
-          setError(
-            t("common.searchError", { message: "No products available." })
-          );
-          setProducts([]);
-          return;
-        }
-
-        const filteredProducts = productsData.filter((product) => {
-          // Collect all possible titles
-          const titles = [];
-          if (product.title) {
-            if (product.title[currentLanguage])
-              titles.push(product.title[currentLanguage]);
-            if (product.title.en) titles.push(product.title.en);
-            if (product.title.ar) titles.push(product.title.ar);
-          }
-          if (product.name) {
-            if (product.name[currentLanguage])
-              titles.push(product.name[currentLanguage]);
-            if (product.name.en) titles.push(product.name.en);
-            if (product.name.ar) titles.push(product.name.ar);
-          }
-
-          if (!titles.length) {
-            console.warn(`Product ${product.id} has no valid titles`);
-            return false;
-          }
-
-          return titles.some((title) =>
-            title.toLowerCase().includes(searchQuery.toLowerCase())
-          );
-        });
-
-        setProducts(filteredProducts);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-        setError(
-          t("common.searchError", {
-            message: err.message || "Failed to fetch products.",
+        const productsWithVariantsData = await Promise.all(
+          productsData.map(async (product) => {
+            // إذا كان المنتج من نوع فاريانت، قم بتحميل الفاريانت
+            if (product.productType === "variant") {
+              try {
+                const variantsSnapshot = await getDocs(
+                  collection(db, `allproducts/${product.id}/variants`)
+                );
+                
+                const variants = [];
+                variantsSnapshot.forEach((variantDoc) => {
+                  variants.push({ id: variantDoc.id, ...variantDoc.data() });
+                });
+                
+                return { ...product, variants };
+              } catch (error) {
+                console.error(`Error loading variants for product ${product.id}:`, error);
+                return product;
+              }
+            }
+            
+            return product;
           })
         );
+        
+        setProductsWithVariants(productsWithVariantsData);
+      } catch (error) {
+        console.error("Error loading variants:", error);
       } finally {
-        setLoading(false);
+        setLoadingVariants(false);
       }
     };
+    
+    loadVariantsForProducts();
+  }, [productsData]);
 
-    if (searchQuery?.trim()) {
-      fetchProducts();
+  // تصفية المنتجات بناءً على استعلام البحث
+  useEffect(() => {
+    if (productsWithVariants.length > 0 && searchQuery) {
+      const filtered = productsWithVariants.filter((product) => {
+        // جمع جميع النصوص القابلة للبحث من المنتج
+        const searchableTexts = [];
+        
+        // إضافة العناوين
+        if (product.title) {
+          if (typeof product.title === 'object') {
+            Object.values(product.title).forEach(title => {
+              if (title) searchableTexts.push(title.toLowerCase());
+            });
+          } else if (typeof product.title === 'string') {
+            searchableTexts.push(product.title.toLowerCase());
+          }
+        }
+        
+        // إضافة الأسماء
+        if (product.name) {
+          if (typeof product.name === 'object') {
+            Object.values(product.name).forEach(name => {
+              if (name) searchableTexts.push(name.toLowerCase());
+            });
+          } else if (typeof product.name === 'string') {
+            searchableTexts.push(product.name.toLowerCase());
+          }
+        }
+        
+        // إضافة الوصف
+        if (product.description) {
+          if (typeof product.description === 'object') {
+            Object.values(product.description).forEach(desc => {
+              if (desc) searchableTexts.push(desc.toLowerCase());
+            });
+          } else if (typeof product.description === 'string') {
+            searchableTexts.push(product.description.toLowerCase());
+          }
+        }
+        
+        // البحث في جميع النصوص
+        const query = searchQuery.toLowerCase();
+        return searchableTexts.some(text => text.includes(query));
+      });
+      setFilteredProducts(filtered);
     } else {
-      setProducts([]);
-      setLoading(false);
+      setFilteredProducts([]);
     }
-  }, [searchQuery, currentLanguage, t]);
+  }, [searchQuery, productsWithVariants]);
 
-  if (loading) {
+  // تحضير المنتجات للعرض مع معالجة المنتجات ذات الفاريانت
+  const prepareProductsForDisplay = (products) => {
+    return products.map(product => {
+      // نسخة جديدة من المنتج
+      const processedProduct = { ...product };
+      
+      // إذا كان المنتج من نوع فاريانت وله فاريانت واحد على الأقل
+      if (product.productType === "variant" && Array.isArray(product.variants) && product.variants.length > 0) {
+        // اختيار أول فاريانت
+        const firstVariant = product.variants[0];
+        
+        // إضافة معلومات الفاريانت المحدد
+        processedProduct.selectedVariantIndex = 0;
+        processedProduct.selectedVariant = firstVariant;
+        
+        // إذا كان الفاريانت يحتوي على صورة رئيسية، استخدمها
+        if (firstVariant.mainImage) {
+          processedProduct.mainImage = firstVariant.mainImage;
+        }
+        
+        // إذا كان الفاريانت يحتوي على صور، استخدمها
+        if (firstVariant.images && firstVariant.images.length > 0) {
+          processedProduct.images = firstVariant.images;
+        }
+        
+        // إذا كان الفاريانت يحتوي على سعر، استخدمه
+        if (firstVariant.price !== undefined) {
+          processedProduct.price = firstVariant.price;
+        }
+        
+        // إذا كان الفاريانت يحتوي على سعر مخفض، استخدمه
+        if (firstVariant.discountPrice !== undefined) {
+          processedProduct.discountPrice = firstVariant.discountPrice;
+        }
+        
+        // إذا كان الفاريانت يحتوي على كمية، استخدمها
+        if (firstVariant.quantity !== undefined) {
+          processedProduct.quantity = firstVariant.quantity;
+        }
+      }
+      
+      return processedProduct;
+    });
+  };
+
+  if (loading || loadingVariants) {
     return (
-      <Container className="search-results py-4">
-        <div className="text-center">{t("common.loadingResults")}</div>
-      </Container>
+      <div className="text-center my-5">
+        <Spinner animation="border" variant="primary" />
+      </div>
     );
   }
 
-  if (error) {
-    return (
-      <Container className="search-results py-4">
-        <Alert variant="danger">{error}</Alert>
-      </Container>
-    );
-  }
-
-  if (!searchQuery?.trim()) {
-    return (
-      <Container className="search-results py-4">
-        <Alert variant="info">{t("common.enterQuery")}</Alert>
-      </Container>
-    );
-  }
+  // تحضير المنتجات للعرض قبل تمريرها إلى المكونات
+  const displayProducts = prepareProductsForDisplay(filteredProducts);
+  
+  // طباعة المنتجات للتصحيح
+  console.log("Display Products:", displayProducts);
 
   return (
-    <Container className="search-results py-4">
-      <h2 className="mb-4">
-        {t("common.searchResults", { query: searchQuery })}
+    <Container className="search-results-container my-4">
+      <h2 className="search-results-title mb-4">
+        {searchQuery ? `${t("common.searchResults", { query: searchQuery })}` : t("common.search")}
       </h2>
-      {products.length === 0 ? (
-        <Alert variant="info">{t("common.noResults")}</Alert>
+      
+      {displayProducts.length === 0 ? (
+        <div className="no-results">
+          <p>{searchQuery ? t("common.noResults") : t("common.enterQuery")}</p>
+        </div>
       ) : (
-        <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-          {products.map((product) => (
-            <Col key={product.id}>
+        <Row>
+          {displayProducts.map((product) => (
+            <Col key={product.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
               <ProductCard product={product} />
             </Col>
           ))}

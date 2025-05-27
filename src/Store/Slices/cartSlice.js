@@ -665,7 +665,7 @@ const cartSlice = createSlice({
 export default cartSlice.reducer;
 
 // دالة مساعدة لتحويل جميع كائنات Timestamp
-function convertAllTimestamps(obj) {
+export function convertAllTimestamps(obj) {
   if (!obj) return obj;
 
   // إذا كان الكائن نفسه هو Timestamp

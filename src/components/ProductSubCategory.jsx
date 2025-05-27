@@ -8,7 +8,7 @@ import { Container, Spinner, Pagination, Row, Col } from "react-bootstrap";
 import SidebarFilter from "../componant/SidebarFilter/SidebarFilter";
 import { useSelector } from "react-redux";
 
-const PRODUCTS_PER_PAGE = 9;
+const PRODUCTS_PER_PAGE = 8;
 
 const ProductSubCategory = () => {
   const [products, setProducts] = useState([]);
@@ -193,11 +193,11 @@ const ProductSubCategory = () => {
               <div className={view === "grid" ? "row" : "row"}>
                 {currentProducts.map((product) =>
                   view === "grid" ? (
-                    <div className="col-md-4 mb-4" key={product.id}>
+                    <div className="col-md-6 mb-4 col-lg-3 sm-6 xs-12"  key={product.id}>
                       <ProductCard product={product} />
                     </div>
                   ) : (
-                    <div className="col-md-6 mb-4" key={product.id}>
+                    <div className="col-md-12 col-lg-6 mb-4" key={product.id}>
                       <ProductCardHorizontal product={product} />
                     </div>
                   )

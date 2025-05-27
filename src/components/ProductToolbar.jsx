@@ -4,7 +4,7 @@ import { FiGrid, FiList } from "react-icons/fi";
 
 const ProductToolbar = ({ onSortChange, onViewChange, viewType }) => {
   return (
-    <div className="d-flex align-items-center justify-content-between mb-3">
+    <div className="d-flex align-items-center justify-content-between mb-3 ">
       <div>
         <button
           className={`btn btn-light me-2 ${viewType === "grid" ? "active" : ""}`}
