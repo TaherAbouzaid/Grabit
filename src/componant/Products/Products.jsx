@@ -66,17 +66,37 @@ const ProductPage = () => {
 
 
   const allProducts = products || [];
+  // تحسين منطق الفلترة للتأكد من أنه يعمل بشكل صحيح
   const filteredProducts = allProducts.filter((product) => {
-      const matchesSearch = !searchQuery || product.title?.en.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return (
-       matchesSearch &&
-      (!category || product.categoryId?.categoryId === category) &&
-      (!subcategory || product.subCategoryId?.subcategoryId === subcategory) &&
-      product.price >= priceRange[0] &&
-      product.price <= priceRange[1] &&
-      (tags.length === 0 || tags.every((tag) => product.tags.includes(tag)))
-    );
+    // تحقق من وجود البيانات المطلوبة
+    if (!product) return false;
+    
+    // فلتر الفئة - تأكد من أن المنتج ينتمي للفئة المحددة
+    const matchesCategory = !category || 
+      (product.categoryId && product.categoryId.categoryId === category);
+    
+    // إذا تم تحديد فئة ولكن المنتج لا ينتمي إليها، قم بإرجاع false مباشرة
+    if (category && !matchesCategory) return false;
+    
+    // فلتر البحث
+    const matchesSearch = !searchQuery || 
+      (product.title?.en?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+       product.title?.ar?.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // فلتر الفئة الفرعية
+    const matchesSubcategory = !subcategory || 
+      (product.subCategoryId && product.subCategoryId.subcategoryId === subcategory);
+    
+    // فلتر السعر
+    const matchesPrice = product.price >= priceRange[0] && 
+      product.price <= priceRange[1];
+    
+    // فلتر العلامات
+    const matchesTags = tags.length === 0 || 
+      (product.tags && tags.every((tag) => product.tags.includes(tag)));
+    
+    return matchesSearch && matchesCategory && matchesSubcategory && 
+      matchesPrice && matchesTags;
   });
 
 const categories = [
@@ -90,6 +110,54 @@ const categories = [
     ])
   ).values(),
 ];
+
+useEffect(() => {
+  console.log("Current filters:", { category, subcategory, priceRange, tags });
+  console.log("Sample product structure:", allProducts[0]?.subCategoryId);
+}, [category, subcategory, priceRange, tags, allProducts]);
+
+// إضافة console.log للتحقق من المنتجات والفلاتر
+useEffect(() => {
+  console.log("Filter values:", { category, subcategory });
+  console.log("Total products:", allProducts.length);
+  console.log("Filtered products:", filteredProducts.length);
+  
+  // فحص بنية البيانات للمنتجات
+  if (allProducts.length > 0) {
+    console.log("Sample product structure:", {
+      id: allProducts[0].id,
+      title: allProducts[0].title,
+      categoryId: allProducts[0].categoryId,
+      subCategoryId: allProducts[0].subCategoryId
+    });
+  }
+  
+  // فحص المنتجات التي لا تظهر في الفلتر
+  if (subcategory) {
+    const missingProducts = allProducts.filter(
+      p => p.subCategoryId?.subcategoryId === subcategory && 
+      !filteredProducts.includes(p)
+    );
+    console.log("Products missing from filter:", missingProducts.length);
+    if (missingProducts.length > 0) {
+      console.log("Sample missing product:", missingProducts[0]);
+    }
+  }
+}, [allProducts, filteredProducts, category, subcategory]);
+
+// إضافة تسجيل للتشخيص
+useEffect(() => {
+  console.log("Current category:", category);
+  console.log("Total products:", allProducts.length);
+  console.log("Filtered products:", filteredProducts.length);
+  
+  if (category) {
+    const categoryProducts = allProducts.filter(p => 
+      p.categoryId && p.categoryId.categoryId === category
+    );
+    console.log(`Products in category ${category}:`, categoryProducts.length);
+  }
+}, [category, allProducts, filteredProducts]);
 
 
 
@@ -127,6 +195,10 @@ const categories = [
             <div className="text-center">
               <p>Error: {error}</p>
             </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="text-center mt-5">
+              <p>لا توجد منتجات في هذه الفئة</p>
+            </div>
           ) : (
             <Row>
               {filteredProducts.map((product) => (
@@ -147,7 +219,6 @@ const categories = [
                   </Card>
                 </Col>
               ))}
-              {filteredProducts.length === 0 && <p>No products found</p>}
             </Row>
           )}
         </Col>

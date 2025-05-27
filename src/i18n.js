@@ -89,6 +89,7 @@ i18n
             checkout: "Check Out",
             guest: "Guest",
             hi: "Hi",
+            menu: "Menu",
           },
 
           // Categories
@@ -732,6 +733,7 @@ i18n
             checkout: "إتمام الشراء",
             guest: "زائر",
             hi: "مرحبًا",
+            menu: "القائمة",
           },
 
           // Categories

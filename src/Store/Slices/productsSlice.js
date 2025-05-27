@@ -78,12 +78,38 @@ export const fetchProductById = createAsyncThunk(
 export const fetchProductsByCategory = createAsyncThunk(
   "products/fetchByCategory",
   async (categoryId) => {
+    // 1. جلب كل الفئات الفرعية التي parentCategoryId يساوي categoryId
+    const subcategoriesRef = collection(db, "subcategories");
+    const subcategoriesSnapshot = await getDocs(subcategoriesRef);
+    const subcategoryIds = subcategoriesSnapshot.docs
+      .filter((doc) => doc.data().parentCategoryId === categoryId)
+      .map((doc) => doc.id);
+
+    // 2. جلب كل المنتجات
     const productsRef = collection(db, "allproducts");
     const querySnapshot = await getDocs(productsRef);
 
+    // 3. تصفية المنتجات بحيث تكون:
+    //    - categoryId.categoryId === categoryId
+    //    - أو subCategoryId.subcategoryId موجودة في قائمة subcategoryIds
     const filteredProducts = querySnapshot.docs
       .map((doc) => ({ id: doc.id, ...doc.data() }))
-      .filter((product) => product.categoryId?.categoryId === categoryId); // ✅ تعديل هنا
+      .filter((product) => {
+        // المنتج مرتبط بالفئة الرئيسية مباشرة
+        if (product.categoryId?.categoryId === categoryId) return true;
+
+        // المنتج مرتبط بفئة فرعية تابعة للفئة الرئيسية
+        if (
+          product.subCategoryId?.subcategoryId &&
+          subcategoryIds.includes(product.subCategoryId.subcategoryId) &&
+          product.subCategoryId?.parentCategoryId === categoryId
+        ) {
+          return true;
+        }
+
+        // غير ذلك لا يظهر
+        return false;
+      });
 
     return filteredProducts;
   }

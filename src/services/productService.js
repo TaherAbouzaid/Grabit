@@ -61,26 +61,35 @@ export const updateTrendingScore = async (productId) => {
 };
 
 export const fetchProducts = async () => {
-  const querySnapshot = await getDocs(collection(db, "allproducts"));
-  const products = [];
-  
-  for (const doc of querySnapshot.docs) {
-    const productData = { id: doc.id, ...doc.data() };
+  try {
+    console.log("Fetching products from database...");
+    const querySnapshot = await getDocs(collection(db, "allproducts"));
+    const products = [];
     
-    // If it's a variant product, fetch its variants
-    if (productData.productType === "variant") {
-      const variantsSnapshot = await getSubDocs(collection(db, `allproducts/${doc.id}/variants`));
-      const variants = [];
-      variantsSnapshot.forEach((variantDoc) => {
-        variants.push({ id: variantDoc.id, ...variantDoc.data() });
-      });
-      productData.variants = variants;
+    console.log("Total products in database:", querySnapshot.docs.length);
+    
+    for (const doc of querySnapshot.docs) {
+      const productData = { id: doc.id, ...doc.data() };
+      
+      // If it's a variant product, fetch its variants
+      if (productData.productType === "variant") {
+        const variantsSnapshot = await getSubDocs(collection(db, `allproducts/${doc.id}/variants`));
+        const variants = [];
+        variantsSnapshot.forEach((variantDoc) => {
+          variants.push({ id: variantDoc.id, ...variantDoc.data() });
+        });
+        productData.variants = variants;
+      }
+      
+      products.push(productData);
     }
     
-    products.push(productData);
+    console.log("Products processed:", products.length);
+    return products;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
   }
-  
-  return products;
 };
 
 export const fetchProductById = async (productId) => {

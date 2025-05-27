@@ -151,20 +151,6 @@ function Header() {
   // Function to handle navbar toggle
   const toggleNavbar = () => {
     setExpanded(!expanded);
-
-    // Force the expanded state to persist
-    setTimeout(() => {
-      const navbar = document.getElementById("main-navbar");
-      if (navbar) {
-        if (!expanded) {
-          navbar.classList.add("show");
-          navbar.style.height = "auto";
-        } else {
-          navbar.classList.remove("show");
-          navbar.style.height = "0";
-        }
-      }
-    }, 10);
   };
 
   // Close navbar when clicking on a link
@@ -228,7 +214,7 @@ function Header() {
       </div>
 
       {/* Main Header */}
-      <div className="py-3 border-bottom">
+      <div className="py-3 ">
         <Container>
           {/* Desktop layout: Logo, Search, Icons in one row */}
           <div className="d-none d-lg-flex justify-content-between align-items-center">
@@ -583,8 +569,8 @@ function Header() {
         </Container>
       </div>
 
-      {/* Navigation */}
-      <Navbar bg="white" className="border-top border-bottom">
+      {/* Navigation for large screens */}
+      <Navbar bg="white" className="border-top border-bottom d-none d-lg-flex">
         <Container>
           <div className="position-relative hover-dropdown d-none d-lg-block">
             <Button
@@ -602,115 +588,6 @@ function Header() {
             </Button>
           </div>
 
-          {/* Custom Navbar Collapse */}
-          <div
-            id="main-navbar"
-            className={`navbar-collapse collapse ${expanded ? "show" : ""}`}
-            style={{
-              height: expanded ? "auto" : "0",
-              overflow: expanded ? "visible" : "hidden",
-            }}
-          >
-            <Nav className="mx-auto ">
-              {/* Links for medium screens - inside the toggle */}
-              <div className="d-md-block d-lg-none">
-                {/* Add All Categories button for medium/small screens */}
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleLinkClick("/shop")}
-                  >
-                    {t("nav.allCategories")}
-                  </span>
-                </Nav.Item>
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleLinkClick("/")}
-                  >
-                    {t("nav.home")}
-                  </span>
-                </Nav.Item>
-                {/* Add Blog link for medium/small screens */}
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleLinkClick("/BlogPage")}
-                  >
-                    {t("nav.blog", "Blog")}
-                  </span>
-                </Nav.Item>
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleLinkClick("/offers")}
-                  >
-                    {t("nav.offers")}
-                  </span>
-                </Nav.Item>
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleLinkClick("/AboutUs")}
-                  >
-                    {t("nav.about")}
-                  </span>
-                </Nav.Item>
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleLinkClick("/ContactPage")}
-                  >
-                    {t("nav.contact")}
-                  </span>
-                </Nav.Item>
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleNavigation("/Cart")}
-                  >
-                    {t("nav.cart")}
-                  </span>
-                </Nav.Item>
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleNavigation("/checkout")}
-                  >
-                    {t("nav.checkout")}
-                  </span>
-                </Nav.Item>
-                {/* Add User Profile link for medium/small screens */}
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleNavigation("/profile")}
-                  >
-                    {t("nav.profile", "Profile")}
-                  </span>
-                </Nav.Item>
-                {/* Add Wishlist link for medium/small screens */}
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={() => handleNavigation("/wishlist")}
-                  >
-                    {t("nav.wishlist", "Wishlist")}
-                  </span>
-                </Nav.Item>
-                {/* Add Language Toggle for medium/small screens */}
-                <Nav.Item className="py-2">
-                  <span
-                    className="header-nav-item cursor-pointer"
-                    onClick={toggleLanguage}
-                  >
-                    {currentLanguage === "en" ? "العربية" : "English"}
-                  </span>
-                </Nav.Item>
-              </div>
-            </Nav>
-          </div>
-
           {/* Regular desktop navigation - FIXED: Always visible on large screens */}
           <div className="d-none d-lg-flex ms-4">
             <Nav.Item className="px-3 py-2">
@@ -724,23 +601,15 @@ function Header() {
 
             {/* Desktop Categories with MegaMenu - Hidden on mobile */}
             <div className="header-nav-dropdown px-3 py-2 d-none d-lg-block">
-              <span className="header-nav-item header-nav-no-underline cursor-pointer d-flex align-items-center gap-1">
-                {t("nav.categories")} <FaAngleDown size={12} />
-              </span>
+              <div className="mega-menu-trigger cum">
+                <span className="header-nav-item header-nav-no-underline cursor-pointer d-flex align-items-center gap-1">
+                  {t("nav.categories")} <FaAngleDown size={12} />
+                </span>
+              </div>
               <div className="header-mega-wrapper">
                 <MegaMenu />
               </div>
             </div>
-
-            {/* Mobile Categories Link - Hidden on desktop */}
-            <Nav.Item className="d-lg-none px-3 py-2">
-              <span
-                className="header-nav-item cursor-pointer"
-                onClick={() => navigate("/shop")}
-              >
-                {t("nav.categories")}
-              </span>
-            </Nav.Item>
 
             {/* Pages Dropdown */}
             <div className="header-nav-dropdown px-3 py-2 position-relative">
@@ -810,7 +679,120 @@ function Header() {
         </Container>
       </Navbar>
 
-      {/* حذف كامل كود Offcanvas */}
+      {/* Navigation for medium and small screens */}
+      <Navbar bg="white" className="d-lg-none">
+        <Container>
+          {/* Replace navbar-collapse with Offcanvas */}
+          <Offcanvas 
+            show={expanded} 
+            onHide={() => setExpanded(false)} 
+            placement={currentLanguage === "ar" ? "end" : "start"}
+            responsive="lg"
+            id="mobile-nav-menu"
+            className="mobile-nav-menu"
+            style={{ zIndex: 100000 }}
+          >
+            <Offcanvas.Header closeButton>
+              <Offcanvas.Title className={currentLanguage === "ar" ? "ms-auto" : "me-auto"}>
+                {t("nav.menu", "Menu")}
+              </Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+              <Nav className="flex-column">
+                {/* Links for medium/small screens */}
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleLinkClick("/shop")}
+                  >
+                    {t("nav.allCategories")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleLinkClick("/")}
+                  >
+                    {t("nav.home")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleLinkClick("/BlogPage")}
+                  >
+                    {t("nav.blog", "Blog")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleLinkClick("/offers")}
+                  >
+                    {t("nav.offers")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleLinkClick("/AboutUs")}
+                  >
+                    {t("nav.about")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleLinkClick("/ContactPage")}
+                  >
+                    {t("nav.contact")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleNavigation("/Cart")}
+                  >
+                    {t("nav.cart")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleNavigation("/checkout")}
+                  >
+                    {t("nav.checkout")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleNavigation("/profile")}
+                  >
+                    {t("nav.profile", "Profile")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={() => handleNavigation("/wishlist")}
+                  >
+                    {t("nav.wishlist", "Wishlist")}
+                  </span>
+                </Nav.Item>
+                <Nav.Item className="py-2">
+                  <span
+                    className="header-nav-item cursor-pointer"
+                    onClick={toggleLanguage}
+                  >
+                    {currentLanguage === "en" ? "العربية" : "English"}
+                  </span>
+                </Nav.Item>
+              </Nav>
+            </Offcanvas.Body>
+          </Offcanvas>
+        </Container>
+      </Navbar>
     </header>
   );
 }

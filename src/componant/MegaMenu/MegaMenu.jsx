@@ -88,7 +88,7 @@ const NewMega = () => {
   const handleSubcategoryClick = (categoryId, subcategoryId) => {
     dispatch(setCategory(categoryId));
     dispatch(setSubcategory(subcategoryId));
-    navigate("/shop");
+    navigate(`/shop?category=${categoryId}&subcategory=${subcategoryId}`);
   };
 
   // Simulate loading for UX
@@ -166,13 +166,7 @@ const NewMega = () => {
                         {subcategories[category.id].map((subcategory) => (
                           <li key={subcategory.id} className="mb-2">
                             <Nav.Link
-                              href={`#subcategory-${subcategory.id}`}
-                              onClick={() =>
-                                handleSubcategoryClick(
-                                  category.id,
-                                  subcategory.id
-                                )
-                              }
+                              onClick={() => handleSubcategoryClick(category.id, subcategory.id)}
                               className="p-0"
                             >
                               {subcategory.name}
@@ -208,13 +202,7 @@ const NewMega = () => {
                           {subcategories[category.id].map((subcategory) => (
                             <li key={subcategory.id} className="mb-2">
                               <Nav.Link
-                                href={`#subcategory-${subcategory.id}`}
-                                onClick={() =>
-                                  handleSubcategoryClick(
-                                    category.id,
-                                    subcategory.id
-                                  )
-                                }
+                                onClick={() => handleSubcategoryClick(category.id, subcategory.id)}
                                 className="p-0"
                               >
                                 {subcategory.name}
