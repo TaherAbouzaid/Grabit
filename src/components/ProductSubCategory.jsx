@@ -349,7 +349,38 @@ const ProductSubCategory = () => {
                             )} of ${sortedProducts.length} item(s)`}
                       </span>
                       <Pagination className="custom-pagination">
-                        {/* Pagination controls */}
+                        <Pagination.Prev
+                          onClick={() => setCurrentPage(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        />
+                        {Array.from({ length: totalPages }).map((_, index) => {
+                          // Show first page, last page, current page, and pages around current
+                          if (
+                            index === 0 ||
+                            index === totalPages - 1 ||
+                            (index >= currentPage - 2 && index <= currentPage)
+                          ) {
+                            return (
+                              <Pagination.Item
+                                key={index}
+                                active={index + 1 === currentPage}
+                                onClick={() => setCurrentPage(index + 1)}
+                              >
+                                {index + 1}
+                              </Pagination.Item>
+                            );
+                          } else if (
+                            index === 1 ||
+                            index === totalPages - 2
+                          ) {
+                            return <Pagination.Ellipsis key={index} />;
+                          }
+                          return null;
+                        })}
+                        <Pagination.Next
+                          onClick={() => setCurrentPage(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                        />
                       </Pagination>
                     </div>
                   )}
@@ -364,4 +395,5 @@ const ProductSubCategory = () => {
 };
 
 export default ProductSubCategory;
+
 
