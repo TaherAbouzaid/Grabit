@@ -35,6 +35,7 @@ import { Country, State, City } from "country-state-city";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "../../context/LanguageContext.jsx";
+import { incrementSoldCount } from "../../services/productStatsService";
 
 const decrementStock = async (orderProducts) => {
   if (!orderProducts || orderProducts.length === 0) {
@@ -477,9 +478,17 @@ export default function CheckoutPage() {
             );
             const result = await decrementStock(createdOrderData.products);
             console.log(`Stock decremented for order ${orderId}:`, result);
+            
+            // إضافة استدعاء incrementSoldCount لكل منتج
+            console.log("CALLING incrementSoldCount FUNCTION");
+            for (const item of createdOrderData.products) {
+              const quantity = item.itemQuantity || item.quantity || 1;
+              await incrementSoldCount(item.productId, quantity);
+              console.log(`Sold count incremented for product ${item.productId} by ${quantity}`);
+            }
           } catch (stockError) {
             console.error(
-              `Failed to decrement stock for order ${orderId}:`,
+              `Failed to update product stats for order ${orderId}:`,
               stockError
             );
           }
@@ -732,6 +741,15 @@ export default function CheckoutPage() {
                                   "paypal",
                                   details.id
                                 );
+
+                                // إضافة استدعاء incrementSoldCount لكل منتج
+                                console.log("CALLING incrementSoldCount FUNCTION for PayPal order");
+                                for (const item of createdOrderData.products) {
+                                  const quantity = item.itemQuantity || item.quantity || 1;
+                                  await incrementSoldCount(item.productId, quantity);
+                                  console.log(`Sold count incremented for product ${item.productId} by ${quantity}`);
+                                }
+
                                 await clearCart();
                                 dispatch(fetchUserData(user.uid));
                                 dispatch(fetchCart(user.uid));

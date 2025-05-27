@@ -322,7 +322,10 @@ const Cart = () => {
             </tbody>
           </Table>
           <div className="mt-3 d-flex justify-content-between">
-            <a href="/" className="text-decoration-underline fw-medium">
+            <a
+              onClick={() => navigate("/shop")}
+              className="text-decoration-underline fw-medium"
+            >
               {t("common.continueShopping")}
             </a>
             <Button

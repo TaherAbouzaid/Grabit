@@ -21,7 +21,9 @@ export const createOrder = createAsyncThunk(
       
       // زيادة عدد المبيعات لكل منتج في الطلب
       for (const item of orderData.items) {
-        await incrementSoldCount(item.productId, item.quantity);
+        console.log(`Incrementing soldCount for product ${item.productId} by ${item.quantity}`);
+        const result = await incrementSoldCount(item.productId, item.quantity);
+        console.log(`Result of incrementSoldCount: ${result}`);
       }
       
       return {
@@ -33,3 +35,4 @@ export const createOrder = createAsyncThunk(
     }
   }
 );
+

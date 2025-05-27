@@ -67,6 +67,7 @@ export const incrementCartAdds = async (productId) => {
 // تحديث عدد المبيعات
 export const incrementSoldCount = async (productId, quantity = 1) => {
   try {
+    console.log(`Starting incrementSoldCount for product ${productId} with quantity ${quantity}`);
     const productRef = doc(db, "allproducts", productId);
     
     // تحديث عدد المبيعات
@@ -74,13 +75,14 @@ export const incrementSoldCount = async (productId, quantity = 1) => {
       soldCount: increment(quantity),
       lastTrendingUpdate: Timestamp.now()
     });
+    console.log(`Successfully updated soldCount for product ${productId}`);
     
     // تحديث درجة الشعبية
     await updateTrendingScore(productId);
     
     return true;
   } catch (error) {
-    console.error("Error incrementing sold count:", error);
+    console.error(`Error incrementing sold count for product ${productId}:`, error);
     return false;
   }
 };
@@ -122,3 +124,5 @@ export const updateTrendingScore = async (productId) => {
     return 0;
   }
 };
+
+
