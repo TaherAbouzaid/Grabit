@@ -16,7 +16,7 @@ import "./Wishlist.css";
 import {
   fetchUserWishlist,
   removeFromWishlist,
-} from "../../store/Slices/wishlistSlice";
+} from "../../Store/Slices/wishlistSlice";
 import { addToCart } from "../../Store/Slices/cartSlice";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -34,67 +34,39 @@ const Wishlist = () => {
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
 
-  // ✅ تحميل wishlist من localStorage أو Firestore
+  // تحميل wishlist من users collection
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
       dispatch(fetchUserWishlist(user.uid));
     }
   }, [user, dispatch]);
 
-  // ✅ عرض toast إذا كان المنتج موجود بالفعل
+  // عرض toast إذا كان المنتج موجود بالفعل
   useEffect(() => {
     if (error === "Product already in wishlist") {
-      showToast("Product is already in your wishlist!", "warning");
+      showToast(t("wishlist.alreadyInWishlist"), "warning");
     }
-  }, [error]);
+  }, [error, t]);
 
-  // ✅ إزالة منتج من الـ wishlist
+  // إزالة منتج من الـ wishlist
   const handleRemoveItem = (productId) => {
-    dispatch(removeFromWishlist({ productId, userId: user.uid }));
+    if (user?.uid) {
+      dispatch(removeFromWishlist({ productId, userId: user.uid }));
+    }
   };
 
-  // ✅ إضافة منتج إلى الـ cart
+  // إضافة منتج إلى الـ cart
   const handleAddToCart = (item) => {
-    if (cartLoading) return;
-    if (item.productType === "variant") {
-      navigate(`/shop/${item.id}`);
-      return;
-    }
-    // Construct a complete cartItem object
+    if (cartLoading || !user?.uid) return;
+
     const cartItem = {
-      userId: user?.uid || null,
+      userId: user.uid,
       productId: item.id,
-      // Use variant data if available, otherwise use main product data
-      title:
-        item.productType === "variant" &&
-        item.variants?.[0]?.title?.[currentLanguage]
-          ? item.variants[0].title
-          : item.title,
-      mainImage:
-        item.productType === "variant" && item.variants?.[0]?.mainImage
-          ? item.variants[0].mainImage
-          : item.mainImage,
-      price:
-        item.productType === "variant" && item.variants?.[0]?.price
-          ? item.variants[0].price
-          : item.price,
-      originalPrice:
-        item.productType === "variant" && item.variants?.[0]?.originalPrice
-          ? item.variants[0].originalPrice
-          : item.originalPrice, // Include original price if applicable
-      quantity:
-        item.productType === "variant" && item.variants?.[0]?.quantity
-          ? item.variants[0].quantity
-          : item.quantity, // Include stock quantity
-      variantId:
-        item.productType === "variant" && item.variants?.[0]?.id
-          ? item.variants[0].id
-          : null, // Include variant ID if applicable
-      variantAttributes:
-        item.productType === "variant" && item.variants?.[0]?.attributes
-          ? item.variants[0].attributes
-          : null, // Include variant attributes if applicable
-      productType: item.productType, // Include product type
+      title: item.title,
+      mainImage: item.imageUrl,
+      price: item.price,
+      quantity: 1, // Default quantity
+      productType: "simple", // Assuming simple product for wishlist items
     };
 
     dispatch(addToCart(cartItem));
@@ -109,14 +81,6 @@ const Wishlist = () => {
 
   return (
     <Container fluid className="p-4">
-      {/* <div className="nav d-flex justify-content-between p-3">
-        <p>{t("wishlist.wishlist")}</p> */}
-      {/* <Breadcrumb>
-          <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-          <Breadcrumb.Item active style={{ color: "#5caf90" }}>{t('wishlist.wishlist')}</Breadcrumb.Item>
-        </Breadcrumb> */}
-      {/* </div> */}
-
       <Row className="wishlist-header">
         <Col>
           <h2 className="text-center fw-bold mt-4">{t("wishlist.wishlist")}</h2>
@@ -140,7 +104,6 @@ const Wishlist = () => {
                   <th>{t("wishlist.image")}</th>
                   <th className="w-50">{t("wishlist.name")}</th>
                   <th>{t("wishlist.price")}</th>
-                  {/* <th>{t('wishlist.status')}</th> */}
                   <th>{t("wishlist.actions")}</th>
                 </tr>
               </thead>
@@ -149,29 +112,10 @@ const Wishlist = () => {
                   wishlistItems.map((item) => (
                     <tr key={item.id}>
                       <td>
-                        <Image
-                          src={
-                            item.productType === "variant" &&
-                            item.variants?.[0]?.mainImage
-                              ? item.variants[0].mainImage
-                              : item.mainImage
-                          }
-                          width="50"
-                        />
+                        <Image src={item.imageUrl} width="50" alt={item.title[currentLanguage]} />
                       </td>
-                      <td>
-                        {item.productType === "variant" &&
-                        item.variants?.[0]?.title?.[currentLanguage]
-                          ? item.variants[0].title[currentLanguage]
-                          : item.title?.[currentLanguage]}
-                      </td>
-                      <td>
-                        {item.productType === "variant" &&
-                        item.variants?.[0]?.price
-                          ? `$${item.variants[0].price}`
-                          : `$${item.price}`}
-                      </td>
-                      {/* <td className="text-success">Available</td> */}
+                      <td>{item.title[currentLanguage]}</td>
+                      <td>${item.price}</td>
                       <td>
                         <Button
                           variant="success"
@@ -193,8 +137,8 @@ const Wishlist = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="text-center text-muted">
-                      {t("wishlist.empty")}{" "}
+                    <td colSpan="4" className="text-center text-muted">
+                      {t("wishlist.empty")}
                     </td>
                   </tr>
                 )}

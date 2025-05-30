@@ -1,13 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../../firebase/config";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { incrementWishlistCount } from "../../services/productStatsService";
 
 // دالة لتحويل كائنات Timestamp إلى تنسيق قابل للتسلسل
@@ -29,7 +22,6 @@ const convertTimestamps = (obj) => {
     const newObj = {};
     Object.keys(obj).forEach((key) => {
       const value = obj[key];
-      // Check for Firebase Timestamp object specifically
       if (value && typeof value === "object" && value.toDate) {
         newObj[key] = value.toDate().toISOString();
       } else {
@@ -42,20 +34,19 @@ const convertTimestamps = (obj) => {
   return obj;
 };
 
-// استرجاع قائمة المفضلة للمستخدم
+// استرجاع قائمة المفضلة للمستخدم من users collection
 export const fetchUserWishlist = createAsyncThunk(
   "wishlist/fetchUserWishlist",
   async (userId, { rejectWithValue }) => {
     try {
-      const wishlistRef = doc(db, "wishlist", userId);
-      const wishlistSnap = await getDoc(wishlistRef);
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
 
-      if (wishlistSnap.exists()) {
-        const items = wishlistSnap.data().items || [];
-        return convertTimestamps(items); // تحويل كل عناصر المفضلة
+      if (userSnap.exists()) {
+        const wishlist = userSnap.data().wishlist || [];
+        return convertTimestamps(wishlist);
       } else {
-        await setDoc(wishlistRef, { items: [] });
-        return [];
+        return rejectWithValue("User document not found");
       }
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -64,20 +55,30 @@ export const fetchUserWishlist = createAsyncThunk(
   }
 );
 
-// إضافة منتج إلى المفضلة
+// إضافة منتج إلى المفضلة في users collection
 export const addToWishlist = createAsyncThunk(
   "wishlist/addToWishlist",
   async ({ product, userId }, { rejectWithValue }) => {
     try {
-      // تحويل المنتج قبل إضافته
-      const serializedProduct = convertTimestamps(product);
+      // تنسيق المنتج ليتوافق مع الهيكلية المطلوبة
+      const wishlistItem = {
+        id: product.id,
+        imageUrl: product.mainImage || product.imageUrl,
+        price: product.price,
+        title: {
+          ar: product.title?.ar || product.title,
+          en: product.title?.en || product.title
+        }
+      };
 
-      const wishlistRef = doc(db, "wishlist", userId);
-      const wishlistSnap = await getDoc(wishlistRef);
+      const serializedItem = convertTimestamps(wishlistItem);
 
-      if (wishlistSnap.exists()) {
-        const wishlistData = wishlistSnap.data();
-        const isProductInWishlist = wishlistData.items.some(
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const wishlist = userSnap.data().wishlist || [];
+        const isProductInWishlist = wishlist.some(
           (item) => item.id === product.id
         );
 
@@ -85,61 +86,45 @@ export const addToWishlist = createAsyncThunk(
           return rejectWithValue("Product already in wishlist");
         }
 
-        await updateDoc(wishlistRef, {
-          items: arrayUnion(serializedProduct),
+        await updateDoc(userRef, {
+          wishlist: arrayUnion(serializedItem)
         });
+
+        await incrementWishlistCount(product.id);
+
+        return serializedItem;
       } else {
-        await setDoc(wishlistRef, {
-          items: [serializedProduct],
-        });
+        return rejectWithValue("User document not found");
       }
-
-      // زيادة عدد الإضافات للمفضلة
-      await incrementWishlistCount(product.id);
-
-      return serializedProduct;
     } catch (error) {
+      console.error("Error adding to wishlist:", error);
       return rejectWithValue(error.message);
     }
   }
 );
 
-// إزالة منتج من المفضلة
+// إزالة منتج من المفضلة في users collection
 export const removeFromWishlist = createAsyncThunk(
   "wishlist/removeFromWishlist",
   async ({ productId, userId }, { rejectWithValue }) => {
     try {
-      const wishlistRef = doc(db, "wishlist", userId);
-      // Fetch the current wishlist to get the exact object
-      const wishlistSnap = await getDoc(wishlistRef);
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
 
-      if (!wishlistSnap.exists()) {
-        console.warn("Wishlist document not found for user:", userId);
-        return rejectWithValue("Wishlist not found");
+      if (!userSnap.exists()) {
+        return rejectWithValue("User document not found");
       }
 
-      const wishlistData = wishlistSnap.data();
-      const itemToRemove = wishlistData.items.find(
-        (item) => item.id === productId
-      );
+      const wishlist = userSnap.data().wishlist || [];
+      const itemToRemove = wishlist.find((item) => item.id === productId);
 
       if (!itemToRemove) {
-        console.warn("Product not found in wishlist for removal:", productId);
         return rejectWithValue("Product not found in wishlist");
       }
 
-      console.log(
-        "Attempting to remove item from Firestore array:",
-        itemToRemove,
-        "for user:",
-        userId
-      );
-
-      await updateDoc(wishlistRef, {
-        items: arrayRemove(itemToRemove),
+      await updateDoc(userRef, {
+        wishlist: arrayRemove(itemToRemove)
       });
-
-      console.log("Firestore arrayRemove triggered.");
 
       return productId;
     } catch (error) {
@@ -181,7 +166,6 @@ const wishlistSlice = createSlice({
       })
       .addCase(addToWishlist.fulfilled, (state, action) => {
         state.loading = false;
-        // Find index to avoid adding duplicate if somehow added during pending state
         const existingIndex = state.items.findIndex(
           (item) => item.id === action.payload.id
         );

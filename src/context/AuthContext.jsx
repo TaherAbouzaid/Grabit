@@ -4,9 +4,9 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../firebase/config";
 import { doc, getDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
-import { fetchUserWishlist } from "../store/Slices/wishlistSlice";
+import { fetchUserWishlist } from "../Store/Slices/wishlistSlice";
 import { fetchCart } from "../Store/Slices/cartSlice";
-import { fetchUserData } from "../store/Slices/userSlice";
+import { fetchUserData } from "../Store/Slices/userSlice";
 
 const AuthContext = createContext();
 
