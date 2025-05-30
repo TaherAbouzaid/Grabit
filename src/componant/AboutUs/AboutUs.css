@@ -1,247 +1,118 @@
-/* Existing AboutUs styles */
-image-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* المسافة بين الصورتين الصغيرتين */
-}
-
-.image-container {
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.image-container img {
-  transition: transform 0.3s ease;
-  object-fit: cover; /* ضمان ملاءمة الصور */
-}
-
-.image-container:hover img {
-  transform: scale(1.05); /* تأثير التكبير عند التمرير */
-}
-
-.small-image {
-  height: 200px; /* ارتفاع الصورتين الصغيرتين */
-}
-
-.main-image {
-  height: 420px; /* ارتفاع الصورة الرئيسية = الصورتين + المسافة بينهما */
-  object-fit: cover;
-}
-
-.content-section {
-  padding: 20px;
-
-}
-
-.section-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.same-size {
-  font-size: inherit;
-}
-
-.section-subtitle {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
-}
-
-.section-text {
-  color: #666;
-  line-height: 1.8;
-  margin-bottom: 1.5rem;
-}
-
-/* التصميم التكيفي (Responsive) */
-@media (max-width: 991px) {
-  .image-grid {
-    gap: 15px;
-  }
-  .small-image {
-    height: 150px; /* تصغير الصورتين الصغيرتين */
-  }
-  .main-image {
-    height: 300px; /* تصغير الصورة الرئيسية */
-  }
-  .content-section {
-    padding: 15px;
-   transform: translateX(-50px);
-  }
-}
-
-@media (max-width: 767px) {
-  .image-column {
-    margin-bottom: 20px; /* مسافة أسفل الصور */
-  }
-  .small-image {
-    height: 120px;
-  }
-  .main-image {
-    height: 260px;
-  }
-  /* .content-section {
-    padding: 10px;
-    transform: translateX(-30px);
-  } */
-}
-
-@media (max-width: 576px) {
-  .small-image {
-    height: 100px;
-  }
-  .main-image {
-    height: 220px;
-  }
-  .section-title {
-    font-size: 2rem;
-  }
-  .section-subtitle {
-    font-size: 1rem;
-  }
-  .section-text {
-    font-size: 0.9rem;
-  }
-}
-/* Services Section styles */
-.services-section {
+/* About Section */
+.about-section {
+  background-color: #f8f9fa;
   padding: 60px 0;
 }
 
-.text-success {
-  color: #5cac94 !important;
+.about-section img {
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
-.section-subtitle {
-  color: #6c757d;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
+.about-images-layout {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
 }
 
+.left-large-img img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  /* object-fit: cover; */
+}
+
+.right-small-imgs {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.right-small-imgs img {
+  width: 100%;
+  height: auto;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+  .about-images-layout {
+    flex-direction: column;
+  }
+
+  .right-small-imgs {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .right-small-imgs img {
+    max-height: 120px;
+  }
+}
+
+/* Typography */
+h2 span,
+h5 span {
+  color: #5cac94;
+  /* Bootstrap success green */
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* Services Cards */
 .service-card {
-  border: 1px solid #e9e9e9;
-  border-radius: 8px;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   height: 100%;
 }
 
 .service-card:hover {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-.icon-container {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  border: 2px solid #5cac94;
-  margin-bottom: 1rem;
-}
-
-.service-icon {
-  width: 30px;
-  height: 30px;
+.service-card svg {
   color: #5cac94;
-}
-
-.service-title {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-
-.service-text {
-  color: #6c757d;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-/* Team Section styles */
-.team-section {
-  padding: 60px 0;
-}
-
-.team-slider-wrapper {
-  overflow: hidden; 
-  width: 100%;
-}
-
-.team-slider {
-  display: flex;
-  width: calc(200% + 20px); 
-  animation: slideHorizontal 15s linear infinite; /* الحركة التلقائية */
-}
-
-.team-card {
-  flex: 0 0 12.5%; 
-  margin-right: 20px; 
-  transition: all 0.3s ease;
-  padding: 15px;
-  text-align: center;
-}
-
-.team-card:hover {
-  transform: translateY(-5px); 
-}
-
-.team-image-container {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.team-image {
-  width: 100%;
-  transition: transform 0.3s ease;
-}
-
-.team-image-container:hover .team-image {
-  transform: scale(1.05);
-}
-
-.team-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 10px 0 5px;
-  color: #333;
-}
-
-.team-position {
-  font-size: 0.9rem;
-  color: #6c757d;
   margin-bottom: 10px;
 }
 
-
-@keyframes slideHorizontal {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%); 
-  }
+/* Team Section */
+.team-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-/* التصميم التكيفي (Responsive) */
-@media (max-width: 991px) {
-  .team-card {
-    flex: 0 0 20%; 
-  }
+.team-image:hover {
+  transform: scale(1.05);
 }
 
-@media (max-width: 767px) {
-  .team-card {
-    flex: 0 0 33.33%;
+/* Responsive */
+@media (max-width: 768px) {
+  .about-section {
+    padding: 40px 0;
   }
-}
 
-@media (max-width: 576px) {
-  .team-card {
-    flex: 0 0 50%; 
+  .service-card {
+    margin-bottom: 20px;
+  }
+
+  .team-image {
+    width: 100px;
+    height: 100px;
   }
 }

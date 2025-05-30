@@ -1,17 +1,13 @@
 import { Container, Row, Col } from "react-bootstrap";
 import { Truck, Headset, RotateCcw, Shield } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./AboutUs.css";
-import "../../components/styles.css";
-import { useTranslation } from "react-i18next";
 
 export default function AboutUs() {
   const { t, i18n } = useTranslation();
-
-
   document.body.dir = i18n.language === "ar" ? "rtl" : "ltr";
 
-  
   const teamImages = [
     "https://grabit-react-next.maraviyainfotech.com/assets/img/team/team-4.jpg",
     "https://grabit-react-next.maraviyainfotech.com/assets/img/team/team-5.jpg",
@@ -22,153 +18,106 @@ export default function AboutUs() {
 
   return (
     <>
-      <Container className="my-5">
-        <Row className="align-items-start">
-         
-          <Col md={4} lg={3} className="image-column">
-            <div className="image-grid">
-              <div className="image-container mb-4">
-                <img
-                  src="https://grabit-react-next.maraviyainfotech.com/assets/img/common/about-2.png"
-                  alt={t("aboutUs.title")}
-                  className="img-fluid rounded shadow small-image"
-                />
-              </div>
-              <div className="image-container">
-                <img
-                  src="https://grabit-react-next.maraviyainfotech.com/assets/img/common/about-3.png"
-                  alt={t("aboutUs.title")}
-                  className="img-fluid rounded shadow small-image"
-                />
-              </div>
-            </div>
-          </Col>
-          
-          <Col md={8} lg={9}>
-            <Row className="align-items-start gx-1">
-              <Col md={12} lg={6}>
-                <div className="image-container mb-4">
+      {/* About Section */}
+      <Container >
+        <Container>
+          <Row className="align-items-center mb-5">
+            <Col lg={6}>
+              <div className="about-images-layout">
+                <div className="left-large-img">
                   <img
                     src="https://grabit-react-next.maraviyainfotech.com/assets/img/common/about.png"
-                    alt={t("aboutUs.title")}
-                    className="img-fluid rounded shadow main-image"
+                    alt="Main"
                   />
                 </div>
-              </Col>
-              <Col md={12} lg={6} className="content-column">
-                <div className="content-section">
-                  <h2 className="section-title">
-                    {t("aboutUs.title")}{" "}
-                    <span className="text-success same-size">{t("aboutUs.titleHighlight")}</span>
-                  </h2>
-                  <h4 className="section-subtitle mb-4">{t("aboutUs.subtitle")}</h4>
-                  <p className="section-text">{t("aboutUs.text1")}</p>
-                  <p className="section-text">{t("aboutUs.text2")}</p>
-                  <p className="section-text">{t("aboutUs.text3")}</p>
+                <div className="right-small-imgs">
+                  <img
+                    src="https://grabit-react-next.maraviyainfotech.com/assets/img/common/about-2.png"
+                    alt="Small 1"
+                  />
+                  <img
+                    src="https://grabit-react-next.maraviyainfotech.com/assets/img/common/about-3.png"
+                    alt="Small 2"
+                  />
                 </div>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+              </div>
+            </Col>
+            <Col lg={6}>
+              {/* <h2 className="section-title">
+                {t("aboutUs.title")}{" "}
+                <span className="text-success">{t("aboutUs.titleHighlight")}</span>
+              </h2> */}
+                       <h2 className="section-title">
+  <span style={{ fontWeight: "normal", fontSize: "inherit" }}>{t("aboutUs.title")}</span>{" "}
+  <span className="text-black" style={{ fontSize: "inherit" }}>{t("aboutUs.titleHighlight")}</span>
+</h2>
+              <h5 className="text-muted mb-4">{t("aboutUs.subtitle")}</h5>
+              <p className="section-text">{t("aboutUs.text1")}</p>
+              <p className="section-text">{t("aboutUs.text2")}</p>
+              <p className="section-text">{t("aboutUs.text3")}</p>
+              {/* <img
+                src="https://grabit-react-next.maraviyainfotech.com/assets/img/common/about.png"
+                alt="about-main"
+                className="img-fluid rounded shadow-lg mt-4"
+              /> */}
+            </Col>
+          </Row>
+        </Container>
       </Container>
 
-      {/* Services Section */}
-      <Container className="my-5 services-section">
-        <Row className="text-center mb-5">
+      {/* Services */}
+      <Container className="my-5">
+        <Row className="text-center mb-4">
           <Col>
             <h2 className="section-title">
-              {t("services.title")}{" "}
-              {/* <span className="text-success same-size">{t("services.titleHighlight")}</span> */}
-            </h2>
+  <span style={{ fontWeight: "normal", fontSize: "inherit" }}>{t("services.title")}</span>{" "}
+  <span className="text-black" style={{ fontSize: "inherit" }}>{t("services.titleHighlight")}</span>
+</h2>
+
             <p className="section-subtitle">{t("services.subtitle")}</p>
           </Col>
         </Row>
-
-        <Row className="justify-content-center">
-          <Col md={3} sm={6} className="mb-4">
-            <div className="service-card text-center p-4">
-              <div className="icon-container mb-3">
-                <Truck className="service-icon" />
-              </div>
-              <h4 className="service-title">{t("services.freeShipping.title")}</h4>
-              <p className="service-text">{t("services.freeShipping.text")}</p>
-            </div>
-          </Col>
-
-          <Col md={3} sm={6} className="mb-4">
-            <div className="service-card text-center p-4">
-              <div className="icon-container mb-3">
-                <Headset className="service-icon" />
-              </div>
-              <h4 className="service-title">{t("services.support.title")}</h4>
-              <p className="service-text">{t("services.support.text")}</p>
-            </div>
-          </Col>
-
-          <Col md={3} sm={6} className="mb-4">
-            <div className="service-card text-center p-4">
-              <div className="icon-container mb-3">
-                <RotateCcw className="service-icon" />
-              </div>
-              <h4 className="service-title">{t("services.returns.title")}</h4>
-              <p className="service-text">{t("services.returns.text")}</p>
-            </div>
-          </Col>
-
-          <Col md={3} sm={6} className="mb-4">
-            <div className="service-card text-center p-4">
-              <div className="icon-container mb-3">
-                <Shield className="service-icon" />
-              </div>
-              <h4 className="service-title">{t("services.payment.title")}</h4>
-              <p className="service-text">{t("services.payment.text")}</p>
-            </div>
-          </Col>
+        <Row className="g-4 text-center">
+          {[Truck, Headset, RotateCcw, Shield].map((Icon, idx) => {
+            const keys = ["freeShipping", "support", "returns", "payment"];
+            const key = keys[idx];
+            return (
+              <Col md={3} sm={6} key={key}>
+                <div className="service-card h-100">
+                  <Icon size={40} />
+                  <h5 className="mt-3">{t(`services.${key}.title`)}</h5>
+                  <p className="text-muted">{t(`services.${key}.text`)}</p>
+                </div>
+              </Col>
+            );
+          })}
         </Row>
       </Container>
 
       {/* Team Section */}
-      <Container className="my-5 team-section">
-        <Row className="text-center mb-5">
+      <Container className="team-section py-5">
+        <Row className="text-center mb-4">
           <Col>
             <h2 className="section-title">
-              {/* {t("team.title")}{" "} */}
-              <span className="text-success same-size">{t("team.titleHighlight")}</span>
-            </h2>
+  <span style={{ fontWeight: "normal", fontSize: "inherit" }}>{t("team.title")}</span>{" "}
+  <span className="text-black" style={{ fontSize: "inherit" }}>{t("team.titleHighlight")}</span>
+</h2>
+
             <p className="section-subtitle">{t("team.subtitle")}</p>
           </Col>
         </Row>
-
-        <div className="team-slider-wrapper">
-          <div className="team-slider">
-            {t("team.members", { returnObjects: true }).map((member, index) => (
-              <div className="team-card" key={index}>
-                <div className="team-image-container mb-3">
-                  <img
-                    src={teamImages[index % teamImages.length]}
-                    alt={member.name}
-                    className="img-fluid rounded team-image"
-                  />
-                </div>
-                <h4 className="team-name">{member.name}</h4>
-                <p className="team-position">{member.position}</p>
-              </div>
-            ))}
-            
-            {t("team.members", { returnObjects: true }).map((member, index) => (
-              <div className="team-card" key={`duplicate-${index}`}>
-                <div className="team-image-container mb-3">
-                  <img
-                    src={teamImages[index % teamImages.length]}
-                    alt={member.name}
-                    className="img-fluid rounded team-image"
-                  />
-                </div>
-                <h4 className="team-name">{member.name}</h4>
-                <p className="team-position">{member.position}</p>
-              </div>
-            ))}
-          </div>
+        <div className="team-slider d-flex justify-content-center flex-wrap gap-4">
+          {t("team.members", { returnObjects: true }).map((member, index) => (
+            <div className="text-center team-card" key={index}>
+              <img
+                src={teamImages[index % teamImages.length]}
+                alt={member.name}
+                className="team-image"
+              />
+              <h5 className="mt-3">{member.name}</h5>
+              <p className="text-muted">{member.position}</p>
+            </div>
+          ))}
         </div>
       </Container>
     </>
