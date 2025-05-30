@@ -1,16 +1,18 @@
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { db, auth, storage } from "../../firebase/config";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-// import { sendPasswordResetEmail } from "firebase/auth";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { Country, State, City } from "country-state-city";
-import {  ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./EditProfile.css";
 import { useTranslation } from "react-i18next";
-import { useLanguage } from "../../context/LanguageContext";
+import { useDispatch } from "react-redux";
+import { useAuth } from "../../context/AuthContext";
+import { fetchUserData } from "../../store/Slices/userSlice";
 
 const EditProfile = () => {
   const [form, setForm] = useState({
@@ -36,11 +38,9 @@ const EditProfile = () => {
   const [cities, setCities] = useState([]);
   const [resetMessage, setResetMessage] = useState({ type: "", text: "" });
   const navigate = useNavigate();
-      const { t } = useTranslation();
-        const { currentLanguage } = useLanguage();
-      
-
-  
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { setCurrentUser } = useAuth(); // Access setCurrentUser from AuthContext
 
   const countries = Country.getAllCountries();
 
@@ -218,7 +218,7 @@ const EditProfile = () => {
         profileImage = await getDownloadURL(imageRef);
       }
 
-      await updateDoc(userRef, {
+      const updatedUserData = {
         fullName: form.fullName,
         email: form.email,
         phone: form.phone,
@@ -230,7 +230,16 @@ const EditProfile = () => {
           postalCode: form.address.postalCode,
         }],
         profileImage,
-      });
+      };
+
+      await updateDoc(userRef, updatedUserData);
+
+      // Fetch updated user data to update Redux store
+      await dispatch(fetchUserData(uid));
+
+      // Update AuthContext with new user data
+      console.log("Updating AuthContext with new user data for userId:", uid);
+      setCurrentUser({ ...updatedUserData, uid });
 
       navigate("/profile");
     } catch (error) {
@@ -238,42 +247,6 @@ const EditProfile = () => {
       setErrors({ submit: "Failed to update profile. Please try again." });
     }
   };
-
-  // const handleResetPassword = async () => {
-  //   setResetMessage({ type: "", text: "" });
-  //   if (!auth.currentUser?.email) {
-  //     setResetMessage({ type: "danger", text: "No email associated with this account." });
-  //     toast.error("No email associated with this account.", {
-  //       position: "top-right",
-  //       autoClose: 3000,
-  //     });
-  //     return;
-  //   }
-
-  //   const toastId = toast.loading("Sending password reset email...", {
-  //     position: "top-right",
-  //   });
-
-  //   try {
-  //     await sendPasswordResetEmail(auth, auth.currentUser.email);
-  //     toast.update(toastId, {
-  //       render: "Password reset email sent. Check your inbox.",
-  //       type: "success",
-  //       isLoading: false,
-  //       autoClose: 3000,
-  //     });
-  //     setResetMessage({ type: "success", text: "Password reset email sent. Check your inbox." });
-  //   } catch (error) {
-  //     console.error("Error sending password reset email:", error.message);
-  //     toast.update(toastId, {
-  //       render: `Failed to send reset email: ${error.message}`,
-  //       type: "error",
-  //       isLoading: false,
-  //       autoClose: 5000,
-  //     });
-  //     setResetMessage({ type: "danger", text: `Failed to send reset email: ${error.message}` });
-  //   }
-  // };
 
   return (
     <Container fluid className="edit-profile py-4">
@@ -430,12 +403,11 @@ const EditProfile = () => {
                 )}
               </Form.Group>
 
-             <div>
+              <div>
+                <Link to="/ChangePassword">{t('profile.changePassword')}</Link>
+              </div>
 
-              <Link to="/ChangePassword" > {t('profile.changePassword')}</Link>
-             </div>
-
-              <div className="d-flex justify-content-between ">
+              <div className="d-flex justify-content-between">
                 <Button variant="secondary" onClick={() => navigate("/profile")}>
                   {t('profile.cancel')}
                 </Button>

@@ -1,15 +1,26 @@
 
+
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Container, Row, Col, Button, ButtonGroup } from "react-bootstrap";
 import './UserProfile.css';
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchUserData } from "../../store/Slices/userSlice";
 
 const UserProfile = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-    const { t } = useTranslation();
-  
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user && user.uid) {
+      console.log("Fetching user data for userId:", user.uid);
+      dispatch(fetchUserData(user.uid));
+    }
+  }, [dispatch, user]);
 
   const handleEdit = () => {
     navigate("/edit-profile");
@@ -29,7 +40,7 @@ const UserProfile = () => {
             <Button variant="secondary" onClick={() => navigate("/Cart")}>{t('profile.cart')}</Button>
             <Button variant="secondary" onClick={() => navigate("/checkout")}>{t('profile.checkout')}</Button>
             <Button variant="secondary" onClick={() => navigate("/OrderTracker")}>{t('profile.trackOrder')}</Button>
-            <Button variant="secondary">{t('profile.invoice')}</Button>
+            {/* <Button variant="secondary">{t('profile.invoice')}</Button> */}
           </ButtonGroup>
         </Col>
 

@@ -28,7 +28,6 @@ const Login = () => {
       }
     } catch (error) {
     console.error("Login error:", error);
-    alert("Email or password is incorrect!");
     }
   };
 

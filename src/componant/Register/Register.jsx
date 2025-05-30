@@ -75,11 +75,9 @@ const Register = () => {
       // Save user data in Firestore (in `users` collection)
       await setDoc(doc(db, "users", user.uid), userData);
 
-      alert("Registered successfully!");
       navigate("/shop");
     } catch (error) {
       console.error("Registration error:", error);
-      alert("Something went wrong!");
     }
   };
 

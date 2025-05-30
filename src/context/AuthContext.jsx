@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../firebase/config";
@@ -23,7 +24,6 @@ export const AuthProvider = ({ children }) => {
           if (userDoc.exists()) {
             const userData = { uid: user.uid, ...userDoc.data() };
             setCurrentUser(userData);
-            // Sync local wishlist and fetch updated wishlist
             await dispatch(fetchUserWishlist(user.uid)).unwrap();
             await dispatch(fetchCart(user.uid)).unwrap();
             await dispatch(fetchUserData(user.uid)).unwrap();
@@ -55,13 +55,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user: currentUser, loading, logout }}>
+    <AuthContext.Provider value={{ user: currentUser, loading, logout, setCurrentUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }
