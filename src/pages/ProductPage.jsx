@@ -16,8 +16,8 @@ import { showToast } from "../components/SimpleToastUtils";
 import {
   addToWishlist,
   removeFromWishlist,
-} from "../store/Slices/wishlistSlice";
-import RelatedProducts from '../components/RelatedProducts';
+} from "../Store/Slices/wishlistSlice";
+import RelatedProducts from "../components/RelatedProducts";
 
 const NextArrow = (props) => {
   const { className, style, onClick } = props;
@@ -837,7 +837,11 @@ const ProductPage = () => {
                       : "Add to Wishlist"
                   }
                 >
-                  {isProductInWishlist ? <FaHeart size={33} /> : <FiHeart size={33}/>}
+                  {isProductInWishlist ? (
+                    <FaHeart size={33} />
+                  ) : (
+                    <FiHeart size={33} />
+                  )}
                 </div>
               )}
             </div>
@@ -1107,7 +1111,10 @@ const ProductPage = () => {
       {/* Related Products Section */}
       <div className="row mt-5">
         <div className="col-12">
-          <h3 className="mb-4 text-center" style={{fontWeight: "bold" , color: '#5caf90'}}> 
+          <h3
+            className="mb-4 text-center"
+            style={{ fontWeight: "bold", color: "#5caf90" }}
+          >
             {currentLanguage === "ar" ? "منتجات ذات صلة" : "Related Products"}
           </h3>
           <RelatedProducts product={product} currentProductId={productId} />
@@ -1121,26 +1128,26 @@ export default ProductPage;
 
 function convertTimestampToJSON(obj) {
   if (!obj) return obj;
-  
+
   // إذا كان الكائن نفسه هو Timestamp
-  if (obj && typeof obj.toJSON === 'function') {
+  if (obj && typeof obj.toJSON === "function") {
     return obj.toJSON();
   }
-  
+
   // إذا كان مصفوفة
   if (Array.isArray(obj)) {
-    return obj.map(item => convertTimestampToJSON(item));
+    return obj.map((item) => convertTimestampToJSON(item));
   }
-  
+
   // إذا كان كائن عادي
-  if (typeof obj === 'object' && obj !== null) {
+  if (typeof obj === "object" && obj !== null) {
     const newObj = {};
     for (const key in obj) {
       newObj[key] = convertTimestampToJSON(obj[key]);
     }
     return newObj;
   }
-  
+
   // إرجاع القيمة كما هي إذا لم تكن كائن
   return obj;
 }
