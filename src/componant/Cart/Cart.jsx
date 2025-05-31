@@ -19,7 +19,7 @@ import {
   removeFromCart,
 } from "../../Store/Slices/cartSlice";
 import { fetchProducts } from "../../Store/Slices/productsSlice";
-import { fetchUserData } from "../../store/Slices/userSlice";
+import { fetchUserData } from "../../Store/Slices/userSlice";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "../../context/LanguageContext.jsx";
