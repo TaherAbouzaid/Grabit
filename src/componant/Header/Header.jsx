@@ -30,9 +30,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCart,
 } from "../../Store/Slices/cartSlice";
-import { fetchUserData } from "../../store/Slices/userSlice";
+import { fetchUserData } from "../../Store/Slices/userSlice";
 import { fetchProducts } from "../../Store/Slices/productsSlice";
-import { fetchUserWishlist } from "../../store/Slices/wishlistSlice";
+import { fetchUserWishlist } from "../../Store/Slices/wishlistSlice";
 import MegaMenu from "../MegaMenu/MegaMenu";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTranslation } from "react-i18next";

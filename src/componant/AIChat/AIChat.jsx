@@ -29,56 +29,180 @@ const AIChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // تحسين معالجة الرسائل
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim()) return;
 
-    // Add user message
-    const newUserMessage = { text: input, isBot: false };
-    setMessages((prev) => [...prev, newUserMessage]);
     const userMessage = input;
     setInput("");
+    setMessages((prev) => [...prev, { text: userMessage, isBot: false }]);
     setIsLoading(true);
 
     try {
-      // Check if the user message is a product search query
       const lowerUserMessage = userMessage.toLowerCase();
-      const isProductSearch =
-        lowerUserMessage.includes("product") ||
-        lowerUserMessage.includes("منتج") ||
-        lowerUserMessage.includes("search") ||
-        lowerUserMessage.includes("بحث") ||
-        lowerUserMessage.includes(t("category")); // Check for category keyword in current language
 
-      let botResponse;
+      // --- Parameter Extraction ---
+      let searchKeywords = lowerUserMessage; // Start with the whole message
+      let detectedCategoryName = null;
+      let sortBy = null;
 
-      if (isProductSearch) {
-        // Perform product search
-        const products = await searchProducts(userMessage);
-        // Create a message object that includes the products
-        botResponse = createProductsMessage(products, i18n.language); // Pass current language
-      } else {
-        // Create conversation history for context
-        const conversationHistory = messages
-          .slice(-6) // Only use last 6 messages for context
-          .map((msg) => ({
-            role: msg.isBot ? "assistant" : "user",
-            // Use msg.text for simple text messages, handle structured messages if needed
-            content:
-              typeof msg.text === "string" ? msg.text : msg.text?.text || "",
-          }));
+      // Check for category mention
+      const categoryMatchAr = lowerUserMessage.match(/(?:في|بفئة)\s+([^\s]+)/);
+      const categoryMatchEn = lowerUserMessage.match(
+        /(?:in|category)\s+([^\s]+)/
+      );
 
-        // Get response from AI service with conversation history and cart data
-        botResponse = await getChatbotResponseWithHistory(
-          userMessage,
-          conversationHistory,
-          user?.uid || null,
-          cart
-        );
+      if (categoryMatchAr) {
+        detectedCategoryName = categoryMatchAr[1];
+        searchKeywords = searchKeywords.replace(categoryMatchAr[0], "").trim(); // Remove category phrase from keywords
+      } else if (categoryMatchEn) {
+        detectedCategoryName = categoryMatchEn[1];
+        searchKeywords = searchKeywords.replace(categoryMatchEn[0], "").trim(); // Remove category phrase from keywords
       }
 
-      // Add bot response (which can be a string or an object with products)
-      setMessages((prev) => [...prev, { ...botResponse, isBot: true }]); // Spread botResponse to include products if present
+      // Check for sort type mention (latest or discount)
+      if (
+        searchKeywords.includes(t("latest")) ||
+        searchKeywords.includes("أحدث")
+      ) {
+        sortBy = "latest";
+        searchKeywords = searchKeywords
+          .replace(t("latest"), "")
+          .replace("أحدث", "")
+          .trim(); // Remove sort phrase from keywords
+      } else if (
+        // Check for cheapest discounted offers
+        lowerUserMessage.includes(t("cheapest offers")) || // Assuming a translation key or add direct strings
+        lowerUserMessage.includes("أرخص العروض") ||
+        lowerUserMessage.includes("عروض بأقل سعر") ||
+        lowerUserMessage.includes("cheapest discounted")
+      ) {
+        sortBy = "cheapest_discounted";
+        // Remove sort phrase from keywords
+        searchKeywords = searchKeywords
+          .replace(t("cheapest offers"), "") // Need to add translation key or use direct strings
+          .replace("أرخص العروض", "")
+          .replace("عروض بأقل سعر", "")
+          .replace("cheapest discounted", "")
+          .trim();
+      } else if (
+        searchKeywords.includes(t("discount")) ||
+        searchKeywords.includes("خصم") ||
+        searchKeywords.includes("مخفضة") ||
+        searchKeywords.includes("offers") ||
+        searchKeywords.includes("عروض") ||
+        searchKeywords.includes("تخفيضات")
+      ) {
+        sortBy = "discount";
+        searchKeywords = searchKeywords
+          .replace(t("discount"), "")
+          .replace("خصم", "")
+          .replace("مخفضة", "")
+          .replace("offers", "")
+          .replace("عروض", "")
+          .replace("تخفيضات", "")
+          .trim(); // Remove sort phrase from keywords
+      }
+
+      // Determine if product search is needed
+      const isProductSearchNeeded =
+        sortBy !== null || 
+        detectedCategoryName !== null || 
+        lowerUserMessage.includes("hp") ||
+        lowerUserMessage.includes("apple") ||
+        lowerUserMessage.includes("samsung") ||
+        lowerUserMessage.includes("sony") ||
+        lowerUserMessage.includes("dell") ||
+        lowerUserMessage.includes("laptop") ||
+        lowerUserMessage.includes("phone") ||
+        lowerUserMessage.includes("tv") ||
+        lowerUserMessage.includes("computer") ||
+        lowerUserMessage.includes("حاسوب") ||
+        lowerUserMessage.includes("لابتوب") ||
+        lowerUserMessage.includes("هاتف") ||
+        lowerUserMessage.includes("تلفزيون") ||
+        lowerUserMessage.includes("كمبيوتر");
+
+      let productSearchResults = null;
+      let aiTextResponse = null;
+
+      // --- Perform Product Search if Needed ---
+      if (isProductSearchNeeded) {
+        console.log("Performing product search for:", userMessage);
+        productSearchResults = await searchProducts(
+          userMessage, // Pass original query
+          5,
+          null, // categoryId is determined in searchProducts from name
+          sortBy,
+          detectedCategoryName // Pass detected category name
+        );
+        console.log("Search results:", productSearchResults);
+      }
+
+      // --- Get Conversational AI Response (based on search results if applicable) ---
+      const conversationHistory = messages
+        .slice(-6) // Only use last 6 messages for context
+        .map((msg) => ({
+          role: msg.isBot ? "assistant" : "user",
+          content:
+            typeof msg.text === "string" ? msg.text : msg.text?.text || "",
+        }));
+
+      let aiPrompt = userMessage;
+
+      // Enhance AI prompt with information about search results if a search was performed
+      if (isProductSearchNeeded) {
+        if (productSearchResults && productSearchResults.length > 0) {
+          const productTitles = productSearchResults
+            .map(
+              (p) =>
+                p.title?.[i18n.language] ||
+                p.title?.en ||
+                p.title?.ar ||
+                "product"
+            )
+            .join(", ");
+          // Modify prompt to tell the AI about the successful search
+          aiPrompt = `The user asked for "${userMessage}". The product search found ${productSearchResults.length} items including: ${productTitles}. Generate a conversational response that introduces these search results to the user.`;
+        } else {
+          // Modify prompt to tell the AI no products were found for the specific request
+          aiPrompt = `The user asked for "${userMessage}". The product search found no items matching the specific request (category/sort). Generate a conversational response that apologizes for not finding products matching the request and perhaps suggests broadening the search.`;
+        }
+      } else {
+        // If no product search was needed, use the original message for the AI prompt
+        aiPrompt = userMessage;
+      }
+
+      // Get AI's text response using the possibly enhanced prompt
+      aiTextResponse = await getChatbotResponseWithHistory(
+        aiPrompt, // Use the possibly enhanced prompt
+        conversationHistory,
+        user?.uid || null,
+        cart
+      );
+
+      // Add the AI's text response to messages
+      if (productSearchResults && productSearchResults.length > 0) {
+        // Create a message with both text and products
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: aiTextResponse,
+            isBot: true,
+            products: productSearchResults
+          }
+        ]);
+      } else {
+        // Just add the text response
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: aiTextResponse,
+            isBot: true
+          }
+        ]);
+      }
     } catch (error) {
       console.error("Error getting chatbot response:", error);
       setMessages((prev) => [

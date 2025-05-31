@@ -6,13 +6,13 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   max-width: 100%;
-  height: 100px;
+  align-items: stretch;
 }
 
 .chatbot-product-image {
   width: 100px;
   min-width: 100px;
-  height: 100px;
+  height: auto;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -21,7 +21,7 @@
 .chatbot-product-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.3s ease;
 }
 
@@ -47,6 +47,8 @@
   flex-direction: column;
   justify-content: space-between;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .chatbot-product-title {
@@ -55,9 +57,11 @@
   margin: 0 0 5px 0;
   color: #333;
   cursor: pointer;
-  white-space: nowrap;
+  word-break: break-word;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
 }
 
 .chatbot-product-title:hover {
@@ -68,6 +72,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 5px;
+  flex-shrink: 0;
 }
 
 .chatbot-product-final-price {
@@ -81,6 +86,7 @@
   color: #999;
   font-size: 12px;
   margin-left: 5px;
+  flex-shrink: 0;
 }
 
 .chatbot-product-add-btn {
@@ -93,6 +99,7 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .chatbot-product-add-btn:hover {
@@ -127,10 +134,13 @@ html[dir="rtl"] .chatbot-product-original-price {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 10px;
+  justify-content: space-between;
 }
 
 .chatbot-products-grid .chatbot-product-card {
   width: calc(50% - 5px);
+  min-width: 150px;
+  flex-grow: 1;
 }
 
 @media (max-width: 480px) {

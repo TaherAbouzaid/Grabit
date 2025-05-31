@@ -3,7 +3,7 @@ import Home from "./pages/Home";
 import React, { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Shop from "./pages/shop";
+import Shop from "./pages/Shop";
 import ProductPage from "./pages/ProductPage";
 import { AuthProvider } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";

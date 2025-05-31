@@ -19,6 +19,14 @@
   word-wrap: break-word;
 }
 
+/* Adjust padding and potentially width when containing product display */
+.message-content .chatbot-products-list, 
+.message-content .chatbot-products-grid {
+  padding: 5px; /* Slightly reduce padding around the product list/grid */
+  margin: -5px; /* Counteract padding from message-content if needed */
+  /* Consider adding width: 100%; if they aren't naturally filling the space */
+}
+
 .user-message .message-content {
   background-color: #5caf90;
   color: white;
