@@ -63,7 +63,7 @@ const Login = () => {
               </div>
 
               <div className="d-flex justify-content-between align-items-center">
-                <a href="/register" className="text-decoration-none text-muted">{t('profile.Create Account?')}</a>
+                <a href="/register" className="registerLink text-decoration-none text-muted">{t('profile.Create Account?')}</a>
                 <Button className="login-btn" type="submit">
                   {t('profile.login')}
                 </Button>

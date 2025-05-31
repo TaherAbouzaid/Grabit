@@ -20,12 +20,16 @@ const OffersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const offersPerPage = 6; // Define how many offers per page
 
+  // Calculate date two weeks from now (May 31, 2025 + 14 days = June 14, 2025)
+  const twoWeeksFromNow = new Date();
+  twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
+
   useEffect(() => {
     dispatch(fetchOffers());
   }, [dispatch]);
 
-  const formatDate = (timestamp) => {
-    return new Date(timestamp).toLocaleDateString(
+  const formatDate = () => {
+    return twoWeeksFromNow.toLocaleDateString(
       i18n.language === "ar" ? "ar-SA" : "en-US",
       {
         year: "numeric",
@@ -35,9 +39,9 @@ const OffersPage = () => {
     );
   };
 
-  const calculateTimeLeft = (endDate) => {
+  const calculateTimeLeft = () => {
     const now = new Date().getTime();
-    const end = new Date(endDate).getTime();
+    const end = twoWeeksFromNow.getTime();
     const difference = end - now;
 
     if (difference <= 0) return t("offers.expired");
@@ -145,27 +149,25 @@ const OffersPage = () => {
                     <div className="d-flex align-items-center mb-3">
                       <FaClock
                         className={`me-2 ${
-                          calculateTimeLeft(offer.endDate) ===
-                          t("offers.expired")
+                          calculateTimeLeft() === t("offers.expired")
                             ? "text-danger"
                             : "text-muted"
                         }`}
                       />
                       <small
                         className={`time-left ${
-                          calculateTimeLeft(offer.endDate) ===
-                          t("offers.expired")
+                          calculateTimeLeft() === t("offers.expired")
                             ? "text-danger"
                             : "text-muted"
                         }`}
                       >
-                        {t("offers.endsIn")}: {calculateTimeLeft(offer.endDate)}
+                        {t("offers.endsIn")}: {calculateTimeLeft()}
                       </small>
                     </div>
                     <div className="d-flex justify-content-between align-items-center">
                       <div>
                         <small className="text-muted d-block offer-validity">
-                          {t("offers.validUntil")}: {formatDate(offer.endDate)}
+                          {t("offers.validUntil")}: {formatDate()}
                         </small>
                       </div>
                       <Button
@@ -237,29 +239,25 @@ const OffersPage = () => {
                       <div className="d-flex align-items-center mb-3">
                         <FaClock
                           className={`me-2 ${
-                            calculateTimeLeft(offer.endDate) ===
-                            t("offers.expired")
+                            calculateTimeLeft() === t("offers.expired")
                               ? "text-danger"
                               : "text-muted"
                           }`}
                         />
                         <small
                           className={`time-left ${
-                            calculateTimeLeft(offer.endDate) ===
-                            t("offers.expired")
+                            calculateTimeLeft() === t("offers.expired")
                               ? "text-danger"
                               : "text-muted"
                           }`}
                         >
-                          {t("offers.endsIn")}:{" "}
-                          {calculateTimeLeft(offer.endDate)}
+                          {t("offers.endsIn")}: {calculateTimeLeft()}
                         </small>
                       </div>
                       <div className="d-flex justify-content-between align-items-center">
                         <div>
                           <small className="text-muted d-block offer-validity">
-                            {t("offers.validUntil")}:{" "}
-                            {formatDate(offer.endDate)}
+                            {t("offers.validUntil")}: {formatDate()}
                           </small>
                         </div>
                         <Button

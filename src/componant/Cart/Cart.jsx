@@ -268,8 +268,7 @@ const Cart = () => {
       <Container className="py-5 text-center">
         <h2>{t("cart.empty")}</h2>
         <Button
-          variant="primary"
-          className="mt-3"
+          className="btn-success mt-3"
           onClick={() => navigate("/shop")}
         >
           {t("common.continueShopping")}
@@ -324,7 +323,7 @@ const Cart = () => {
           <div className="mt-3 d-flex justify-content-between">
             <a
               onClick={() => navigate("/shop")}
-              className="text-decoration-underline fw-medium"
+              className=" text-decoration-underline fw-medium"
             >
               {t("common.continueShopping")}
             </a>
@@ -354,7 +353,7 @@ const Cart = () => {
                 ${(calculateSubTotal() + calculateSubTotal() * 0.14).toFixed(2)}
               </span>
             </div>
-            <Button variant="primary" className="w-100" onClick={goToCheckout}>
+            <Button  className="btn-success w-100" onClick={goToCheckout}>
               {t("nav.checkout")}
             </Button>
           </div>

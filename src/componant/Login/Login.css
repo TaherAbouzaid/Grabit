@@ -11,11 +11,18 @@
 }
 
 .login-btn {
-  background-color: #505e64;
-  border: none;
+  background-color: #5caf90 !important;
+  border: none !important;
   transition: background-color 0.3s ease;
 }
 
 .login-btn:hover {
-  background-color: #5cac94;
+  background-color: #3c836e;
+}
+
+.registerLink {
+  color: #5caf90 !important;
+  font-weight: 500;
+  transition: color 0.3s ease;  
+
 }

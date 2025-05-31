@@ -29,7 +29,7 @@ import {
 import { db } from "../../firebase/config";
 import { fetchCart } from "../../Store/Slices/cartSlice";
 import { fetchProducts } from "../../Store/Slices/productsSlice";
-import { fetchUserData } from "../../store/Slices/userSlice";
+import { fetchUserData } from "../../Store/Slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import { Country, State, City } from "country-state-city";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
@@ -1051,7 +1051,7 @@ export default function CheckoutPage() {
                       <div className="mt-4">
                         {addressOption === "new" ? (
                           <Button
-                            variant="primary"
+                            variant="success"
                             type="submit"
                             className="px-4 py-2 me-2"
                             disabled={isSubmitting}

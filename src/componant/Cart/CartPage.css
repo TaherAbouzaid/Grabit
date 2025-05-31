@@ -55,8 +55,8 @@ body {
   
   /* Buttons */
   .btn-success {
-    background-color: #5caf90;
-    border-color: #5caf90;
+    background-color: #5caf90 !important;
+    border-color: #5caf90 !important;
   }
   
   .btn-success:hover {
