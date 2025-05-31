@@ -5,7 +5,6 @@ import { BiSend } from "react-icons/bi";
 import {
   getChatbotResponseWithHistory,
   searchProducts,
-  createProductsMessage,
 } from "../../services/chatbotService";
 import { useAuth } from "../../context/AuthContext";
 import "./AIChat.css";

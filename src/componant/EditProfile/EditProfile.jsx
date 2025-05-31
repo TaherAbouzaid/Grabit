@@ -12,7 +12,7 @@ import "./EditProfile.css";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useAuth } from "../../context/AuthContext";
-import { fetchUserData } from "../../store/Slices/userSlice";
+import { fetchUserData } from "../../Store/Slices/userSlice";
 
 const EditProfile = () => {
   const [form, setForm] = useState({

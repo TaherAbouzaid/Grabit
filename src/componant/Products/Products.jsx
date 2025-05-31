@@ -5,7 +5,7 @@ import SidebarFilter from '../SidebarFilter/SidebarFilter';
 import { Link, useNavigate } from "react-router-dom"; 
 import './Products.css'
 import { useAuth } from '../../context/AuthContext';
-import { addToLocalWishlist, addToWishlist } from '../../store/Slices/wishlistSlice';
+import { addToLocalWishlist, addToWishlist } from '../../Store/Slices/wishlistSlice';
 import { addToCart, fetchCart } from '../../Store/Slices/cartSlice';
 import { fetchProducts} from '../../Store/Slices/productsSlice'
 

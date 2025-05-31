@@ -7,7 +7,7 @@ import './UserProfile.css';
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { fetchUserData } from "../../store/Slices/userSlice";
+import { fetchUserData } from "../../Store/Slices/userSlice";
 
 const UserProfile = () => {
   const { user, loading } = useAuth();

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
-import { fetchUserData } from '../store/Slices/userSlice';
+import { fetchUserData } from '../Store/Slices/userSlice';
 import { Container, Spinner } from 'react-bootstrap';
 import { showToast } from './SimpleToast';
 

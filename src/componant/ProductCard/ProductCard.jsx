@@ -5,7 +5,7 @@ import { addToCart } from "../../Store/Slices/cartSlice";
 import {
   addToWishlist,
   removeFromWishlist,
-} from "../../store/Slices/wishlistSlice";
+} from "../../Store/Slices/wishlistSlice";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./ProductCard.css";

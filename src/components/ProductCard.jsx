@@ -12,7 +12,7 @@ import { addToCart } from "../Store/Slices/cartSlice";
 import {
   addToWishlist,
   removeFromWishlist,
-} from "../store/Slices/wishlistSlice";
+} from "../Store/Slices/wishlistSlice";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { showToast } from "./SimpleToastUtils";
