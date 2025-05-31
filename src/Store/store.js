@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import filterReducer from "../Slices/filtersSlice";
-import productReducer from "../Slices/productsSlice";
-import userReducer from "../Slices/userSlice";
-import wishlistReducer from "../Slices/wishlistSlice";
-import cartReducer from "../Slices/cartSlice";
-import categoryReducer from "../Slices/categorySlicees";
-import reviewReducer from "../Slices/reviewSlice";
-import offerReducer from "../Slices/offerSlice";
+import filterReducer from "../Store/Slices/filtersSlice";
+import productReducer from "../Store/Slices/productsSlice";
+import userReducer from "../Store/Slices/userSlice";
+import wishlistReducer from "../Store/Slices/wishlistSlice";
+import cartReducer from "../Store/Slices/cartSlice";
+import categoryReducer from "../Store/Slices/categorySlicees";
+import reviewReducer from "../Store/Slices/reviewSlice";
+import offerReducer from "./Slices/offerSlice";
 
 const store = configureStore({
   reducer: {
