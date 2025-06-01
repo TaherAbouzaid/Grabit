@@ -88,7 +88,7 @@ const Register = () => {
     }
   };
 
-  return (
+  return (     
     <Container className="mt-5">
       <div className="registration-box mx-auto" style={{ maxWidth: '900px' }}>
         <h2 className="text-center">{t('profile.register')}</h2>
