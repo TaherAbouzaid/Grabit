@@ -319,7 +319,7 @@ export default function CheckoutPage() {
         };
       }),
       shippingAddress,
-      status: paymentMethod === "cod" ? "pending" : "delivered",
+      status: paymentMethod === "cod" || paymentMethod === "paypal" ? "pending" : "pending",
       updatedAt: new Date(),
       userId: user.uid,
     };
