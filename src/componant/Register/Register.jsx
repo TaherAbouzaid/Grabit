@@ -4,11 +4,12 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebase/config";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { Button, Col, Container, Row, Form } from "react-bootstrap";
+import { Button, Col, Container, Row, Form, Alert } from "react-bootstrap";
 import './Register.css';
 import { useEffect, useState } from "react";
 import { Country, State, City } from 'country-state-city';
 import { useTranslation } from "react-i18next";
+import { showToast } from "../../components/SimpleToastUtils";
 
 const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -76,10 +77,16 @@ const Register = () => {
       navigate("/shop");
     } catch (error) {
       console.error("Registration error:", error);
+     
+      if (error.code === 'auth/email-already-in-use') {
+        showToast(t("profile.Email already in use"), 'error', 3000);
+      } else {
+        showToast(t("profile.Error during registration. Please try again."), 'error', 3000);
+      }
     }
   };
 
-  return (
+  return (     
     <Container className="mt-5">
       <div className="registration-box mx-auto" style={{ maxWidth: '900px' }}>
         <h2 className="text-center">{t('profile.register')}</h2>
